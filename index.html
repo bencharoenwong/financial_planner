@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Goal Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .status-green { background-color: #10b981; }
+        .status-yellow { background-color: #f59e0b; }
+        .status-red { background-color: #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">💰 Financial Goal Analyzer</h1>
+            <p class="text-gray-400">Determine if your wealth accumulation goal is realistic</p>
+        </div>
+
+        <!-- Calculator Form -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-xl">
+            <form id="calculatorForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Current Wealth -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Current Savings ($)
+                        </label>
+                        <input type="number" id="currentWealth" value="10000" min="1" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Target Wealth -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Target Goal ($)
+                        </label>
+                        <input type="number" id="targetWealth" value="1000000" min="1" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Years -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Time Horizon (years)
+                        </label>
+                        <input type="number" id="yearsToGoal" value="30" min="1" max="50" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Monthly Contribution -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Monthly Contribution ($)
+                        </label>
+                        <input type="number" id="monthlyContribution" value="500" min="0" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Risk Profile -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Risk Profile</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                            <input type="radio" name="riskProfile" value="conservative" class="mr-2">
+                            <div>
+                                <div class="font-medium text-sm">Conservative</div>
+                                <div class="text-xs text-gray-400">6% / 10% vol</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                            <input type="radio" name="riskProfile" value="moderate" class="mr-2">
+                            <div>
+                                <div class="font-medium text-sm">Moderate</div>
+                                <div class="text-xs text-gray-400">8% / 13% vol</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                            <input type="radio" name="riskProfile" value="aggressive" checked class="mr-2">
+                            <div>
+                                <div class="font-medium text-sm">Aggressive</div>
+                                <div class="text-xs text-gray-400">10% / 16% vol</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                            <input type="radio" name="riskProfile" value="very_aggressive" class="mr-2">
+                            <div>
+                                <div class="font-medium text-sm">Very Aggressive</div>
+                                <div class="text-xs text-gray-400">12% / 20% vol</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Monthly Income (Optional) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Monthly Income (optional, for sustainability check)
+                    </label>
+                    <input type="number" id="monthlyIncome" value="" min="0" placeholder="Leave blank to skip"
+                        class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" id="analyzeBtn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <span id="btnText">Analyze My Goal</span>
+                    <svg id="spinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <!-- Results (hidden initially) -->
+        <div id="results" class="hidden space-y-6">
+            <!-- Status Banner -->
+            <div id="statusBanner" class="rounded-lg p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <span id="statusEmoji" class="text-2xl mr-3"></span>
+                    <div>
+                        <div id="statusText" class="font-bold text-lg"></div>
+                        <div id="probText" class="text-sm opacity-90"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-800 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-1">Required Monthly</div>
+                    <div id="requiredMonthly" class="text-2xl font-bold text-white"></div>
+                    <div id="contributionGap" class="text-sm mt-1"></div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-1">80% Confidence Floor</div>
+                    <div id="percentile20" class="text-2xl font-bold text-white"></div>
+                    <div class="text-sm text-gray-400 mt-1">Worst likely outcome</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-4">
+                    <div class="text-sm text-gray-400 mb-1">Median Outcome</div>
+                    <div id="percentile50" class="text-2xl font-bold text-white"></div>
+                    <div class="text-sm text-gray-400 mt-1">Expected result</div>
+                </div>
+            </div>
+
+            <!-- Flags -->
+            <div id="flagsContainer" class="bg-gray-800 rounded-lg p-4">
+                <div class="font-medium mb-2 flex items-center">
+                    <span class="mr-2">⚠️</span> Flags
+                </div>
+                <ul id="flagsList" class="space-y-1 text-sm text-gray-300"></ul>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="font-medium mb-2 flex items-center">
+                    <span class="mr-2">💡</span> Recommendations
+                </div>
+                <ul id="recommendationsList" class="space-y-2 text-sm text-gray-300"></ul>
+            </div>
+
+            <!-- Projection Chart -->
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="font-medium mb-4">📈 Wealth Projection</div>
+                <div class="h-64">
+                    <canvas id="projectionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="text-xs text-gray-500 text-center p-4 bg-gray-800 rounded-lg">
+                <strong>Disclaimer:</strong> This tool provides educational estimates only and does not constitute financial advice. 
+                Projections are based on historical market assumptions and do not guarantee future results. 
+                Consult a qualified financial advisor before making investment decisions.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API URL - change this when deploying
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000' 
+            : '';  // Same origin in production
+
+        let chart = null;
+
+        document.getElementById('calculatorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('analyzeBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('spinner');
+            
+            // Show loading state
+            btn.disabled = true;
+            btnText.textContent = 'Analyzing...';
+            spinner.classList.remove('hidden');
+
+            const data = {
+                currentWealth: parseFloat(document.getElementById('currentWealth').value),
+                targetWealth: parseFloat(document.getElementById('targetWealth').value),
+                yearsToGoal: parseInt(document.getElementById('yearsToGoal').value),
+                monthlyContribution: parseFloat(document.getElementById('monthlyContribution').value),
+                riskProfile: document.querySelector('input[name="riskProfile"]:checked').value,
+            };
+
+            const monthlyIncome = document.getElementById('monthlyIncome').value;
+            if (monthlyIncome) {
+                data.monthlyIncome = parseFloat(monthlyIncome);
+            }
+
+            try {
+                // Try API first, fall back to local calculation
+                let result;
+                try {
+                    const response = await fetch(`${API_URL}/api/analyze`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    if (!response.ok) throw new Error('API error');
+                    result = await response.json();
+                } catch (apiError) {
+                    // Fall back to client-side calculation
+                    result = calculateLocally(data);
+                }
+
+                displayResults(result);
+            } catch (error) {
+                alert('Error analyzing goal: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Analyze My Goal';
+                spinner.classList.add('hidden');
+            }
+        });
+
+        function displayResults(result) {
+            document.getElementById('results').classList.remove('hidden');
+
+            // Status banner
+            const banner = document.getElementById('statusBanner');
+            const statusEmoji = document.getElementById('statusEmoji');
+            const statusText = document.getElementById('statusText');
+            const probText = document.getElementById('probText');
+
+            banner.className = 'rounded-lg p-4 flex items-center justify-between ';
+            if (result.status === 'GREEN') {
+                banner.classList.add('status-green');
+                statusEmoji.textContent = '🟢';
+                statusText.textContent = 'On Track';
+            } else if (result.status === 'YELLOW') {
+                banner.classList.add('status-yellow');
+                statusEmoji.textContent = '🟡';
+                statusText.textContent = 'Needs Attention';
+            } else {
+                banner.classList.add('status-red');
+                statusEmoji.textContent = '🔴';
+                statusText.textContent = 'Critical';
+            }
+            probText.textContent = `${(result.probabilityOfSuccess * 100).toFixed(1)}% probability of success`;
+
+            // Key metrics
+            document.getElementById('requiredMonthly').textContent = 
+                '$' + result.requiredMonthlyFor80Percent.toLocaleString(undefined, {maximumFractionDigits: 0});
+            
+            const gap = result.contributionGap;
+            const gapEl = document.getElementById('contributionGap');
+            if (gap > 0) {
+                gapEl.textContent = `+$${gap.toLocaleString(undefined, {maximumFractionDigits: 0})}/mo needed`;
+                gapEl.className = 'text-sm mt-1 text-red-400';
+            } else {
+                gapEl.textContent = `$${Math.abs(gap).toLocaleString(undefined, {maximumFractionDigits: 0})}/mo above minimum`;
+                gapEl.className = 'text-sm mt-1 text-green-400';
+            }
+
+            document.getElementById('percentile20').textContent = 
+                '$' + result.projections.percentile20.toLocaleString(undefined, {maximumFractionDigits: 0});
+            document.getElementById('percentile50').textContent = 
+                '$' + result.projections.percentile50.toLocaleString(undefined, {maximumFractionDigits: 0});
+
+            // Flags
+            const flagsContainer = document.getElementById('flagsContainer');
+            const flagsList = document.getElementById('flagsList');
+            flagsList.innerHTML = '';
+            if (result.flags && result.flags.length > 0) {
+                flagsContainer.classList.remove('hidden');
+                result.flags.forEach(flag => {
+                    const li = document.createElement('li');
+                    li.textContent = '• ' + flag;
+                    flagsList.appendChild(li);
+                });
+            } else {
+                flagsContainer.classList.add('hidden');
+            }
+
+            // Recommendations
+            const recsList = document.getElementById('recommendationsList');
+            recsList.innerHTML = '';
+            result.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = '• ' + rec;
+                recsList.appendChild(li);
+            });
+
+            // Chart
+            updateChart(result);
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateChart(result) {
+            const ctx = document.getElementById('projectionChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const years = result.input.yearsToGoal;
+            const labels = Array.from({length: years + 1}, (_, i) => `Year ${i}`);
+            
+            // Simplified projection curves (exponential interpolation)
+            const initial = result.input.currentWealth;
+            const monthly = result.input.monthlyContribution;
+            const p20Final = result.projections.percentile20;
+            const p50Final = result.projections.percentile50;
+            const p80Final = result.projections.percentile80;
+            const target = result.input.targetWealth;
+
+            // Generate curves
+            const generateCurve = (finalValue) => {
+                return labels.map((_, i) => {
+                    const t = i / years;
+                    // Approximate with contributions considered
+                    const lumpGrowth = initial * Math.pow(finalValue / (initial + monthly * years * 12), t);
+                    const contribGrowth = monthly * 12 * i * Math.pow(1 + (finalValue / (initial + monthly * years * 12) - 1), t/2);
+                    return Math.round(lumpGrowth + contribGrowth);
+                });
+            };
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '80th Percentile',
+                            data: generateCurve(p80Final),
+                            borderColor: 'rgba(34, 197, 94, 0.5)',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: '+1',
+                            tension: 0.4,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Median',
+                            data: generateCurve(p50Final),
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'transparent',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '20th Percentile',
+                            data: generateCurve(p20Final),
+                            borderColor: 'rgba(239, 68, 68, 0.5)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: '-1',
+                            tension: 0.4,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Target',
+                            data: labels.map(() => target),
+                            borderColor: 'rgba(251, 191, 36, 0.8)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#9ca3af' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#9ca3af',
+                                callback: (value) => '$' + (value / 1000).toFixed(0) + 'K'
+                            },
+                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Simple client-side fallback calculation
+        function calculateLocally(data) {
+            const profiles = {
+                conservative: { ret: 0.06, vol: 0.10 },
+                moderate: { ret: 0.08, vol: 0.13 },
+                aggressive: { ret: 0.10, vol: 0.16 },
+                very_aggressive: { ret: 0.12, vol: 0.20 }
+            };
+
+            const profile = profiles[data.riskProfile];
+            const geoReturn = profile.ret - (profile.vol ** 2) / 2;
+            const years = data.yearsToGoal;
+
+            // Simplified deterministic projection
+            const totalContribs = data.monthlyContribution * 12 * years;
+            const fvLump = data.currentWealth * Math.pow(1 + geoReturn, years);
+            const fvContribs = data.monthlyContribution * 12 * 
+                ((Math.pow(1 + geoReturn, years) - 1) / geoReturn);
+            
+            const median = fvLump + fvContribs;
+            const p20 = median * 0.6;  // Rough approximation
+            const p80 = median * 1.5;
+
+            const requiredCagr = Math.pow(data.targetWealth / data.currentWealth, 1/years) - 1;
+            const probSuccess = median >= data.targetWealth ? 0.6 : 0.3;
+
+            // Find required monthly (simplified)
+            const targetGrowth = data.targetWealth / data.currentWealth;
+            const lumpGrowth = Math.pow(1 + geoReturn, years);
+            const deficit = data.targetWealth - (data.currentWealth * lumpGrowth);
+            const contribGrowthFactor = ((Math.pow(1 + geoReturn, years) - 1) / geoReturn);
+            const requiredMonthly = Math.max(0, (deficit / contribGrowthFactor) / 12 * 1.3);
+
+            let status = 'GREEN';
+            let flags = [];
+            let recommendations = [];
+
+            if (probSuccess < 0.5) {
+                status = 'RED';
+                flags.push('Goal may be unrealistic with current parameters');
+                recommendations.push('Consider increasing contributions or extending timeline');
+            } else if (probSuccess < 0.8) {
+                status = 'YELLOW';
+                flags.push('Success probability below 80% threshold');
+                recommendations.push('Review risk profile or increase savings rate');
+            } else {
+                recommendations.push('Current plan is on track');
+            }
+
+            return {
+                input: data,
+                probabilityOfSuccess: probSuccess,
+                requiredMonthlyFor80Percent: requiredMonthly,
+                contributionGap: requiredMonthly - data.monthlyContribution,
+                projections: {
+                    percentile20: p20,
+                    percentile50: median,
+                    percentile80: p80
+                },
+                status,
+                flags,
+                recommendations
+            };
+        }
+    </script>
+</body>
+</html>
