@@ -61,15 +61,37 @@
                             <button type="button" onclick="showHelp('targetGoal')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
                         </label>
                         <input type="number" id="targetWealth" value="1000000" min="1" required
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onchange="updateInflationAdjustedTarget()">
                         <div class="flex items-center gap-2 mt-1">
-                            <select id="targetValueType" class="text-xs bg-gray-600 border-none rounded px-2 py-1 text-gray-300" onchange="updateTargetHelp()">
+                            <select id="targetValueType" class="text-xs bg-gray-600 border-none rounded px-2 py-1 text-gray-300" onchange="updateInflationAdjustedTarget()">
                                 <option value="future">Future dollars (nominal)</option>
                                 <option value="today" selected>Today's dollars (real)</option>
                             </select>
                             <button type="button" onclick="showHelp('realVsNominal')" class="text-xs text-blue-400 hover:text-blue-300">What's the difference?</button>
                         </div>
                         <div id="targetValueHelp" class="text-xs text-gray-500 mt-1">Purchasing power equivalent to $1M today</div>
+                        <!-- Show inflation-adjusted target -->
+                        <div id="inflationAdjustedTarget" class="mt-2 p-2 bg-blue-900/30 rounded text-xs hidden">
+                            <div class="text-blue-300">Actual target needed:</div>
+                            <div class="text-white font-bold text-lg" id="nominalTargetDisplay">$2,427,000</div>
+                            <div class="text-blue-400">to have $1M purchasing power in 30 years at 3% inflation</div>
+                        </div>
+                    </div>
+
+                    <!-- Inflation Rate (Goal Mode) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Expected Inflation
+                            <button type="button" onclick="showHelp('inflation')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="goalInflation" min="1" max="5" step="0.5" value="3"
+                                class="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                oninput="document.getElementById('goalInflationDisplay').textContent = this.value + '%'; updateInflationAdjustedTarget()">
+                            <span id="goalInflationDisplay" class="text-sm font-medium text-white w-12 text-right">3%</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">Historical US average: ~3%</div>
                     </div>
 
                     <!-- Years (Goal Mode) -->
@@ -79,7 +101,8 @@
                             <button type="button" onclick="showHelp('yearsToGoal')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
                         </label>
                         <input type="number" id="yearsToGoal" value="30" min="1" max="50" required
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onchange="updateInflationAdjustedTarget()">
                         <div class="text-xs text-gray-500 mt-1">Time until you need to access this money</div>
                     </div>
 
@@ -466,6 +489,32 @@
                 </div>
             </div>
 
+            <!-- Investment Assumptions -->
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="text-sm text-gray-400 mb-2">📈 Investment Assumptions Used</div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-xs text-gray-500">Risk Profile</div>
+                        <div id="fireRiskProfile" class="font-medium text-white capitalize">Aggressive</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Nominal Return</div>
+                        <div id="fireNominalReturn" class="font-medium text-green-400">10%</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Inflation</div>
+                        <div id="fireInflationUsed" class="font-medium text-red-400">3%</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500">Real Return</div>
+                        <div id="fireRealReturn" class="font-medium text-blue-400">7%</div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 mt-2 text-center">
+                    Change risk profile above to see how it affects your FIRE date
+                </div>
+            </div>
+
             <!-- What This Means (Educational) -->
             <div class="bg-gray-800 rounded-lg p-4">
                 <div class="font-medium mb-2">📚 What This Means</div>
@@ -831,14 +880,58 @@
         }
 
         function updateTargetHelp() {
+            // Legacy function - now handled by updateInflationAdjustedTarget
+            updateInflationAdjustedTarget();
+        }
+
+        function updateInflationAdjustedTarget() {
             const valueType = document.getElementById('targetValueType').value;
+            const targetVal = parseFloat(document.getElementById('targetWealth').value) || 0;
+            const years = parseInt(document.getElementById('yearsToGoal').value) || 30;
+            const inflation = parseFloat(document.getElementById('goalInflation').value) || 3;
+
             const helpEl = document.getElementById('targetValueHelp');
+            const adjustedSection = document.getElementById('inflationAdjustedTarget');
+            const nominalDisplay = document.getElementById('nominalTargetDisplay');
+
+            if (valueType === 'today') {
+                // User entered today's dollars - need to inflate to future value
+                const inflationFactor = Math.pow(1 + inflation / 100, years);
+                const nominalTarget = targetVal * inflationFactor;
+
+                helpEl.textContent = `You want purchasing power of $${targetVal.toLocaleString()} in today's terms`;
+                adjustedSection.classList.remove('hidden');
+                nominalDisplay.textContent = '$' + nominalTarget.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+                // Update the explanation
+                adjustedSection.querySelector('.text-blue-400').textContent =
+                    `to have $${targetVal.toLocaleString()} purchasing power in ${years} years at ${inflation}% inflation`;
+
+                // Store the nominal target for calculations
+                adjustedSection.dataset.nominalTarget = nominalTarget;
+            } else {
+                // User entered future (nominal) dollars directly
+                helpEl.textContent = `Actual dollars in your account (worth less due to inflation)`;
+                adjustedSection.classList.add('hidden');
+                adjustedSection.dataset.nominalTarget = targetVal;
+
+                // Show what this will be worth in today's dollars
+                const realValue = targetVal / Math.pow(1 + inflation / 100, years);
+                helpEl.textContent = `Worth ~$${realValue.toLocaleString(undefined, { maximumFractionDigits: 0 })} in today's purchasing power`;
+            }
+        }
+
+        function getNominalTarget() {
+            // Get the actual target to use in calculations (always nominal/future value)
+            const valueType = document.getElementById('targetValueType').value;
             const targetVal = parseFloat(document.getElementById('targetWealth').value) || 0;
 
             if (valueType === 'today') {
-                helpEl.textContent = `Purchasing power equivalent to $${(targetVal/1000000).toFixed(1)}M today`;
+                const years = parseInt(document.getElementById('yearsToGoal').value) || 30;
+                const inflation = parseFloat(document.getElementById('goalInflation').value) || 3;
+                return targetVal * Math.pow(1 + inflation / 100, years);
             } else {
-                helpEl.textContent = `Actual dollars in your account (inflation will reduce purchasing power)`;
+                return targetVal;
             }
         }
 
@@ -880,6 +973,10 @@
         function exportGoalToExcel() {
             if (!lastGoalResult) {
                 alert('Please run an analysis first');
+                return;
+            }
+            if (typeof XLSX === 'undefined') {
+                alert('Export library not loaded. Please refresh the page or check your internet connection.');
                 return;
             }
 
@@ -1009,6 +1106,10 @@
         function exportFIREToExcel() {
             if (!lastFireResult) {
                 alert('Please run a FIRE calculation first');
+                return;
+            }
+            if (typeof XLSX === 'undefined') {
+                alert('Export library not loaded. Please refresh the page or check your internet connection.');
                 return;
             }
 
@@ -1170,6 +1271,10 @@
             const fireResults = document.getElementById('fireResults');
             const analyzeBtn = document.getElementById('btnText');
 
+            // Clear previous results when switching modes
+            lastGoalResult = null;
+            lastFireResult = null;
+
             if (mode === 'goal') {
                 goalBtn.classList.add('bg-blue-600', 'text-white');
                 goalBtn.classList.remove('text-gray-400');
@@ -1257,7 +1362,10 @@
                 currentAge,
                 currentWealth,
                 monthlyInvestment,
+                riskProfile,
+                nominalReturn,
                 realReturn,
+                inflation,
                 scenarios: {
                     saveMore: { months: monthsSaveMore, age: currentAge + monthsSaveMore / 12 },
                     spendLess: { months: monthsSpendLess, age: currentAge + monthsSpendLess / 12, fireNumber: fireNumberSpendLess },
@@ -1290,6 +1398,12 @@
             document.getElementById('fireExpensesSummary').textContent = '$' + result.annualExpenses.toLocaleString(undefined, {maximumFractionDigits: 0});
             document.getElementById('fireSWRSummary').textContent = result.swr + '%';
             document.getElementById('fireRetirementYearsSummary').textContent = result.retirementYears;
+
+            // Investment assumptions
+            document.getElementById('fireRiskProfile').textContent = result.riskProfile.replace('_', ' ');
+            document.getElementById('fireNominalReturn').textContent = (result.nominalReturn * 100).toFixed(0) + '%';
+            document.getElementById('fireInflationUsed').textContent = result.inflation + '%';
+            document.getElementById('fireRealReturn').textContent = (result.realReturn * 100).toFixed(1) + '%';
 
             // Educational section
             document.getElementById('eduExpenses').textContent = result.annualExpenses.toLocaleString(undefined, {maximumFractionDigits: 0});
@@ -1507,12 +1621,20 @@
             // Goal Mode
             btnText.textContent = 'Analyzing...';
 
+            // Get the nominal (future value) target - this is what they actually need
+            const nominalTarget = getNominalTarget();
+            const userEnteredTarget = parseFloat(document.getElementById('targetWealth').value);
+            const targetType = document.getElementById('targetValueType').value;
+
             const data = {
                 currentWealth: parseFloat(document.getElementById('currentWealth').value),
-                targetWealth: parseFloat(document.getElementById('targetWealth').value),
+                targetWealth: nominalTarget, // Use inflation-adjusted target for calculations
+                targetWealthUserEntered: userEnteredTarget, // Store original for display
+                targetValueType: targetType,
                 yearsToGoal: parseInt(document.getElementById('yearsToGoal').value),
                 monthlyContribution: parseFloat(document.getElementById('monthlyContribution').value),
                 riskProfile: document.querySelector('input[name="riskProfile"]:checked').value,
+                inflationRate: parseFloat(document.getElementById('goalInflation').value) / 100,
             };
 
             const monthlyIncome = document.getElementById('monthlyIncome').value;
@@ -1798,6 +1920,12 @@
 
             return {
                 input: data,
+                assumptions: {
+                    arithmeticReturn: profile.ret,
+                    geometricReturn: geoReturn,
+                    volatility: profile.vol,
+                    riskProfile: data.riskProfile
+                },
                 probabilityOfSuccess: probSuccess,
                 requiredMonthlyFor80Percent: requiredMonthly,
                 contributionGap: requiredMonthly - data.monthlyContribution,
@@ -1805,6 +1933,10 @@
                     percentile20: p20,
                     percentile50: median,
                     percentile80: p80
+                },
+                sustainableIncome: {
+                    conservative: data.targetWealth * 0.03,
+                    moderate: data.targetWealth * 0.04
                 },
                 status,
                 flags,
