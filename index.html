@@ -57,26 +57,69 @@
                     <!-- Target Wealth -->
                     <div id="targetWealthSection">
                         <label class="block text-sm font-medium text-gray-300 mb-2">
-                            Target Goal ($)
+                            What's your goal amount?
                             <button type="button" onclick="showHelp('targetGoal')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
                         </label>
                         <input type="number" id="targetWealth" value="1000000" min="1" required
                             class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             onchange="updateInflationAdjustedTarget()">
-                        <div class="flex items-center gap-2 mt-1">
-                            <select id="targetValueType" class="text-xs bg-gray-600 border-none rounded px-2 py-1 text-gray-300" onchange="updateInflationAdjustedTarget()">
-                                <option value="future">Future dollars (nominal)</option>
-                                <option value="today" selected>Today's dollars (real)</option>
-                            </select>
-                            <button type="button" onclick="showHelp('realVsNominal')" class="text-xs text-blue-400 hover:text-blue-300">What's the difference?</button>
+
+                        <!-- Simplified toggle with plain language -->
+                        <div class="mt-2 flex items-center gap-2">
+                            <span class="text-xs text-gray-400">I'm thinking in:</span>
+                            <div class="inline-flex rounded bg-gray-700 p-0.5">
+                                <button type="button" id="todayDollarsBtn" onclick="setTargetType('today')"
+                                    class="px-2 py-1 text-xs rounded bg-blue-600 text-white cursor-pointer transition-colors hover:bg-blue-500">
+                                    Today's buying power
+                                </button>
+                                <button type="button" id="futureDollarsBtn" onclick="setTargetType('future')"
+                                    class="px-2 py-1 text-xs rounded text-gray-400 cursor-pointer transition-colors hover:text-gray-200 hover:bg-gray-600">
+                                    Actual future amount
+                                </button>
+                            </div>
+                            <button type="button" onclick="showHelp('realVsNominal')" class="text-xs text-blue-400 hover:text-blue-300">?</button>
                         </div>
-                        <div id="targetValueHelp" class="text-xs text-gray-500 mt-1">Purchasing power equivalent to $1M today</div>
-                        <!-- Show inflation-adjusted target -->
-                        <div id="inflationAdjustedTarget" class="mt-2 p-2 bg-blue-900/30 rounded text-xs hidden">
-                            <div class="text-blue-300">Actual target needed:</div>
-                            <div class="text-white font-bold text-lg" id="nominalTargetDisplay">$2,427,000</div>
-                            <div class="text-blue-400">to have $1M purchasing power in 30 years at 3% inflation</div>
+
+                        <!-- Hidden select for form submission -->
+                        <select id="targetValueType" class="hidden" onchange="updateInflationAdjustedTarget()">
+                            <option value="future">Future dollars (nominal)</option>
+                            <option value="today" selected>Today's dollars (real)</option>
+                        </select>
+
+                        <!-- Clear explanation based on selection -->
+                        <div id="targetExplanation" class="mt-2 p-3 rounded text-sm">
+                            <div id="todayDollarsExplanation">
+                                <div class="text-gray-300">
+                                    <strong class="text-white">You want: $<span id="targetInTodayTerms">1,000,000</span></strong> in today's buying power
+                                </div>
+                                <div class="mt-2 flex items-center gap-2 text-xs">
+                                    <span class="text-gray-400">With</span>
+                                    <input type="number" id="goalInflationInline" value="3" min="1" max="6" step="0.5"
+                                        class="w-14 bg-gray-600 border-none rounded px-2 py-1 text-white text-center"
+                                        onchange="updateInflationAdjustedTarget()">
+                                    <span class="text-gray-400">% inflation over</span>
+                                    <span id="yearsDisplay" class="text-white">30</span>
+                                    <span class="text-gray-400">years...</span>
+                                </div>
+                                <div class="mt-2 bg-yellow-900/40 border border-yellow-700/50 rounded p-2">
+                                    <div class="text-yellow-300 text-xs">You'll actually need:</div>
+                                    <div class="text-yellow-100 font-bold text-xl" id="nominalTargetDisplay">$2,427,000</div>
+                                    <div class="text-yellow-400/70 text-xs">in your account to have that buying power</div>
+                                </div>
+                            </div>
+                            <div id="futureDollarsExplanation" class="hidden">
+                                <div class="text-gray-300">
+                                    <strong class="text-white">You'll have: $<span id="targetInFutureTerms">1,000,000</span></strong> in your account
+                                </div>
+                                <div class="mt-2 bg-gray-700/50 rounded p-2 text-xs">
+                                    <span class="text-gray-400">Worth approximately </span>
+                                    <span class="text-white font-medium" id="realValueDisplay">$412,000</span>
+                                    <span class="text-gray-400"> in today's buying power</span>
+                                    <div class="text-gray-500 mt-1">(assuming 3% inflation over 30 years)</div>
+                                </div>
+                            </div>
                         </div>
+                        <div id="targetValueHelp" class="hidden"></div>
                     </div>
 
                     <!-- Inflation Rate (Goal Mode) -->
@@ -239,8 +282,25 @@
                                 <span id="savingsRateDisplay" class="text-sm font-medium text-white w-12 text-right">15%</span>
                             </div>
                             <div class="flex items-center justify-between text-xs">
-                                <span class="text-gray-500">Calculated savings:</span>
+                                <span class="text-gray-500">From salary:</span>
                                 <span id="calculatedContribution" class="text-green-400 font-medium">$900/mo</span>
+                            </div>
+                            <!-- Additional Monthly Savings -->
+                            <div class="pt-2 border-t border-gray-600">
+                                <label class="text-xs text-gray-400 mb-1 block">
+                                    + Additional savings (bonuses, windfalls, etc.)
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-500 text-sm">$</span>
+                                    <input type="number" id="additionalSavings" value="0" min="0"
+                                        class="flex-1 bg-gray-600 border-none rounded px-3 py-2 text-white text-sm focus:ring-2 focus:ring-blue-500"
+                                        placeholder="0" onchange="updateCalculatedContribution()">
+                                    <span class="text-gray-500 text-sm">/mo</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-sm font-medium pt-2 border-t border-gray-600">
+                                <span class="text-gray-300">Total monthly savings:</span>
+                                <span id="totalMonthlySavings" class="text-green-400">$900/mo</span>
                             </div>
                             <div id="savingsRateFeedback" class="text-xs text-gray-400"></div>
                         </div>
@@ -884,40 +944,119 @@
             updateInflationAdjustedTarget();
         }
 
+        function setTargetType(type) {
+            // Update hidden select for form value
+            document.getElementById('targetValueType').value = type;
+
+            // Update toggle button styles
+            const todayBtn = document.getElementById('todayDollarsBtn');
+            const futureBtn = document.getElementById('futureDollarsBtn');
+            const todayExpl = document.getElementById('todayDollarsExplanation');
+            const futureExpl = document.getElementById('futureDollarsExplanation');
+
+            if (type === 'today') {
+                todayBtn.classList.add('bg-blue-600', 'text-white');
+                todayBtn.classList.remove('text-gray-400');
+                futureBtn.classList.remove('bg-blue-600', 'text-white');
+                futureBtn.classList.add('text-gray-400');
+                todayExpl.classList.remove('hidden');
+                futureExpl.classList.add('hidden');
+            } else {
+                futureBtn.classList.add('bg-blue-600', 'text-white');
+                futureBtn.classList.remove('text-gray-400');
+                todayBtn.classList.remove('bg-blue-600', 'text-white');
+                todayBtn.classList.add('text-gray-400');
+                futureExpl.classList.remove('hidden');
+                todayExpl.classList.add('hidden');
+            }
+
+            // Recalculate displays
+            updateInflationAdjustedTarget();
+        }
+
         function updateInflationAdjustedTarget() {
             const valueType = document.getElementById('targetValueType').value;
             const targetVal = parseFloat(document.getElementById('targetWealth').value) || 0;
             const years = parseInt(document.getElementById('yearsToGoal').value) || 30;
-            const inflation = parseFloat(document.getElementById('goalInflation').value) || 3;
 
-            const helpEl = document.getElementById('targetValueHelp');
-            const adjustedSection = document.getElementById('inflationAdjustedTarget');
-            const nominalDisplay = document.getElementById('nominalTargetDisplay');
+            // Get inflation from inline input if visible, otherwise from slider
+            let inflation;
+            const inlineInflation = document.getElementById('goalInflationInline');
+            const sliderInflation = document.getElementById('goalInflation');
+
+            if (valueType === 'today' && inlineInflation) {
+                inflation = parseFloat(inlineInflation.value) || 3;
+                // Sync slider with inline input
+                if (sliderInflation) {
+                    sliderInflation.value = inflation;
+                    document.getElementById('goalInflationDisplay').textContent = inflation + '%';
+                }
+            } else {
+                inflation = parseFloat(sliderInflation?.value) || 3;
+                // Sync inline with slider
+                if (inlineInflation) {
+                    inlineInflation.value = inflation;
+                }
+            }
+
+            const inflationFactor = Math.pow(1 + inflation / 100, years);
+
+            // Update years display
+            const yearsDisplay = document.getElementById('yearsDisplay');
+            if (yearsDisplay) yearsDisplay.textContent = years;
 
             if (valueType === 'today') {
                 // User entered today's dollars - need to inflate to future value
-                const inflationFactor = Math.pow(1 + inflation / 100, years);
                 const nominalTarget = targetVal * inflationFactor;
 
-                helpEl.textContent = `You want purchasing power of $${targetVal.toLocaleString()} in today's terms`;
-                adjustedSection.classList.remove('hidden');
-                nominalDisplay.textContent = '$' + nominalTarget.toLocaleString(undefined, { maximumFractionDigits: 0 });
+                // Update "Today's buying power" explanation
+                const targetInToday = document.getElementById('targetInTodayTerms');
+                if (targetInToday) targetInToday.textContent = targetVal.toLocaleString();
 
-                // Update the explanation
-                adjustedSection.querySelector('.text-blue-400').textContent =
-                    `to have $${targetVal.toLocaleString()} purchasing power in ${years} years at ${inflation}% inflation`;
+                const nominalDisplay = document.getElementById('nominalTargetDisplay');
+                if (nominalDisplay) nominalDisplay.textContent = '$' + nominalTarget.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
-                // Store the nominal target for calculations
-                adjustedSection.dataset.nominalTarget = nominalTarget;
+                // Store for calculations
+                const targetExpl = document.getElementById('targetExplanation');
+                if (targetExpl) targetExpl.dataset.nominalTarget = nominalTarget;
             } else {
                 // User entered future (nominal) dollars directly
-                helpEl.textContent = `Actual dollars in your account (worth less due to inflation)`;
-                adjustedSection.classList.add('hidden');
-                adjustedSection.dataset.nominalTarget = targetVal;
+                const realValue = targetVal / inflationFactor;
 
-                // Show what this will be worth in today's dollars
-                const realValue = targetVal / Math.pow(1 + inflation / 100, years);
-                helpEl.textContent = `Worth ~$${realValue.toLocaleString(undefined, { maximumFractionDigits: 0 })} in today's purchasing power`;
+                // Update "Actual future amount" explanation
+                const targetInFuture = document.getElementById('targetInFutureTerms');
+                if (targetInFuture) targetInFuture.textContent = targetVal.toLocaleString();
+
+                const realDisplay = document.getElementById('realValueDisplay');
+                if (realDisplay) realDisplay.textContent = '$' + realValue.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+                // Update the inflation assumption text in future dollars view
+                const futureExpl = document.getElementById('futureDollarsExplanation');
+                if (futureExpl) {
+                    const assumptionText = futureExpl.querySelector('.text-gray-500');
+                    if (assumptionText) assumptionText.textContent = `(assuming ${inflation}% inflation over ${years} years)`;
+                }
+
+                // Store for calculations
+                const targetExpl = document.getElementById('targetExplanation');
+                if (targetExpl) targetExpl.dataset.nominalTarget = targetVal;
+            }
+
+            // Legacy element support
+            const helpEl = document.getElementById('targetValueHelp');
+            const adjustedSection = document.getElementById('inflationAdjustedTarget');
+            if (helpEl && adjustedSection) {
+                if (valueType === 'today') {
+                    const nominalTarget = targetVal * inflationFactor;
+                    helpEl.textContent = `You want purchasing power of $${targetVal.toLocaleString()} in today's terms`;
+                    adjustedSection.classList.remove('hidden');
+                    const oldNominalDisplay = adjustedSection.querySelector('#nominalTargetDisplay') || adjustedSection.querySelector('.font-bold');
+                    if (oldNominalDisplay) oldNominalDisplay.textContent = '$' + nominalTarget.toLocaleString(undefined, { maximumFractionDigits: 0 });
+                } else {
+                    const realValue = targetVal / inflationFactor;
+                    helpEl.textContent = `Worth ~$${realValue.toLocaleString(undefined, { maximumFractionDigits: 0 })} in today's purchasing power`;
+                    adjustedSection.classList.add('hidden');
+                }
             }
         }
 
@@ -1561,23 +1700,31 @@
         function updateCalculatedContribution() {
             const salary = parseFloat(document.getElementById('netMonthlySalary').value) || 0;
             const rate = parseFloat(document.getElementById('savingsRateSlider').value) || 0;
-            const contribution = salary * (rate / 100);
+            const additionalSavings = parseFloat(document.getElementById('additionalSavings')?.value) || 0;
+            const salaryContribution = salary * (rate / 100);
+            const totalContribution = salaryContribution + additionalSavings;
 
             document.getElementById('savingsRateDisplay').textContent = rate + '%';
-            document.getElementById('calculatedContribution').textContent = '$' + contribution.toLocaleString(undefined, {maximumFractionDigits: 0}) + '/mo';
+            document.getElementById('calculatedContribution').textContent = '$' + salaryContribution.toLocaleString(undefined, {maximumFractionDigits: 0}) + '/mo';
+
+            // Update total display
+            const totalDisplay = document.getElementById('totalMonthlySavings');
+            if (totalDisplay) {
+                totalDisplay.textContent = '$' + totalContribution.toLocaleString(undefined, {maximumFractionDigits: 0}) + '/mo';
+            }
 
             // Update the hidden direct input so form submission works
-            document.getElementById('monthlyContribution').value = contribution;
+            document.getElementById('monthlyContribution').value = totalContribution;
 
             // Also update the income field for sustainability checks
             document.getElementById('monthlyIncome').value = salary;
 
             // Provide feedback on savings rate
             const feedback = document.getElementById('savingsRateFeedback');
-            if (rate === 0) {
+            if (rate === 0 && additionalSavings === 0) {
                 feedback.textContent = '⚠️ Zero savings - relying entirely on current wealth growth';
                 feedback.className = 'text-xs text-red-400';
-            } else if (rate < 10) {
+            } else if (rate < 10 && additionalSavings === 0) {
                 feedback.textContent = 'Below typical recommendation (10-15%). Consider increasing if possible.';
                 feedback.className = 'text-xs text-yellow-400';
             } else if (rate <= 20) {
@@ -1943,6 +2090,12 @@
                 recommendations
             };
         }
+
+        // Initialize displays on page load
+        (function init() {
+            updateInflationAdjustedTarget();
+            setTargetType('today'); // Default to "today's buying power"
+        })();
     </script>
 </body>
 </html>
