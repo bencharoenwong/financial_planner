@@ -51,13 +51,41 @@
                             class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
 
-                    <!-- Monthly Contribution -->
+                    <!-- Monthly Contribution / Savings Rate Toggle -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            Monthly Contribution ($)
-                        </label>
-                        <input type="number" id="monthlyContribution" value="500" min="0" required
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-sm font-medium text-gray-300">Monthly Savings</label>
+                            <button type="button" onclick="toggleSavingsMode()" class="text-xs text-blue-400 hover:text-blue-300">
+                                <span id="savingsModeToggle">Switch to salary + rate →</span>
+                            </button>
+                        </div>
+
+                        <!-- Direct contribution input (default) -->
+                        <div id="directContributionMode">
+                            <input type="number" id="monthlyContribution" value="500" min="0" required
+                                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Monthly savings ($)">
+                        </div>
+
+                        <!-- Salary + rate mode (hidden by default) -->
+                        <div id="salaryRateMode" class="hidden space-y-3">
+                            <div>
+                                <input type="number" id="netMonthlySalary" value="6000" min="0"
+                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Net monthly salary ($)" onchange="updateCalculatedContribution()">
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="range" id="savingsRateSlider" min="0" max="50" value="15"
+                                    class="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                    oninput="updateCalculatedContribution()">
+                                <span id="savingsRateDisplay" class="text-sm font-medium text-white w-12 text-right">15%</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-500">Calculated savings:</span>
+                                <span id="calculatedContribution" class="text-green-400 font-medium">$900/mo</span>
+                            </div>
+                            <div id="savingsRateFeedback" class="text-xs text-gray-400"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -93,16 +121,53 @@
                                 <div class="text-xs text-gray-400">12% / 20% vol</div>
                             </div>
                         </label>
+                        <label class="flex items-center p-3 bg-yellow-900/50 border border-yellow-600/50 rounded-lg cursor-pointer hover:bg-yellow-800/50 transition col-span-2 md:col-span-4">
+                            <input type="radio" name="riskProfile" value="rentech" class="mr-2">
+                            <div>
+                                <div class="font-medium text-sm text-yellow-300">RenTech Medallion</div>
+                                <div class="text-xs text-yellow-400">40% / 20% vol (Sharpe ~2) - Illustrative only, not accessible to retail investors</div>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
-                <!-- Monthly Income (Optional) -->
-                <div>
+                <!-- Monthly Income (Optional - shown only in direct mode) -->
+                <div id="incomeInputSection">
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Monthly Income (optional, for sustainability check)
+                        Monthly Income <span class="text-gray-500">(optional, for sustainability check)</span>
                     </label>
                     <input type="number" id="monthlyIncome" value="" min="0" placeholder="Leave blank to skip"
                         class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="button" onclick="toggleIncomeGuide()" class="text-xs text-blue-400 hover:text-blue-300 mt-2 underline">
+                        How to think about income risk →
+                    </button>
+                </div>
+
+                <!-- Income Risk Guide (hidden by default) -->
+                <div id="incomeGuide" class="hidden bg-gray-700/50 border border-gray-600 rounded-lg p-4 text-sm">
+                    <div class="font-medium text-gray-200 mb-2">💡 Risk-Adjusting Your Income</div>
+                    <p class="text-gray-400 mb-3">
+                        Just like investments, income has volatility. Your "expected" income growth should be risk-adjusted:
+                    </p>
+                    <div class="bg-gray-800 rounded p-2 font-mono text-xs text-center mb-3">
+                        Effective Growth ≈ Average Growth − ½ × Volatility²
+                    </div>
+                    <table class="w-full text-xs mb-3">
+                        <thead class="text-gray-400">
+                            <tr><th class="text-left py-1">Job Type</th><th class="text-right">Avg Growth</th><th class="text-right">Volatility</th><th class="text-right">Effective</th></tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <tr><td class="py-1">Government/Tenured</td><td class="text-right">3%</td><td class="text-right">5%</td><td class="text-right text-green-400">~2.9%</td></tr>
+                            <tr><td class="py-1">Large Corp Salaried</td><td class="text-right">5%</td><td class="text-right">15%</td><td class="text-right text-green-400">~3.9%</td></tr>
+                            <tr><td class="py-1">Sales/Commission</td><td class="text-right">10%</td><td class="text-right">40%</td><td class="text-right text-yellow-400">~2.0%</td></tr>
+                            <tr><td class="py-1">Startup/Founder</td><td class="text-right">20%</td><td class="text-right">80%</td><td class="text-right text-red-400">~-12%</td></tr>
+                            <tr><td class="py-1">Freelance/Gig</td><td class="text-right">8%</td><td class="text-right">50%</td><td class="text-right text-red-400">~-4.5%</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="text-gray-500 text-xs">
+                        <strong>Caveat:</strong> This is illustrative. Real income paths aren't log-normal, and human capital has options (you can switch jobs, upskill).
+                        But the intuition holds: high variance in income is costly for planning.
+                    </p>
                 </div>
 
                 <!-- Submit -->
@@ -149,6 +214,29 @@
                 </div>
             </div>
 
+            <!-- Sustainable Income from Target -->
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="font-medium mb-3 flex items-center">
+                    <span class="mr-2">🏦</span> Your Target Supports This Annual Income
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-700/50 rounded-lg p-3">
+                        <div class="text-xs text-gray-400 mb-1">Conservative (3% SWR)</div>
+                        <div id="sustainableConservative" class="text-xl font-bold text-green-400"></div>
+                        <div class="text-xs text-gray-500 mt-1">30+ year horizon, inflation-adjusted</div>
+                    </div>
+                    <div class="bg-gray-700/50 rounded-lg p-3">
+                        <div class="text-xs text-gray-400 mb-1">Moderate (4% SWR)</div>
+                        <div id="sustainableModerate" class="text-xl font-bold text-blue-400"></div>
+                        <div class="text-xs text-gray-500 mt-1">Traditional "4% rule"</div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 mt-3">
+                    Safe Withdrawal Rate (SWR) = annual spending as % of portfolio at retirement.
+                    Lower SWR = more conservative, higher chance of not running out.
+                </div>
+            </div>
+
             <!-- Flags -->
             <div id="flagsContainer" class="bg-gray-800 rounded-lg p-4">
                 <div class="font-medium mb-2 flex items-center">
@@ -184,11 +272,73 @@
 
     <script>
         // API URL - change this when deploying
-        const API_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8000' 
+        const API_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:8000'
             : '';  // Same origin in production
 
         let chart = null;
+
+        function toggleIncomeGuide() {
+            const guide = document.getElementById('incomeGuide');
+            guide.classList.toggle('hidden');
+        }
+
+        let usingSalaryMode = false;
+
+        function toggleSavingsMode() {
+            usingSalaryMode = !usingSalaryMode;
+            const directMode = document.getElementById('directContributionMode');
+            const salaryMode = document.getElementById('salaryRateMode');
+            const incomeSection = document.getElementById('incomeInputSection');
+            const toggleText = document.getElementById('savingsModeToggle');
+
+            if (usingSalaryMode) {
+                directMode.classList.add('hidden');
+                salaryMode.classList.remove('hidden');
+                incomeSection.classList.add('hidden'); // Hide separate income field
+                toggleText.textContent = '← Switch to direct amount';
+                updateCalculatedContribution();
+            } else {
+                directMode.classList.remove('hidden');
+                salaryMode.classList.add('hidden');
+                incomeSection.classList.remove('hidden');
+                toggleText.textContent = 'Switch to salary + rate →';
+            }
+        }
+
+        function updateCalculatedContribution() {
+            const salary = parseFloat(document.getElementById('netMonthlySalary').value) || 0;
+            const rate = parseFloat(document.getElementById('savingsRateSlider').value) || 0;
+            const contribution = salary * (rate / 100);
+
+            document.getElementById('savingsRateDisplay').textContent = rate + '%';
+            document.getElementById('calculatedContribution').textContent = '$' + contribution.toLocaleString(undefined, {maximumFractionDigits: 0}) + '/mo';
+
+            // Update the hidden direct input so form submission works
+            document.getElementById('monthlyContribution').value = contribution;
+
+            // Also update the income field for sustainability checks
+            document.getElementById('monthlyIncome').value = salary;
+
+            // Provide feedback on savings rate
+            const feedback = document.getElementById('savingsRateFeedback');
+            if (rate === 0) {
+                feedback.textContent = '⚠️ Zero savings - relying entirely on current wealth growth';
+                feedback.className = 'text-xs text-red-400';
+            } else if (rate < 10) {
+                feedback.textContent = 'Below typical recommendation (10-15%). Consider increasing if possible.';
+                feedback.className = 'text-xs text-yellow-400';
+            } else if (rate <= 20) {
+                feedback.textContent = '✓ Solid savings rate. This is in the recommended range.';
+                feedback.className = 'text-xs text-green-400';
+            } else if (rate <= 35) {
+                feedback.textContent = '💪 Above average! Make sure this is sustainable long-term.';
+                feedback.className = 'text-xs text-blue-400';
+            } else {
+                feedback.textContent = '🔥 Very aggressive. Ensure you\'re not sacrificing quality of life.';
+                feedback.className = 'text-xs text-yellow-400';
+            }
+        }
 
         document.getElementById('calculatorForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -280,10 +430,18 @@
                 gapEl.className = 'text-sm mt-1 text-green-400';
             }
 
-            document.getElementById('percentile20').textContent = 
+            document.getElementById('percentile20').textContent =
                 '$' + result.projections.percentile20.toLocaleString(undefined, {maximumFractionDigits: 0});
-            document.getElementById('percentile50').textContent = 
+            document.getElementById('percentile50').textContent =
                 '$' + result.projections.percentile50.toLocaleString(undefined, {maximumFractionDigits: 0});
+
+            // Sustainable income from target wealth
+            const sustainableConservative = result.sustainableIncome?.conservative || (result.input.targetWealth * 0.03);
+            const sustainableModerate = result.sustainableIncome?.moderate || (result.input.targetWealth * 0.04);
+            document.getElementById('sustainableConservative').textContent =
+                '$' + sustainableConservative.toLocaleString(undefined, {maximumFractionDigits: 0}) + '/yr';
+            document.getElementById('sustainableModerate').textContent =
+                '$' + sustainableModerate.toLocaleString(undefined, {maximumFractionDigits: 0}) + '/yr';
 
             // Flags
             const flagsContainer = document.getElementById('flagsContainer');
@@ -419,7 +577,8 @@
                 conservative: { ret: 0.06, vol: 0.10 },
                 moderate: { ret: 0.08, vol: 0.13 },
                 aggressive: { ret: 0.10, vol: 0.16 },
-                very_aggressive: { ret: 0.12, vol: 0.20 }
+                very_aggressive: { ret: 0.12, vol: 0.20 },
+                rentech: { ret: 0.40, vol: 0.20 }
             };
 
             const profile = profiles[data.riskProfile];
@@ -437,7 +596,26 @@
             const p80 = median * 1.5;
 
             const requiredCagr = Math.pow(data.targetWealth / data.currentWealth, 1/years) - 1;
-            const probSuccess = median >= data.targetWealth ? 0.6 : 0.3;
+
+            // Calculate probability based on where target falls in distribution
+            // Using log-normal approximation: if target <= p20, prob > 80%; if target <= median, prob > 50%
+            let probSuccess;
+            if (data.targetWealth <= data.currentWealth) {
+                // Already achieved goal - near certain success
+                probSuccess = 0.99;
+            } else if (data.targetWealth <= p20) {
+                // Target below 20th percentile - very likely to succeed
+                probSuccess = 0.85 + 0.10 * (p20 - data.targetWealth) / (p20 - data.currentWealth);
+            } else if (data.targetWealth <= median) {
+                // Target between p20 and median - likely to succeed
+                probSuccess = 0.50 + 0.30 * (median - data.targetWealth) / (median - p20);
+            } else if (data.targetWealth <= p80) {
+                // Target between median and p80 - moderate chance
+                probSuccess = 0.20 + 0.30 * (p80 - data.targetWealth) / (p80 - median);
+            } else {
+                // Target above p80 - unlikely
+                probSuccess = Math.max(0.05, 0.20 * (p80 / data.targetWealth));
+            }
 
             // Find required monthly (simplified)
             const targetGrowth = data.targetWealth / data.currentWealth;

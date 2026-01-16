@@ -69,6 +69,11 @@ class AnalysisResult:
     # Required monthly for 80% success
     required_monthly_for_80pct: float
 
+    # Sustainable withdrawal income from target wealth (real annual income)
+    # Based on safe withdrawal rates: conservative 3%, moderate 4%
+    sustainable_income_conservative: float  # 3% SWR
+    sustainable_income_moderate: float      # 4% SWR
+
     # Flags
     flag_status: str  # GREEN, YELLOW, RED
     flag_reasons: list = field(default_factory=list)
@@ -99,6 +104,8 @@ class AnalysisResult:
             "percentile_50_with_contrib": self.percentile_50_with_contrib,
             "percentile_80_with_contrib": self.percentile_80_with_contrib,
             "required_monthly_for_80pct": self.required_monthly_for_80pct,
+            "sustainable_income_conservative": self.sustainable_income_conservative,
+            "sustainable_income_moderate": self.sustainable_income_moderate,
             "flag_status": self.flag_status,
             "flag_reasons": self.flag_reasons,
             "recommendations": self.recommendations,

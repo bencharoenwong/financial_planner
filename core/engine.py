@@ -215,14 +215,16 @@ class FinancialAnalyzer:
                     status = "YELLOW"
                 flags.append(f"Required savings {contrib_pct:.0%} of income is high")
 
-        # Check required return
-        if required_return > self.config.required_return_critical:
-            status = "RED"
-            flags.append(f"Required return {required_return:.0%} exceeds realistic expectations")
-        elif required_return > self.config.required_return_warning:
-            if status != "RED":
-                status = "YELLOW"
-            flags.append(f"Required return {required_return:.0%} is aggressive")
+        # Check required return - but only if probability is low
+        # If Monte Carlo shows high success probability, the profile can achieve the return
+        if prob_success < self.config.success_prob_green:
+            if required_return > self.config.required_return_critical:
+                status = "RED"
+                flags.append(f"Required return {required_return:.0%} exceeds realistic expectations")
+            elif required_return > self.config.required_return_warning:
+                if status != "RED":
+                    status = "YELLOW"
+                flags.append(f"Required return {required_return:.0%} is aggressive")
 
         return status, flags
 
@@ -324,6 +326,11 @@ class FinancialAnalyzer:
             prob_contrib, required_monthly, monthly_income, required_cagr
         )
 
+        # Calculate sustainable withdrawal income from target wealth
+        # Conservative: 3% SWR, Moderate: 4% SWR (real, inflation-adjusted)
+        sustainable_income_conservative = target_wealth * 0.03
+        sustainable_income_moderate = target_wealth * 0.04
+
         # Build result
         result = AnalysisResult(
             client_id=client_id,
@@ -346,6 +353,8 @@ class FinancialAnalyzer:
             percentile_50_with_contrib=p50_contrib,
             percentile_80_with_contrib=p80_contrib,
             required_monthly_for_80pct=required_monthly,
+            sustainable_income_conservative=sustainable_income_conservative,
+            sustainable_income_moderate=sustainable_income_moderate,
             flag_status=flag_status,
             flag_reasons=flag_reasons,
         )

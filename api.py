@@ -56,6 +56,7 @@ class RiskProfile(str, Enum):
     moderate = "moderate"
     aggressive = "aggressive"
     very_aggressive = "very_aggressive"
+    rentech = "rentech"
 
 
 class AnalyzeRequest(BaseModel):
@@ -108,6 +109,11 @@ class LumpSumResults(BaseModel):
     percentile80: float
 
 
+class SustainableIncome(BaseModel):
+    conservative: float  # 3% SWR
+    moderate: float      # 4% SWR
+
+
 class AnalyzeResponse(BaseModel):
     input: dict
     assumptions: Assumptions
@@ -116,6 +122,7 @@ class AnalyzeResponse(BaseModel):
     contributionGap: float
     projections: Projections
     lumpSumOnly: LumpSumResults
+    sustainableIncome: SustainableIncome
     status: str
     flags: list[str]
     recommendations: list[str]
@@ -218,6 +225,10 @@ async def analyze(request: AnalyzeRequest):
                 percentile50=round(result.percentile_50_lump, 2),
                 percentile80=round(result.percentile_80_lump, 2),
             ),
+            sustainableIncome=SustainableIncome(
+                conservative=round(result.sustainable_income_conservative, 2),
+                moderate=round(result.sustainable_income_moderate, 2),
+            ),
             status=result.flag_status,
             flags=result.flag_reasons,
             recommendations=result.recommendations,
@@ -304,6 +315,10 @@ async def analyze_batch(file: UploadFile = File(...)):
                         percentile20=round(result.percentile_20_lump, 2),
                         percentile50=round(result.percentile_50_lump, 2),
                         percentile80=round(result.percentile_80_lump, 2),
+                    ),
+                    sustainableIncome=SustainableIncome(
+                        conservative=round(result.sustainable_income_conservative, 2),
+                        moderate=round(result.sustainable_income_moderate, 2),
                     ),
                     status=result.flag_status,
                     flags=result.flag_reasons,

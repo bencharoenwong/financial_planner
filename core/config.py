@@ -13,6 +13,7 @@ RISK_PROFILES = {
     "moderate": (0.08, 0.13, "Balanced allocation (40% bonds, 60% stocks)"),
     "aggressive": (0.10, 0.16, "Equity-focused (S&P 500-like)"),
     "very_aggressive": (0.12, 0.20, "Concentrated/leveraged positions"),
+    "rentech": (0.40, 0.20, "Medallion-like (40% return, Sharpe ~2) - for illustration only"),
 }
 
 
