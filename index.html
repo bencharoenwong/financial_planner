@@ -6,6 +6,7 @@
     <title>Financial Goal Analyzer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         .status-green { background-color: #10b981; }
         .status-yellow { background-color: #f59e0b; }
@@ -398,6 +399,49 @@
                 </div>
             </div>
 
+            <!-- Key Considerations (Educational) -->
+            <div class="bg-gray-800 rounded-lg p-4">
+                <button onclick="toggleSection('goalConsiderations')" class="w-full flex items-center justify-between font-medium">
+                    <span>📚 Key Considerations for Your Plan</span>
+                    <span id="goalConsiderationsArrow" class="transform transition-transform">▼</span>
+                </button>
+                <div id="goalConsiderations" class="hidden mt-4 space-y-4 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-yellow-400 mb-1">⚠️ Sequence of Returns Risk</div>
+                            <p class="text-gray-300">Bad returns early in your investment period hurt more than bad returns later. A 30% drop in year 1 is harder to recover from than in year 25.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-blue-400 mb-1">💰 Tax Considerations</div>
+                            <p class="text-gray-300">401(k)/IRA = pre-tax contributions, taxed on withdrawal. Roth = post-tax, tax-free growth. Taxable accounts have capital gains. Plan accordingly.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-red-400 mb-1">📉 Inflation Erosion</div>
+                            <p class="text-gray-300">At 3% inflation, $1M in 30 years has the purchasing power of ~$412K today. Always think in "real" (inflation-adjusted) terms.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-green-400 mb-1">👤 Human Capital</div>
+                            <p class="text-gray-300">Your ability to earn income is an asset. Early career = high human capital, low financial capital. Invest aggressively when young.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-purple-400 mb-1">🏦 Emergency Fund First</div>
+                            <p class="text-gray-300">Keep 3-6 months expenses in cash before investing. This prevents selling investments at bad times to cover emergencies.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-orange-400 mb-1">⚖️ Debt vs Investing</div>
+                            <p class="text-gray-300">High-interest debt (>7%) should be paid first. Low-interest debt (mortgage at 3%) can coexist with investing if returns exceed the rate.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Button -->
+            <div class="flex justify-center">
+                <button onclick="exportGoalToExcel()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg flex items-center gap-2 transition">
+                    <span>📊</span> Export to Excel (with formulas)
+                </button>
+            </div>
+
             <!-- Disclaimer -->
             <div class="text-xs text-gray-500 text-center p-4 bg-gray-800 rounded-lg">
                 <strong>Disclaimer:</strong> This tool provides educational estimates only and does not constitute financial advice.
@@ -494,6 +538,57 @@
                 <div class="h-64">
                     <canvas id="fireChart"></canvas>
                 </div>
+            </div>
+
+            <!-- FIRE Considerations (Educational) -->
+            <div class="bg-gray-800 rounded-lg p-4">
+                <button onclick="toggleSection('fireConsiderations')" class="w-full flex items-center justify-between font-medium">
+                    <span>📚 Key Considerations for Early Retirement</span>
+                    <span id="fireConsiderationsArrow" class="transform transition-transform">▼</span>
+                </button>
+                <div id="fireConsiderations" class="hidden mt-4 space-y-4 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-red-400 mb-1">🏥 Healthcare Gap</div>
+                            <p class="text-gray-300">Medicare starts at 65. If retiring earlier, budget $500-1500/month for health insurance. This is often the biggest FIRE expense surprise.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-blue-400 mb-1">🏛️ Social Security</div>
+                            <p class="text-gray-300">You can claim at 62 (reduced) or wait until 70 (maximum). Each year you delay past 67 increases benefits ~8%. Factor this into late-retirement projections.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-yellow-400 mb-1">📉 Sequence Risk is Critical</div>
+                            <p class="text-gray-300">A bear market in years 1-5 of retirement can devastate your portfolio. Consider a 2-3 year cash buffer or flexible withdrawal strategy.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-green-400 mb-1">🔄 Variable Withdrawals</div>
+                            <p class="text-gray-300">Instead of fixed 4%, use guardrails: cut spending 10% if portfolio drops 20%, increase 10% if it rises 50%. This dramatically improves success rates.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-purple-400 mb-1">💼 Tax Optimization</div>
+                            <p class="text-gray-300">Roth conversion ladder: convert 401(k) to Roth in low-income years, access 5 years later tax-free. Can significantly reduce lifetime taxes.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-orange-400 mb-1">🌍 Geographic Arbitrage</div>
+                            <p class="text-gray-300">Moving to lower cost-of-living areas (domestically or internationally) can reduce your FIRE number by 30-50%. Popular: Portugal, Mexico, Thailand, US South.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-cyan-400 mb-1">☕ Coast FIRE / Barista FIRE</div>
+                            <p class="text-gray-300">Coast: Save enough that compound growth hits your FIRE number by 65, then stop saving. Barista: Part-time work covers expenses while investments grow.</p>
+                        </div>
+                        <div class="bg-gray-700/50 p-3 rounded">
+                            <div class="font-medium text-pink-400 mb-1">🧠 One More Year Syndrome</div>
+                            <p class="text-gray-300">The psychological trap of always wanting "one more year" of savings. At some point, time > money. Define your "enough" number and stick to it.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Button -->
+            <div class="flex justify-center">
+                <button onclick="exportFIREToExcel()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg flex items-center gap-2 transition">
+                    <span>📊</span> Export to Excel (with formulas)
+                </button>
             </div>
 
             <!-- FIRE Disclaimer -->
@@ -769,10 +864,298 @@
 
             recommendationEl.textContent = '💡 ' + message;
             recommendationEl.classList.remove('hidden');
+        }
 
-            // Optionally auto-adjust (or just show recommendation)
-            // swrSlider.value = recommendedSWR;
-            // updateFireNumber();
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId + 'Arrow');
+            section.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // Store last results for export
+        let lastGoalResult = null;
+        let lastFireResult = null;
+
+        function exportGoalToExcel() {
+            if (!lastGoalResult) {
+                alert('Please run an analysis first');
+                return;
+            }
+
+            const r = lastGoalResult;
+            const wb = XLSX.utils.book_new();
+
+            // Sheet 1: Summary
+            const summaryData = [
+                ['FINANCIAL GOAL ANALYSIS', '', '', ''],
+                ['Generated:', new Date().toLocaleDateString(), '', ''],
+                ['', '', '', ''],
+                ['KEY INPUTS', '', 'KEY OUTPUTS', ''],
+                ['Current Savings', r.input.currentWealth, 'Probability of Success', { t: 'n', v: r.probabilityOfSuccess, z: '0.0%' }],
+                ['Target Goal', r.input.targetWealth, 'Status', r.status],
+                ['Years to Goal', r.input.yearsToGoal, 'Required Monthly (80% success)', r.requiredMonthlyFor80Percent],
+                ['Monthly Contribution', r.input.monthlyContribution, 'Contribution Gap', r.contributionGap],
+                ['Risk Profile', r.input.riskProfile, '', ''],
+                ['', '', '', ''],
+                ['PROJECTIONS (with contributions)', '', '', ''],
+                ['20th Percentile (Worst Likely)', r.projections.percentile20, '', ''],
+                ['50th Percentile (Median)', r.projections.percentile50, '', ''],
+                ['80th Percentile (Best Likely)', r.projections.percentile80, '', ''],
+                ['', '', '', ''],
+                ['SUSTAINABLE RETIREMENT INCOME', '', '', ''],
+                ['Conservative (3% SWR)', r.sustainableIncome?.conservative || r.input.targetWealth * 0.03, '/year', ''],
+                ['Moderate (4% SWR)', r.sustainableIncome?.moderate || r.input.targetWealth * 0.04, '/year', ''],
+            ];
+            const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+            summaryWs['!cols'] = [{ wch: 30 }, { wch: 18 }, { wch: 30 }, { wch: 18 }];
+            XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+
+            // Sheet 2: Assumptions & Formulas
+            const assumptionsData = [
+                ['ASSUMPTIONS & METHODOLOGY', ''],
+                ['', ''],
+                ['Risk Profile Parameters', ''],
+                ['Profile', r.input.riskProfile],
+                ['Arithmetic Return', r.assumptions.arithmeticReturn],
+                ['Geometric Return', r.assumptions.geometricReturn],
+                ['Volatility (Std Dev)', r.assumptions.volatility],
+                ['', ''],
+                ['Key Formulas', ''],
+                ['Geometric Return', '= Arithmetic Return - (Volatility² / 2)'],
+                ['Future Value (Lump Sum)', '= PV × (1 + r)^n'],
+                ['Future Value (Annuity)', '= PMT × ((1 + r)^n - 1) / r'],
+                ['FIRE Number', '= Annual Expenses / SWR'],
+                ['', ''],
+                ['Monte Carlo Simulation', ''],
+                ['Number of Simulations', '15,000'],
+                ['Monthly Returns', '= Normal(μ/12, σ/√12)'],
+                ['Success = paths where final wealth ≥ target', ''],
+            ];
+            const assumptionsWs = XLSX.utils.aoa_to_sheet(assumptionsData);
+            assumptionsWs['!cols'] = [{ wch: 35 }, { wch: 45 }];
+            XLSX.utils.book_append_sheet(wb, assumptionsWs, 'Assumptions');
+
+            // Sheet 3: Year-by-Year Projections with Formulas
+            const years = r.input.yearsToGoal;
+            const projData = [
+                ['YEAR-BY-YEAR PROJECTIONS', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['Inputs (referenced in formulas)', '', '', '', '', ''],
+                ['Initial Investment', r.input.currentWealth, '', '', '', ''],
+                ['Monthly Contribution', r.input.monthlyContribution, '', '', '', ''],
+                ['Annual Contribution', { f: 'B5*12' }, '', '', '', ''],
+                ['Expected Return (Geometric)', r.assumptions.geometricReturn, '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['Year', 'Start Balance', 'Annual Contribution', 'Growth', 'End Balance', 'Target'],
+            ];
+
+            // Add projection rows with formulas
+            for (let y = 0; y <= years; y++) {
+                const row = y + 10; // Excel row number (1-indexed)
+                if (y === 0) {
+                    projData.push([
+                        0,
+                        r.input.currentWealth,
+                        0,
+                        0,
+                        r.input.currentWealth,
+                        r.input.targetWealth
+                    ]);
+                } else {
+                    projData.push([
+                        y,
+                        { f: `E${row}` }, // Start = previous End
+                        { f: '$B$6' }, // Annual contribution (absolute reference)
+                        { f: `(B${row + 1}+C${row + 1})*$B$7` }, // Growth = (Start+Contrib)*Rate
+                        { f: `B${row + 1}+C${row + 1}+D${row + 1}` }, // End = Start+Contrib+Growth
+                        r.input.targetWealth
+                    ]);
+                }
+            }
+
+            const projWs = XLSX.utils.aoa_to_sheet(projData);
+            projWs['!cols'] = [{ wch: 8 }, { wch: 16 }, { wch: 18 }, { wch: 14 }, { wch: 16 }, { wch: 14 }];
+            XLSX.utils.book_append_sheet(wb, projWs, 'Projections');
+
+            // Sheet 4: Sensitivity Analysis
+            const sensData = [
+                ['SENSITIVITY ANALYSIS', '', '', ''],
+                ['', '', '', ''],
+                ['What-If Scenarios: Different Monthly Contributions', '', '', ''],
+                ['Monthly Contribution', 'Annual', 'FV (Simple Est.)', 'Meets Target?'],
+            ];
+
+            const baseContrib = r.input.monthlyContribution;
+            const contribScenarios = [0, baseContrib * 0.5, baseContrib, baseContrib * 1.25, baseContrib * 1.5, baseContrib * 2];
+            contribScenarios.forEach((contrib, i) => {
+                const row = i + 5;
+                sensData.push([
+                    contrib,
+                    { f: `A${row}*12` },
+                    { f: `${r.input.currentWealth}*(1+${r.assumptions.geometricReturn})^${years}+B${row}*((1+${r.assumptions.geometricReturn})^${years}-1)/${r.assumptions.geometricReturn}` },
+                    { f: `IF(C${row}>=${r.input.targetWealth},"YES","NO")` }
+                ]);
+            });
+
+            const sensWs = XLSX.utils.aoa_to_sheet(sensData);
+            sensWs['!cols'] = [{ wch: 20 }, { wch: 12 }, { wch: 18 }, { wch: 14 }];
+            XLSX.utils.book_append_sheet(wb, sensWs, 'Sensitivity');
+
+            // Download
+            XLSX.writeFile(wb, `Financial_Goal_Analysis_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        }
+
+        function exportFIREToExcel() {
+            if (!lastFireResult) {
+                alert('Please run a FIRE calculation first');
+                return;
+            }
+
+            const r = lastFireResult;
+            const wb = XLSX.utils.book_new();
+
+            // Sheet 1: FIRE Summary
+            const summaryData = [
+                ['FIRE (Financial Independence) ANALYSIS', '', ''],
+                ['Generated:', new Date().toLocaleDateString(), ''],
+                ['', '', ''],
+                ['YOUR FIRE NUMBER', '', ''],
+                ['Annual Expenses', r.annualExpenses, ''],
+                ['Safe Withdrawal Rate (SWR)', r.swr / 100, ''],
+                ['FIRE Number', { f: 'B5/B6' }, '← Annual Expenses ÷ SWR'],
+                ['', '', ''],
+                ['CURRENT PROGRESS', '', ''],
+                ['Current Portfolio', r.currentWealth, ''],
+                ['Progress to FIRE', { f: 'B10/B7' }, ''],
+                ['Gap to FIRE', { f: 'B7-B10' }, ''],
+                ['', '', ''],
+                ['TIMELINE', '', ''],
+                ['Current Age', r.currentAge, ''],
+                ['Projected FIRE Age', Math.round(r.fireAge), ''],
+                ['Years to FIRE', { f: 'B16-B15' }, ''],
+                ['Retirement Duration', r.retirementYears, 'years'],
+                ['', '', ''],
+                ['INPUTS', '', ''],
+                ['Monthly Investment', r.monthlyInvestment, ''],
+                ['Expected Real Return', r.realReturn, '(after inflation)'],
+            ];
+            const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+            summaryWs['!cols'] = [{ wch: 25 }, { wch: 18 }, { wch: 25 }];
+            // Format percentage cells
+            if (summaryWs['B6']) summaryWs['B6'].z = '0.0%';
+            if (summaryWs['B11']) summaryWs['B11'].z = '0.0%';
+            if (summaryWs['B22']) summaryWs['B22'].z = '0.0%';
+            XLSX.utils.book_append_sheet(wb, summaryWs, 'FIRE Summary');
+
+            // Sheet 2: Path to FIRE with formulas
+            const pathData = [
+                ['PATH TO FIRE', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', ''],
+                ['Parameters (referenced below)', '', '', '', '', '', ''],
+                ['Starting Portfolio', r.currentWealth, '', '', '', '', ''],
+                ['Monthly Investment', r.monthlyInvestment, '', '', '', '', ''],
+                ['Annual Investment', { f: 'B5*12' }, '', '', '', '', ''],
+                ['Real Return', r.realReturn, '', '', '', '', ''],
+                ['FIRE Target', r.fireNumber, '', '', '', '', ''],
+                ['', '', '', '', '', '', ''],
+                ['Year', 'Age', 'Start Balance', 'Annual Investment', 'Growth', 'End Balance', 'FIRE Target', 'Reached FIRE?'],
+            ];
+
+            const yearsToProject = Math.min(Math.ceil(r.monthsToFIRE / 12) + 5, 50);
+            for (let y = 0; y <= yearsToProject; y++) {
+                const row = y + 11;
+                if (y === 0) {
+                    pathData.push([
+                        0,
+                        r.currentAge,
+                        r.currentWealth,
+                        0,
+                        0,
+                        r.currentWealth,
+                        r.fireNumber,
+                        { f: `IF(F${row}>=$B$8,"YES","")` }
+                    ]);
+                } else {
+                    pathData.push([
+                        y,
+                        { f: `B${row}+1` },
+                        { f: `F${row}` },
+                        { f: '$B$6' },
+                        { f: `(C${row + 1}+D${row + 1})*$B$7` },
+                        { f: `C${row + 1}+D${row + 1}+E${row + 1}` },
+                        { f: '$B$8' },
+                        { f: `IF(F${row + 1}>=$B$8,"YES","")` }
+                    ]);
+                }
+            }
+
+            const pathWs = XLSX.utils.aoa_to_sheet(pathData);
+            pathWs['!cols'] = [{ wch: 6 }, { wch: 6 }, { wch: 14 }, { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }];
+            XLSX.utils.book_append_sheet(wb, pathWs, 'Path to FIRE');
+
+            // Sheet 3: Scenarios Comparison
+            const scenData = [
+                ['SCENARIO COMPARISON', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['Scenario', 'Monthly Invest', 'Monthly Expenses', 'FIRE Number', 'Years to FIRE'],
+                ['Base Case', r.monthlyInvestment, r.annualExpenses / 12, r.fireNumber, Math.round(r.monthsToFIRE / 12)],
+                ['Save 25% More', r.monthlyInvestment * 1.25, r.annualExpenses / 12, r.fireNumber, Math.round(r.scenarios.saveMore.months / 12)],
+                ['Spend 25% Less', r.monthlyInvestment, r.annualExpenses * 0.75 / 12, r.scenarios.spendLess.fireNumber, Math.round(r.scenarios.spendLess.months / 12)],
+                ['Both Changes', r.monthlyInvestment * 1.25, r.annualExpenses * 0.75 / 12, r.scenarios.spendLess.fireNumber, Math.round(r.scenarios.both.months / 12)],
+                ['', '', '', '', ''],
+                ['ANALYSIS', '', '', '', ''],
+                ['Saving 25% more reaches FIRE', '', { f: 'E4-E5' }, 'years earlier', ''],
+                ['Spending 25% less reaches FIRE', '', { f: 'E4-E6' }, 'years earlier', ''],
+                ['Both together reaches FIRE', '', { f: 'E4-E7' }, 'years earlier', ''],
+            ];
+            const scenWs = XLSX.utils.aoa_to_sheet(scenData);
+            scenWs['!cols'] = [{ wch: 25 }, { wch: 16 }, { wch: 18 }, { wch: 14 }, { wch: 14 }];
+            XLSX.utils.book_append_sheet(wb, scenWs, 'Scenarios');
+
+            // Sheet 4: Post-FIRE Withdrawal Projection
+            const withdrawData = [
+                ['POST-FIRE WITHDRAWAL PROJECTION', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['Parameters', '', '', '', '', ''],
+                ['Starting Portfolio (at FIRE)', r.fireNumber, '', '', '', ''],
+                ['Annual Withdrawal', r.annualExpenses, '', '', '', ''],
+                ['Withdrawal Rate', { f: 'B5/B4' }, '', '', '', ''],
+                ['Expected Real Return (in retirement)', 0.04, '(typically lower, more conservative)', '', '', ''],
+                ['Retirement Years', r.retirementYears, '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['Year', 'Age at FIRE +', 'Start Balance', 'Withdrawal', 'Growth', 'End Balance'],
+            ];
+
+            for (let y = 0; y <= r.retirementYears; y++) {
+                const row = y + 11;
+                if (y === 0) {
+                    withdrawData.push([
+                        0,
+                        0,
+                        r.fireNumber,
+                        0,
+                        0,
+                        r.fireNumber
+                    ]);
+                } else {
+                    withdrawData.push([
+                        y,
+                        y,
+                        { f: `F${row}` },
+                        { f: '$B$5' },
+                        { f: `(C${row + 1}-D${row + 1})*$B$7` },
+                        { f: `C${row + 1}-D${row + 1}+E${row + 1}` }
+                    ]);
+                }
+            }
+
+            const withdrawWs = XLSX.utils.aoa_to_sheet(withdrawData);
+            withdrawWs['!cols'] = [{ wch: 6 }, { wch: 12 }, { wch: 16 }, { wch: 14 }, { wch: 12 }, { wch: 16 }];
+            XLSX.utils.book_append_sheet(wb, withdrawWs, 'Post-FIRE Withdrawals');
+
+            // Download
+            XLSX.writeFile(wb, `FIRE_Analysis_${new Date().toISOString().slice(0, 10)}.xlsx`);
         }
 
         function setCalculatorMode(mode) {
@@ -898,6 +1281,7 @@
         }
 
         function displayFireResults(result) {
+            lastFireResult = result; // Store for export
             document.getElementById('fireResults').classList.remove('hidden');
             document.getElementById('results').classList.add('hidden');
 
@@ -1163,6 +1547,7 @@
         });
 
         function displayResults(result) {
+            lastGoalResult = result; // Store for export
             document.getElementById('results').classList.remove('hidden');
 
             // Status banner
