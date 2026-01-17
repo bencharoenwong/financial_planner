@@ -8,12 +8,20 @@
     {
       "src": "index.html",
       "use": "@vercel/static"
+    },
+    {
+      "src": "docs/**/*.md",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "api.py"
+    },
+    {
+      "src": "/docs/(.*\\.md)",
+      "dest": "/docs/$1"
     },
     {
       "src": "/(.*)",

@@ -16,6 +16,8 @@ Deterministic financial planning tool that analyzes goal feasibility using Monte
 | `docs/PRD_GAMIFICATION.md` | Option B: Duolingo-style gamified experience |
 | `docs/COMPETITIVE_ANALYSIS.md` | Why gamification may not transfer to finance |
 | `docs/DATA_ARCHITECTURE.md` | Privacy-preserving design (no PII, local storage) |
+| `docs/FINANCIAL_PLANNING_FRAMEWORK.md` | **User-facing** - Global planning guide with deep research prompts |
+| `docs/WIZARD_SPEC.md` | Design spec for the guide panel UI |
 
 ## Architecture
 
@@ -31,7 +33,9 @@ fin_planner/
 │   ├── PRD.md                  # Option A: Calculator product
 │   ├── PRD_GAMIFICATION.md     # Option B: Gamified product
 │   ├── COMPETITIVE_ANALYSIS.md # Wealthfront/Duolingo analysis
-│   └── DATA_ARCHITECTURE.md    # Privacy-first data design
+│   ├── DATA_ARCHITECTURE.md    # Privacy-first data design
+│   ├── FINANCIAL_PLANNING_FRAMEWORK.md  # User-facing planning guide
+│   └── WIZARD_SPEC.md          # Guide panel UI design
 ├── vercel.json                 # Vercel deployment config
 ├── Dockerfile                  # Container config
 └── requirements.txt            # Python dependencies
@@ -137,21 +141,28 @@ Tests should cover:
 
 **See `docs/DECISION_SUMMARY.md` for the key decision between two product directions.**
 
-### If Option A (Calculator - Recommended)
+### Option A (Calculator with Guide - Recommended)
 
-Phase 1: Ship current tool
+Phase 1: Core tool (done)
 - [x] Monte Carlo simulation engine
 - [x] REST API
-- [x] Web frontend
-- [ ] Code cleanup (deduplicate api.py / financial_goal_analyzer.py)
+- [x] Web frontend (Goal Mode + FIRE Mode)
+
+Phase 2: Guide panel
+- [ ] Add collapsible guide panel to index.html (see `docs/WIZARD_SPEC.md`)
+- [ ] Step-by-step prompts that highlight form fields
+- [ ] Link to `FINANCIAL_PLANNING_FRAMEWORK.md` for deep research
+
+Phase 3: Export & multi-goal
+- [ ] Multi-goal tracking in single session
+- [ ] Export to spreadsheet with monthly tracker template
+- [ ] Local storage for saved scenarios
+
+Phase 4: Code cleanup
+- [ ] Deduplicate api.py / financial_goal_analyzer.py
 - [ ] Batch API endpoint for CSV upload
 
-Phase 2: Light engagement
-- [ ] Local storage for saved scenarios
-- [ ] Side-by-side comparison view
-- [ ] Export (JSON/image)
-
-### If Option B (Gamified)
+### Option B (Gamified)
 
 Requires significant additional build. See `docs/PRD_GAMIFICATION.md`.
 - [ ] User accounts and database
