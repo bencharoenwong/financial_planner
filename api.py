@@ -183,6 +183,51 @@ async def get_profiles():
     ]
 
 
+API_VERSION = "1.0.0"
+
+
+def _build_response(result, input_data: dict) -> AnalyzeResponse:
+    """
+    Build standardized API response from analysis result.
+
+    Shared by single analysis and batch processing to ensure consistency.
+    """
+    return AnalyzeResponse(
+        input=input_data,
+        assumptions=Assumptions(
+            arithmeticReturn=result.arithmetic_return,
+            geometricReturn=result.geometric_return,
+            volatility=result.volatility,
+            riskProfile=result.risk_profile,
+        ),
+        probabilityOfSuccess=round(result.prob_success_with_contrib, 4),
+        requiredMonthlyFor80Percent=round(result.required_monthly_for_80pct, 2),
+        contributionGap=round(
+            result.required_monthly_for_80pct - result.monthly_contribution, 2
+        ),
+        projections=Projections(
+            percentile20=round(result.percentile_20_with_contrib, 2),
+            percentile50=round(result.percentile_50_with_contrib, 2),
+            percentile80=round(result.percentile_80_with_contrib, 2),
+        ),
+        lumpSumOnly=LumpSumResults(
+            probabilityOfSuccess=round(result.prob_success_lump_only, 4),
+            percentile20=round(result.percentile_20_lump, 2),
+            percentile50=round(result.percentile_50_lump, 2),
+            percentile80=round(result.percentile_80_lump, 2),
+        ),
+        sustainableIncome=SustainableIncome(
+            conservative=round(result.sustainable_income_conservative, 2),
+            moderate=round(result.sustainable_income_moderate, 2),
+        ),
+        status=result.flag_status,
+        flags=result.flag_reasons,
+        recommendations=result.recommendations,
+        analyzedAt=datetime.now().isoformat(),
+        version=API_VERSION,
+    )
+
+
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 async def analyze(request: AnalyzeRequest):
     """
@@ -201,40 +246,7 @@ async def analyze(request: AnalyzeRequest):
             monthly_income=request.monthlyIncome,
         )
 
-        return AnalyzeResponse(
-            input=request.model_dump(),
-            assumptions=Assumptions(
-                arithmeticReturn=result.arithmetic_return,
-                geometricReturn=result.geometric_return,
-                volatility=result.volatility,
-                riskProfile=result.risk_profile,
-            ),
-            probabilityOfSuccess=round(result.prob_success_with_contrib, 4),
-            requiredMonthlyFor80Percent=round(result.required_monthly_for_80pct, 2),
-            contributionGap=round(
-                result.required_monthly_for_80pct - result.monthly_contribution, 2
-            ),
-            projections=Projections(
-                percentile20=round(result.percentile_20_with_contrib, 2),
-                percentile50=round(result.percentile_50_with_contrib, 2),
-                percentile80=round(result.percentile_80_with_contrib, 2),
-            ),
-            lumpSumOnly=LumpSumResults(
-                probabilityOfSuccess=round(result.prob_success_lump_only, 4),
-                percentile20=round(result.percentile_20_lump, 2),
-                percentile50=round(result.percentile_50_lump, 2),
-                percentile80=round(result.percentile_80_lump, 2),
-            ),
-            sustainableIncome=SustainableIncome(
-                conservative=round(result.sustainable_income_conservative, 2),
-                moderate=round(result.sustainable_income_moderate, 2),
-            ),
-            status=result.flag_status,
-            flags=result.flag_reasons,
-            recommendations=result.recommendations,
-            analyzedAt=datetime.now().isoformat(),
-            version="1.0.0",
-        )
+        return _build_response(result, request.model_dump())
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -283,50 +295,17 @@ async def analyze_batch(file: UploadFile = File(...)):
                 ),
             )
 
-            results.append(
-                AnalyzeResponse(
-                    input={
-                        "client_id": result.client_id,
-                        "currentWealth": result.current_wealth,
-                        "targetWealth": result.target_wealth,
-                        "yearsToGoal": result.years,
-                        "monthlyContribution": result.monthly_contribution,
-                        "riskProfile": result.risk_profile,
-                        "monthlyIncome": result.monthly_income,
-                    },
-                    assumptions=Assumptions(
-                        arithmeticReturn=result.arithmetic_return,
-                        geometricReturn=result.geometric_return,
-                        volatility=result.volatility,
-                        riskProfile=result.risk_profile,
-                    ),
-                    probabilityOfSuccess=round(result.prob_success_with_contrib, 4),
-                    requiredMonthlyFor80Percent=round(result.required_monthly_for_80pct, 2),
-                    contributionGap=round(
-                        result.required_monthly_for_80pct - result.monthly_contribution, 2
-                    ),
-                    projections=Projections(
-                        percentile20=round(result.percentile_20_with_contrib, 2),
-                        percentile50=round(result.percentile_50_with_contrib, 2),
-                        percentile80=round(result.percentile_80_with_contrib, 2),
-                    ),
-                    lumpSumOnly=LumpSumResults(
-                        probabilityOfSuccess=round(result.prob_success_lump_only, 4),
-                        percentile20=round(result.percentile_20_lump, 2),
-                        percentile50=round(result.percentile_50_lump, 2),
-                        percentile80=round(result.percentile_80_lump, 2),
-                    ),
-                    sustainableIncome=SustainableIncome(
-                        conservative=round(result.sustainable_income_conservative, 2),
-                        moderate=round(result.sustainable_income_moderate, 2),
-                    ),
-                    status=result.flag_status,
-                    flags=result.flag_reasons,
-                    recommendations=result.recommendations,
-                    analyzedAt=datetime.now().isoformat(),
-                    version="1.0.0",
-                )
-            )
+            # Build input dict for batch results (includes client_id)
+            input_data = {
+                "client_id": result.client_id,
+                "currentWealth": result.current_wealth,
+                "targetWealth": result.target_wealth,
+                "yearsToGoal": result.years,
+                "monthlyContribution": result.monthly_contribution,
+                "riskProfile": result.risk_profile,
+                "monthlyIncome": result.monthly_income,
+            }
+            results.append(_build_response(result, input_data))
 
         # Summary stats
         green_count = sum(1 for r in results if r.status == "GREEN")
