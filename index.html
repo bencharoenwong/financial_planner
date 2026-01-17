@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Goal Analyzer</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -56,6 +57,107 @@
                 opacity: 1;
                 pointer-events: auto;
             }
+        }
+
+        /* Framework Wizard Modal */
+        .wizard-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 300ms ease;
+        }
+        .wizard-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .wizard-container {
+            background: #1f2937;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 300ms ease;
+        }
+        .wizard-modal.open .wizard-container {
+            transform: scale(1);
+        }
+        .wizard-slides {
+            display: flex;
+            overflow: hidden;
+            flex: 1;
+            min-height: 0;
+        }
+        .wizard-slide {
+            min-width: 100%;
+            padding: 1.5rem;
+            overflow-y: auto;
+            transition: transform 400ms ease;
+        }
+        .wizard-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+        .wizard-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4b5563;
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+        .wizard-dot.active {
+            background: #3b82f6;
+            transform: scale(1.2);
+        }
+        .wizard-dot.completed {
+            background: #10b981;
+        }
+        .prompt-card {
+            background: #374151;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #4b5563;
+        }
+        .prompt-card pre {
+            background: #1f2937;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            background: #3b82f6;
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 200ms;
+        }
+        .copy-btn:hover {
+            background: #2563eb;
+        }
+        .copy-btn.copied {
+            background: #10b981;
         }
 
     </style>
@@ -154,14 +256,14 @@
 
                 <!-- Link to Framework -->
                 <div class="border-t border-gray-700 pt-4 mt-4">
-                    <a href="docs/FINANCIAL_PLANNING_FRAMEWORK.md"
-                       target="_blank"
+                    <button type="button"
+                       onclick="openFrameworkWizard()"
                        class="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
                         📄 Full Planning Framework
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
-                    </a>
+                    </button>
                     <p class="text-xs text-gray-500 mt-1">Templates + LLM prompts for your country's tax rules</p>
                 </div>
             </aside>
@@ -2242,6 +2344,419 @@
             updateInflationAdjustedTarget();
             setTargetType('today'); // Default to "today's buying power"
         })();
+
+        // ============================================
+        // Framework Wizard
+        // ============================================
+        let wizardStep = 0;
+        const totalSteps = 5;
+
+        function openFrameworkWizard() {
+            const modal = document.getElementById('frameworkWizard');
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            wizardStep = 0;
+            updateWizardDisplay();
+        }
+
+        function closeFrameworkWizard() {
+            const modal = document.getElementById('frameworkWizard');
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function goToWizardStep(step) {
+            wizardStep = Math.max(0, Math.min(step, totalSteps - 1));
+            updateWizardDisplay();
+        }
+
+        function nextWizardStep() {
+            if (wizardStep < totalSteps - 1) {
+                wizardStep++;
+                updateWizardDisplay();
+            }
+        }
+
+        function prevWizardStep() {
+            if (wizardStep > 0) {
+                wizardStep--;
+                updateWizardDisplay();
+            }
+        }
+
+        function updateWizardDisplay() {
+            // Update slides position
+            const slides = document.querySelectorAll('.wizard-slide');
+            slides.forEach((slide, i) => {
+                slide.style.transform = `translateX(-${wizardStep * 100}%)`;
+            });
+
+            // Update dots
+            const dots = document.querySelectorAll('.wizard-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i === wizardStep) {
+                    dot.classList.add('active');
+                } else if (i < wizardStep) {
+                    dot.classList.add('completed');
+                }
+            });
+
+            // Update nav buttons
+            document.getElementById('wizardPrevBtn').disabled = wizardStep === 0;
+            document.getElementById('wizardNextBtn').textContent = wizardStep === totalSteps - 1 ? 'Done' : 'Next →';
+        }
+
+        function copyPrompt(btnElement, promptId) {
+            const promptEl = document.getElementById(promptId);
+            const text = promptEl.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                btnElement.classList.add('copied');
+                btnElement.innerHTML = '✓ Copied!';
+                setTimeout(() => {
+                    btnElement.classList.remove('copied');
+                    btnElement.innerHTML = '📋 Copy';
+                }, 2000);
+            });
+        }
     </script>
+
+    <!-- Framework Wizard Modal -->
+    <div id="frameworkWizard" class="wizard-modal" onclick="if(event.target === this) closeFrameworkWizard()">
+        <div class="wizard-container">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-700">
+                <h2 class="text-xl font-bold text-white">📋 Financial Planning Framework</h2>
+                <button onclick="closeFrameworkWizard()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+
+            <!-- Slides Container -->
+            <div class="wizard-slides">
+                <!-- Step 1: Your Situation -->
+                <div class="wizard-slide">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-white mb-2">Step 1: Document Your Situation</h3>
+                        <p class="text-gray-400 text-sm">Fill in this template with your details. You'll paste this into AI prompts for personalized research.</p>
+                    </div>
+
+                    <div class="prompt-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-300">📝 Your Situation Template</span>
+                            <button class="copy-btn" onclick="copyPrompt(this, 'situationTemplate')">📋 Copy</button>
+                        </div>
+                        <pre id="situationTemplate" class="text-gray-300">MY SITUATION
+============
+
+Location & Status
+-----------------
+Current tax residency: _______________
+Citizenship(s): _______________
+Visa status (if applicable): _______________
+Expected location in 5 years: _______________
+
+Age & Career
+------------
+Age bracket: _______________ (e.g., 25-30, 30-35)
+Career stage: _______________ (early/mid/senior)
+Employment type: _______________ (employee/self-employed)
+Income relative to local median: _______________
+
+Employer Benefits
+-----------------
+Employer retirement scheme: _______________ (yes with match / none / unsure)
+Match rate (if applicable): ___%
+
+Financial Foundation
+--------------------
+Emergency fund: _______________ (none / 1-3 mo / 3-6 mo / 6+ mo)
+High-interest debt (>7%): _______________ (none / some / significant)
+Current savings rate: ___% of gross income
+
+Goals
+-----
+Goal 1: _______________
+  - Target amount: _______________
+  - Timeline: ___ years
+  - Priority: _______________ (must-have / nice-to-have)
+
+Goal 2: _______________
+  - Target amount: _______________
+  - Timeline: ___ years
+
+Uncertainty Factors
+-------------------
+Geographic mobility: _______________ (staying put / may relocate / uncertain)
+Career stability: _______________ (stable / moderate / high uncertainty)</pre>
+                    </div>
+
+                    <div class="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 text-sm text-blue-200">
+                        <strong>Privacy tip:</strong> Use ranges and categories (e.g., "75k-100k") rather than exact figures. The AI only needs ballpark numbers to give useful advice.
+                    </div>
+                </div>
+
+                <!-- Step 2: Research Prompts -->
+                <div class="wizard-slide">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-white mb-2">Step 2: Research Your Country's Options</h3>
+                        <p class="text-gray-400 text-sm">Copy this prompt and paste it into ChatGPT or Claude. Replace the [BRACKETS] with your info from Step 1.</p>
+                    </div>
+
+                    <div class="prompt-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-300">🔍 Country Research Prompt</span>
+                            <button class="copy-btn" onclick="copyPrompt(this, 'countryPrompt')">📋 Copy</button>
+                        </div>
+                        <pre id="countryPrompt" class="text-gray-300">I need to understand the tax-advantaged savings options available to me.
+
+MY SITUATION:
+- Tax residency: [YOUR TAX RESIDENCY]
+- Citizenship: [YOUR CITIZENSHIP]
+- Visa status: [YOUR VISA STATUS OR "N/A"]
+- Employment type: [EMPLOYEE / SELF-EMPLOYED / ETC]
+- Income level: [YOUR INCOME RELATIVE TO MEDIAN]
+
+Please explain:
+
+1. RETIREMENT ACCOUNTS
+   - What tax-advantaged retirement accounts exist?
+   - Contribution limits, tax treatment, withdrawal rules
+   - What happens if I leave the country?
+
+2. OTHER TAX-ADVANTAGED VEHICLES
+   - Investment accounts with special tax treatment
+   - Health/education savings vehicles
+
+3. EMPLOYER SCHEMES
+   - Typical employer matching
+   - Vesting and portability
+
+4. INVESTMENT TAXATION
+   - Capital gains tax rates and holding period benefits
+   - Dividend taxation
+   - Any wealth taxes
+
+5. STATE/SOCIAL PENSION
+   - Public pension system basics
+   - Can I claim if I leave the country?
+
+Be specific to my country. Note if my visa status affects anything.</pre>
+                    </div>
+
+                    <div class="prompt-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-300">✈️ Portability Prompt (if you may relocate)</span>
+                            <button class="copy-btn" onclick="copyPrompt(this, 'portabilityPrompt')">📋 Copy</button>
+                        </div>
+                        <pre id="portabilityPrompt" class="text-gray-300">I may relocate internationally and need to understand portability.
+
+Current tax residency: [YOUR CURRENT COUNTRY]
+Citizenship: [YOUR CITIZENSHIP]
+Likely destination(s): [WHERE YOU MIGHT MOVE]
+Timeline: [WHEN YOU MIGHT MOVE]
+
+For each account type in my country:
+[LIST ACCOUNTS FROM PREVIOUS RESEARCH]
+
+Please explain:
+1. What happens to this account if I move?
+2. Can I continue contributing from abroad?
+3. How will withdrawals be taxed in both countries?
+4. Is there a tax treaty that affects this?
+5. Should I keep money in portable taxable accounts instead?
+
+Given my uncertainty, suggest an allocation between tax-advantaged (locked) vs taxable (portable).</pre>
+                    </div>
+                </div>
+
+                <!-- Step 3: Use Calculator -->
+                <div class="wizard-slide">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-white mb-2">Step 3: Test Your Numbers</h3>
+                        <p class="text-gray-400 text-sm">Use our Monte Carlo calculator to test if your goals are achievable.</p>
+                    </div>
+
+                    <div class="grid gap-4">
+                        <div class="prompt-card">
+                            <h4 class="font-medium text-white mb-2">What to Enter</h4>
+                            <div class="text-sm text-gray-300 space-y-2">
+                                <p><span class="text-blue-400">Current Savings:</span> Total already saved for THIS goal (retirement accounts + brokerage). Don't include emergency fund.</p>
+                                <p><span class="text-blue-400">Target Amount:</span> Your goal amount. Use "today's buying power" — the tool adjusts for inflation.</p>
+                                <p><span class="text-blue-400">Years:</span> How long until you need the money.</p>
+                                <p><span class="text-blue-400">Monthly Contribution:</span> What you plan to invest each month toward this goal.</p>
+                                <p><span class="text-blue-400">Risk Profile:</span> Based on timeline:
+                                    <br>• &lt;5 years → Conservative
+                                    <br>• 5-15 years → Moderate
+                                    <br>• 15+ years → Aggressive</p>
+                            </div>
+                        </div>
+
+                        <div class="prompt-card">
+                            <h4 class="font-medium text-white mb-2">Reading Results</h4>
+                            <div class="text-sm space-y-2">
+                                <p class="flex items-center gap-2">
+                                    <span class="inline-block w-3 h-3 rounded-full bg-green-500"></span>
+                                    <span class="text-gray-300"><strong>80%+</strong> = Solid plan, on track</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <span class="inline-block w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    <span class="text-gray-300"><strong>50-79%</strong> = Stretch goal, some risk</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <span class="inline-block w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="text-gray-300"><strong>&lt;50%</strong> = Needs adjustment</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-900/30 border border-yellow-500/30 rounded-lg p-3 text-sm text-yellow-200">
+                            <strong>If Yellow or Red:</strong> Try increasing contributions, extending timeline, reducing target, or accepting more risk (if timeline supports it).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Assemble Plan -->
+                <div class="wizard-slide">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-white mb-2">Step 4: Assemble Your Plan</h3>
+                        <p class="text-gray-400 text-sm">Combine your research and calculator results into a complete plan.</p>
+                    </div>
+
+                    <div class="prompt-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-300">📑 Plan Template</span>
+                            <button class="copy-btn" onclick="copyPrompt(this, 'planTemplate')">📋 Copy</button>
+                        </div>
+                        <pre id="planTemplate" class="text-gray-300">MY FINANCIAL PLAN
+=================
+Created: [DATE]
+Review by: [DATE + 6 MONTHS]
+
+RESEARCH FINDINGS
+-----------------
+Tax-advantaged accounts I'll use:
+1. [ACCOUNT TYPE]: [WHY]
+2. [ACCOUNT TYPE]: [WHY]
+
+Accounts I'm NOT using and why:
+- [ACCOUNT]: [REASON]
+
+GOALS & ALLOCATION
+------------------
+Monthly savings budget: $_______ (___% of gross income)
+
+Goal 1: [NAME] — [GREEN/YELLOW/RED]
+  Target: $_______ by [YEAR]
+  Strategy: $_______ /month into [ACCOUNT TYPE]
+  Risk profile: [CONSERVATIVE/MODERATE/AGGRESSIVE]
+  Calculator probability: ___%
+
+Goal 2: [NAME] — [GREEN/YELLOW/RED]
+  Target: $_______ by [YEAR]
+  Strategy: $_______ /month into [ACCOUNT TYPE]
+  Calculator probability: ___%
+
+CONTINGENCIES
+-------------
+If I relocate to [COUNTRY]:
+- [WHAT CHANGES]
+
+If income changes significantly:
+- [ADJUSTMENT PLAN]
+
+REVIEW TRIGGERS
+---------------
+- [ ] Major life change (job, marriage, kids, move)
+- [ ] Income changes >20%
+- [ ] Every 6-12 months regardless
+- [ ] Market drops >30%</pre>
+                    </div>
+                </div>
+
+                <!-- Step 5: Validate -->
+                <div class="wizard-slide">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-white mb-2">Step 5: Validate Your Plan</h3>
+                        <p class="text-gray-400 text-sm">Use this prompt to have AI check your plan for gaps and inconsistencies.</p>
+                    </div>
+
+                    <div class="prompt-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-300">✅ Validation Prompt</span>
+                            <button class="copy-btn" onclick="copyPrompt(this, 'validatePrompt')">📋 Copy</button>
+                        </div>
+                        <pre id="validatePrompt" class="text-gray-300">Please evaluate my financial plan for consistency and gaps.
+Do NOT give me a new plan—just identify issues with MY plan.
+
+MY SITUATION:
+[PASTE YOUR SITUATION FROM STEP 1]
+
+MY RESEARCH FINDINGS:
+[PASTE KEY FINDINGS FROM AI RESEARCH]
+
+MY PLAN:
+[PASTE YOUR COMPLETED PLAN FROM STEP 4]
+
+CALCULATOR RESULTS:
+[PASTE YOUR CALCULATOR RESULTS]
+
+Please check:
+
+1. MATH CHECK
+   - Do my monthly contributions add up correctly?
+   - Is my total savings rate reasonable?
+   - Do the calculator probabilities support my goals?
+
+2. ACCOUNT CHOICE CHECK
+   - Am I using the right accounts for each goal?
+   - Am I leaving tax benefits on the table?
+   - Does my portability match my mobility level?
+
+3. PRIORITY CHECK
+   - Am I funding goals in the right order?
+   - Is anything missing (emergency fund, debt, employer match)?
+
+4. CONSISTENCY CHECK
+   - Do my stated uncertainties match my account choices?
+   - Are my risk profiles appropriate for my timelines?
+
+5. GAPS
+   - What am I not thinking about?
+   - What questions should I research further?
+
+Be direct. If something doesn't make sense, say so.</pre>
+                    </div>
+
+                    <div class="bg-green-900/30 border border-green-500/30 rounded-lg p-3 text-sm text-green-200">
+                        <strong>Done!</strong> Save your completed plan and review it every 6-12 months, or when life circumstances change.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="border-t border-gray-700 p-4">
+                <!-- Step Dots -->
+                <div class="wizard-dots mb-4">
+                    <button class="wizard-dot active" onclick="goToWizardStep(0)" aria-label="Step 1"></button>
+                    <button class="wizard-dot" onclick="goToWizardStep(1)" aria-label="Step 2"></button>
+                    <button class="wizard-dot" onclick="goToWizardStep(2)" aria-label="Step 3"></button>
+                    <button class="wizard-dot" onclick="goToWizardStep(3)" aria-label="Step 4"></button>
+                    <button class="wizard-dot" onclick="goToWizardStep(4)" aria-label="Step 5"></button>
+                </div>
+
+                <!-- Prev/Next Buttons -->
+                <div class="flex justify-between">
+                    <button id="wizardPrevBtn" onclick="prevWizardStep()" disabled
+                        class="px-4 py-2 text-sm text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                        ← Back
+                    </button>
+                    <button id="wizardNextBtn" onclick="wizardStep === totalSteps - 1 ? closeFrameworkWizard() : nextWizardStep()"
+                        class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                        Next →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
