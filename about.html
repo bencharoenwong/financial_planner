@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Growth Graph</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <a href="index.html">
+                <img src="Logo - Growth Graph.png" alt="Growth Graph" class="h-16 mx-auto mb-4">
+            </a>
+            <h1 class="text-3xl font-bold text-white mb-2">About Growth Graph</h1>
+            <p class="text-gray-400">Independent financial planning tools for a global world</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="space-y-12">
+            <!-- Mission -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="text-blue-400">01</span> Our Mission
+                </h2>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        We believe everyone deserves access to professional-grade financial planning tools,
+                        regardless of their net worth or where they live.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        Most financial calculators are either oversimplified (ignoring uncertainty) or
+                        designed to sell you investment products. Growth Graph is different: we use
+                        rigorous Monte Carlo simulation to give you honest probabilities, and we have
+                        no products to sell.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Who We Are -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="text-blue-400">02</span> Who We Are
+                </h2>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Growth Graph is built by <strong class="text-white">Chicago Global Capital</strong>,
+                        a quantitative investment firm. Our team combines academic finance expertise with
+                        real-world investment management experience.
+                    </p>
+                    <div class="border-l-2 border-blue-500 pl-4 mt-6">
+                        <p class="text-gray-400 text-sm italic">
+                            "We built Growth Graph because we saw too many people making major financial
+                            decisions based on napkin math or biased calculators. Everyone deserves to
+                            understand the range of outcomes they might face."
+                        </p>
+                        <p class="text-gray-500 text-sm mt-2">— Ben Charoenwong, Founder</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Our Principles -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="text-blue-400">03</span> Our Principles
+                </h2>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-gray-800 rounded-lg p-5">
+                        <div class="text-2xl mb-2">🔒</div>
+                        <h3 class="font-medium text-white mb-2">Privacy-First</h3>
+                        <p class="text-gray-400 text-sm">
+                            Your financial data stays on your device. We don't store, sell, or share
+                            any personal information. Ever.
+                        </p>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-5">
+                        <div class="text-2xl mb-2">📊</div>
+                        <h3 class="font-medium text-white mb-2">Transparent Math</h3>
+                        <p class="text-gray-400 text-sm">
+                            No black boxes. We show our assumptions, explain our methodology, and
+                            let you verify the calculations.
+                        </p>
+                    </div>
+                    <div class="bg-gray-800 rounded-lg p-5">
+                        <div class="text-2xl mb-2">🌍</div>
+                        <h3 class="font-medium text-white mb-2">Globally Relevant</h3>
+                        <p class="text-gray-400 text-sm">
+                            Built for expats, remote workers, and anyone planning across borders.
+                            Not just another US-only calculator.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Methodology -->
+            <section id="methodology">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="text-blue-400">04</span> How It Works
+                </h2>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="font-medium text-white mb-3">Monte Carlo Simulation</h3>
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Unlike simple calculators that assume fixed returns (e.g., "7% every year"),
+                        we run <strong class="text-white">10,000 simulations</strong> of your investment
+                        journey. Each simulation uses randomly-generated annual returns based on your
+                        risk profile.
+                    </p>
+
+                    <div class="bg-gray-900 rounded p-4 mb-4">
+                        <p class="text-gray-400 text-sm font-mono">
+                            For each simulation:<br>
+                            &nbsp;&nbsp;For each year:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;return = random_normal(mean=μ, std=σ)<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;wealth = wealth × (1 + return) + contributions<br>
+                            &nbsp;&nbsp;Record final wealth<br>
+                            <br>
+                            Success rate = simulations where wealth ≥ target / 10,000
+                        </p>
+                    </div>
+
+                    <h3 class="font-medium text-white mb-3 mt-6">Risk Profile Assumptions</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-gray-400 border-b border-gray-700">
+                                    <th class="py-2">Profile</th>
+                                    <th class="py-2">Expected Return</th>
+                                    <th class="py-2">Volatility (σ)</th>
+                                    <th class="py-2">Typical Allocation</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-2">Conservative</td>
+                                    <td class="py-2">6%</td>
+                                    <td class="py-2">10%</td>
+                                    <td class="py-2">70% bonds, 30% stocks</td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-2">Moderate</td>
+                                    <td class="py-2">8%</td>
+                                    <td class="py-2">13%</td>
+                                    <td class="py-2">40% bonds, 60% stocks</td>
+                                </tr>
+                                <tr class="border-b border-gray-700/50">
+                                    <td class="py-2">Aggressive</td>
+                                    <td class="py-2">10%</td>
+                                    <td class="py-2">16%</td>
+                                    <td class="py-2">S&P 500-like</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2">Very Aggressive</td>
+                                    <td class="py-2">12%</td>
+                                    <td class="py-2">20%</td>
+                                    <td class="py-2">Concentrated growth</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="font-medium text-white mb-3 mt-6">What the Results Mean</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                            <span class="text-gray-300"><strong class="text-white">80%+ success:</strong> On track with good margin for error</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                            <span class="text-gray-300"><strong class="text-white">50-79% success:</strong> Achievable but needs monitoring</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <span class="text-gray-300"><strong class="text-white">&lt;50% success:</strong> Consider adjusting your plan</span>
+                        </div>
+                    </div>
+
+                    <p class="text-gray-400 text-sm mt-6">
+                        <strong class="text-gray-300">Note:</strong> These are arithmetic (not geometric) returns.
+                        We use log-normal return distributions, which is standard in financial modeling.
+                        Past performance doesn't guarantee future results.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Disclaimer -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="text-blue-400">05</span> Important Disclaimers
+                </h2>
+                <div class="bg-gray-800 rounded-lg p-6 border border-yellow-500/30">
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Growth Graph is an <strong class="text-white">educational tool</strong>, not financial advice.
+                        The projections are based on simplified models and historical assumptions that may not
+                        reflect future market conditions.
+                    </p>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li>• We are not registered investment advisors</li>
+                        <li>• Results are hypothetical and for planning purposes only</li>
+                        <li>• Tax implications vary by jurisdiction and are not modeled</li>
+                        <li>• Consult a qualified professional before making financial decisions</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section>
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="text-blue-400">06</span> Contact Us
+                </h2>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <p class="text-gray-300 mb-4">
+                        Questions, feedback, or found a bug? We'd love to hear from you.
+                    </p>
+                    <p class="text-gray-300">
+                        Email: <a href="mailto:support@chicagoglobal.com" class="text-blue-400 hover:text-blue-300">support@chicagoglobal.com</a>
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-gray-800 text-center">
+            <div class="flex justify-center gap-6 text-sm text-gray-500">
+                <a href="index.html" class="hover:text-gray-300">Calculator</a>
+                <a href="about.html" class="hover:text-gray-300">About</a>
+                <a href="privacy.html" class="hover:text-gray-300">Privacy</a>
+            </div>
+            <p class="text-gray-600 text-xs mt-4">
+                © 2026 Chicago Global Capital. All rights reserved.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
