@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Goal Analyzer</title>
+    <title>Growth Graph - Financial Goal Analyzer</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              950: '#2d3d4d',  // darkest
+              900: '#3d4f5f',  // body bg
+              800: '#4a5d6d',  // cards
+              700: '#5a6d7d',  // inputs
+              600: '#6a7d8d',  // borders
+              500: '#7a8d9d',  // hover states
+              accent: '#2c3e50', // navy buttons
+              'accent-hover': '#34495e',
+              light: '#a8b4c4',  // periwinkle text
+              lighter: '#c8d4e4', // lighter periwinkle
+            }
+          }
+        }
+      }
+    }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -160,28 +182,89 @@
             background: #10b981;
         }
 
+        /* Onboarding Modal */
+        .onboarding-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 110;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 300ms ease;
+        }
+        .onboarding-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .onboarding-container {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 440px;
+            padding: 2rem;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 300ms ease;
+            border: 1px solid #374151;
+        }
+        .onboarding-modal.open .onboarding-container {
+            transform: scale(1) translateY(0);
+        }
+        .country-select {
+            appearance: none;
+            background: #374151 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+            background-size: 1.25rem;
+            padding-right: 2.5rem;
+        }
+        .country-select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+        }
+        .profile-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: #374151;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 200ms;
+        }
+        .profile-badge:hover {
+            background: #4b5563;
+        }
+
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen">
+<body class="bg-brand-900 text-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">💰 Financial Goal Analyzer</h1>
-            <p class="text-gray-400">Determine if your wealth accumulation goal is realistic</p>
+            <img src="Logo - Growth Graph.png" alt="Growth Graph" class="h-20 mx-auto mb-3">
+            <p class="text-brand-light text-sm tracking-widest uppercase mb-4">Empowering Your Future</p>
 
             <!-- Mode Toggle -->
-            <div class="mt-4 inline-flex rounded-lg bg-gray-800 p-1">
+            <div class="mt-4 inline-flex rounded-lg bg-brand-800 p-1">
                 <button type="button" id="goalModeBtn" onclick="setCalculatorMode('goal')"
-                    class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white transition">
+                    class="px-4 py-2 text-sm font-medium rounded-md bg-brand-accent text-white transition hover:bg-brand-accent-hover">
                     Goal Mode
                 </button>
                 <button type="button" id="fireModeBtn" onclick="setCalculatorMode('fire')"
-                    class="px-4 py-2 text-sm font-medium rounded-md text-gray-400 hover:text-white transition">
+                    class="px-4 py-2 text-sm font-medium rounded-md text-brand-light hover:text-white transition">
                     🔥 FIRE Mode
                 </button>
             </div>
-            <div class="mt-2 flex items-center justify-center gap-4">
-                <button type="button" onclick="showHelp('glossary')" class="text-xs text-gray-500 hover:text-gray-300">
+            <div class="mt-2 flex items-center justify-center gap-4 flex-wrap">
+                <!-- Expat Profile Badge -->
+                <button type="button" id="profileBadge" onclick="openOnboarding()" class="profile-badge hidden">
+                    <span id="profileBadgeText">🌍 Set location</span>
+                </button>
+                <button type="button" onclick="showHelp('glossary')" class="text-xs text-brand-light hover:text-brand-lighter">
                     📖 Financial Terms Glossary
                 </button>
                 <button type="button"
@@ -189,7 +272,7 @@
                     onclick="toggleGuide()"
                     aria-expanded="false"
                     aria-controls="guidePanel"
-                    class="text-xs text-blue-400 hover:text-blue-300 border border-blue-400/30 rounded px-2 py-1 hover:bg-blue-400/10 transition">
+                    class="text-xs text-brand-light hover:text-white border border-brand-light/30 rounded px-2 py-1 hover:bg-brand-500/10 transition">
                     Need help? Open Guide
                 </button>
             </div>
@@ -204,17 +287,17 @@
             <aside id="guidePanel"
                 role="complementary"
                 aria-label="Planning Guide"
-                class="guide-panel bg-gray-800 border-r border-gray-700 p-4 hidden">
+                class="guide-panel bg-brand-800 border-r border-brand-700 p-4 hidden">
 
                 <!-- Skip Link -->
-                <a href="#calculatorForm" class="sr-only focus:not-sr-only focus:absolute focus:bg-blue-600 focus:text-white focus:p-2 focus:rounded">
+                <a href="#calculatorForm" class="sr-only focus:not-sr-only focus:absolute focus:bg-brand-accent focus:text-white focus:p-2 focus:rounded">
                     Skip to calculator
                 </a>
 
                 <!-- Guide Header -->
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-white">Planning Guide</h2>
-                    <button type="button" onclick="toggleGuide()" class="lg:hidden text-gray-400 hover:text-white p-1" aria-label="Close guide">
+                    <button type="button" onclick="toggleGuide()" class="lg:hidden text-brand-light hover:text-white p-1" aria-label="Close guide">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -224,27 +307,27 @@
                 <!-- Quick Tips -->
                 <div class="space-y-3 text-sm">
                     <!-- Pre-flight -->
-                    <div class="p-3 bg-gray-700/50 rounded">
+                    <div class="p-3 bg-brand-700/50 rounded">
                         <div class="font-medium text-white mb-2">Before investing</div>
                         <label class="flex items-center gap-2 text-gray-300 mb-1 cursor-pointer">
-                            <input type="checkbox" id="checkEmergencyFund" class="rounded bg-gray-600 border-gray-500 text-blue-500">
+                            <input type="checkbox" id="checkEmergencyFund" class="rounded bg-brand-600 border-brand-500 text-brand-light">
                             <span class="text-xs">Emergency fund (3-6 months)</span>
                         </label>
                         <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
-                            <input type="checkbox" id="checkDebtPaid" class="rounded bg-gray-600 border-gray-500 text-blue-500">
+                            <input type="checkbox" id="checkDebtPaid" class="rounded bg-brand-600 border-brand-500 text-brand-light">
                             <span class="text-xs">High-interest debt paid off</span>
                         </label>
                     </div>
 
                     <!-- Field hints -->
-                    <div class="text-xs text-gray-400 space-y-2">
+                    <div class="text-xs text-brand-light space-y-2">
                         <p><span class="text-gray-300">Current Savings:</span> Retirement + brokerage accounts for this goal. Not emergency fund.</p>
                         <p><span class="text-gray-300">Target:</span> Use "today's buying power" to think in current dollars.</p>
                         <p><span class="text-gray-300">Risk:</span> &lt;5 yrs → Conservative. 5-15 yrs → Moderate. 15+ yrs → Aggressive.</p>
                     </div>
 
                     <!-- Results key -->
-                    <div class="p-3 bg-gray-700/50 rounded">
+                    <div class="p-3 bg-brand-700/50 rounded">
                         <div class="font-medium text-white mb-2">Reading results</div>
                         <div class="text-xs space-y-1">
                             <p><span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span> 80%+ = on track</p>
@@ -255,16 +338,16 @@
                 </div>
 
                 <!-- Link to Framework -->
-                <div class="border-t border-gray-700 pt-4 mt-4">
+                <div class="border-t border-brand-700 pt-4 mt-4">
                     <button type="button"
                        onclick="openFrameworkWizard()"
-                       class="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                       class="text-sm text-brand-light hover:text-white flex items-center gap-1">
                         📄 Full Planning Framework
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
-                    <p class="text-xs text-gray-500 mt-1">Templates + LLM prompts for your country's tax rules</p>
+                    <p class="text-xs text-brand-light mt-1">Templates + LLM prompts for your country's tax rules</p>
                 </div>
             </aside>
 
@@ -272,7 +355,7 @@
             <div id="calculatorContent">
 
         <!-- Calculator Form -->
-        <div class="bg-gray-800 rounded-lg p-6 mb-8 shadow-xl">
+        <div class="bg-brand-800 rounded-lg p-6 mb-8 shadow-xl">
             <form id="calculatorForm" class="space-y-6">
                 <!-- Goal Mode Inputs -->
                 <div id="goalModeInputs" class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -280,37 +363,37 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Current Savings ($)
-                            <button type="button" onclick="showHelp('currentSavings')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('currentSavings')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="currentWealth" value="10000" min="1" required
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <div class="text-xs text-gray-500 mt-1">Total investable assets today (401k, IRA, brokerage, etc.)</div>
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-brand-light focus:border-transparent">
+                        <div class="text-xs text-brand-light mt-1">Total investable assets today (401k, IRA, brokerage, etc.)</div>
                     </div>
 
                     <!-- Target Wealth -->
                     <div id="targetWealthSection">
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             What's your goal amount?
-                            <button type="button" onclick="showHelp('targetGoal')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('targetGoal')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="targetWealth" value="1000000" min="1" required
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-brand-light focus:border-transparent"
                             onchange="updateInflationAdjustedTarget()">
 
                         <!-- Simplified toggle with plain language -->
                         <div class="mt-2 flex items-center gap-2">
-                            <span class="text-xs text-gray-400">I'm thinking in:</span>
-                            <div class="inline-flex rounded bg-gray-700 p-0.5">
+                            <span class="text-xs text-brand-light">I'm thinking in:</span>
+                            <div class="inline-flex rounded bg-brand-700 p-0.5">
                                 <button type="button" id="todayDollarsBtn" onclick="setTargetType('today')"
-                                    class="px-2 py-1 text-xs rounded bg-blue-600 text-white cursor-pointer transition-colors hover:bg-blue-500">
+                                    class="px-2 py-1 text-xs rounded bg-brand-accent text-white cursor-pointer transition-colors hover:bg-brand-500">
                                     Today's buying power
                                 </button>
                                 <button type="button" id="futureDollarsBtn" onclick="setTargetType('future')"
-                                    class="px-2 py-1 text-xs rounded text-gray-400 cursor-pointer transition-colors hover:text-gray-200 hover:bg-gray-600">
+                                    class="px-2 py-1 text-xs rounded text-brand-light cursor-pointer transition-colors hover:text-white hover:bg-brand-600">
                                     Actual future amount
                                 </button>
                             </div>
-                            <button type="button" onclick="showHelp('realVsNominal')" class="text-xs text-blue-400 hover:text-blue-300">?</button>
+                            <button type="button" onclick="showHelp('realVsNominal')" class="text-xs text-brand-light hover:text-white">?</button>
                         </div>
 
                         <!-- Hidden select for form submission -->
@@ -326,13 +409,13 @@
                                     <strong class="text-white">You want: $<span id="targetInTodayTerms">1,000,000</span></strong> in today's buying power
                                 </div>
                                 <div class="mt-2 flex items-center gap-2 text-xs">
-                                    <span class="text-gray-400">With</span>
+                                    <span class="text-brand-light">With</span>
                                     <input type="number" id="goalInflationInline" value="3" min="1" max="6" step="0.5"
-                                        class="w-14 bg-gray-600 border-none rounded px-2 py-1 text-white text-center"
+                                        class="w-14 bg-brand-600 border-none rounded px-2 py-1 text-white text-center"
                                         onchange="updateInflationAdjustedTarget()">
-                                    <span class="text-gray-400">% inflation over</span>
+                                    <span class="text-brand-light">% inflation over</span>
                                     <span id="yearsDisplay" class="text-white">30</span>
-                                    <span class="text-gray-400">years...</span>
+                                    <span class="text-brand-light">years...</span>
                                 </div>
                                 <div class="mt-2 bg-yellow-900/40 border border-yellow-700/50 rounded p-2">
                                     <div class="text-yellow-300 text-xs">You'll actually need:</div>
@@ -344,41 +427,54 @@
                                 <div class="text-gray-300">
                                     <strong class="text-white">You'll have: $<span id="targetInFutureTerms">1,000,000</span></strong> in your account
                                 </div>
-                                <div class="mt-2 bg-gray-700/50 rounded p-2 text-xs">
-                                    <span class="text-gray-400">Worth approximately </span>
+                                <div class="mt-2 bg-brand-700/50 rounded p-2 text-xs">
+                                    <span class="text-brand-light">Worth approximately </span>
                                     <span class="text-white font-medium" id="realValueDisplay">$412,000</span>
-                                    <span class="text-gray-400"> in today's buying power</span>
-                                    <div class="text-gray-500 mt-1">(assuming 3% inflation over 30 years)</div>
+                                    <span class="text-brand-light"> in today's buying power</span>
+                                    <div class="text-brand-light mt-1">(assuming 3% inflation over 30 years)</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Inflation Rate (Goal Mode) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            Expected Inflation
-                            <button type="button" onclick="showHelp('inflation')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
-                        </label>
-                        <div class="flex items-center gap-3">
-                            <input type="range" id="goalInflation" min="1" max="5" step="0.5" value="3"
-                                class="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
-                                oninput="document.getElementById('goalInflationDisplay').textContent = this.value + '%'; updateInflationAdjustedTarget()">
-                            <span id="goalInflationDisplay" class="text-sm font-medium text-white w-12 text-right">3%</span>
+                    <!-- Advanced Options Toggle -->
+                    <div class="col-span-full">
+                        <button type="button" onclick="toggleAdvancedOptions()"
+                            class="text-sm text-brand-light hover:text-white flex items-center gap-2 transition">
+                            <span id="advancedToggleIcon">▶</span>
+                            <span>Advanced Options</span>
+                            <span class="text-xs text-brand-light/70">(Inflation, Income Check)</span>
+                        </button>
+                    </div>
+
+                    <!-- Advanced Options (collapsed by default) -->
+                    <div id="advancedOptionsSection" class="hidden col-span-full grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <!-- Inflation Rate (Goal Mode) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                Expected Inflation
+                                <button type="button" onclick="showHelp('inflation')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
+                            </label>
+                            <div class="flex items-center gap-3">
+                                <input type="range" id="goalInflation" min="1" max="5" step="0.5" value="3"
+                                    class="flex-1 h-2 bg-brand-600 rounded-lg appearance-none cursor-pointer"
+                                    oninput="document.getElementById('goalInflationDisplay').textContent = this.value + '%'; updateInflationAdjustedTarget()">
+                                <span id="goalInflationDisplay" class="text-sm font-medium text-white w-12 text-right">3%</span>
+                            </div>
+                            <div class="text-xs text-brand-light mt-1">Historical US average: ~3% (default)</div>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">Historical US average: ~3%</div>
                     </div>
 
                     <!-- Years (Goal Mode) -->
                     <div id="yearsSection">
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Years Until Goal
-                            <button type="button" onclick="showHelp('yearsToGoal')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('yearsToGoal')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="yearsToGoal" value="30" min="1" max="50" required
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-brand-light focus:border-transparent"
                             onchange="updateInflationAdjustedTarget()">
-                        <div class="text-xs text-gray-500 mt-1">Time until you need to access this money</div>
+                        <div class="text-xs text-brand-light mt-1">Time until you need to access this money</div>
                     </div>
                 </div>
 
@@ -388,23 +484,23 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Current Portfolio ($)
-                            <button type="button" onclick="showHelp('currentSavings')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('currentSavings')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="fireCurrentWealth" value="50000" min="0"
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                        <div class="text-xs text-gray-500 mt-1">All invested assets (retirement accounts + taxable)</div>
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <div class="text-xs text-brand-light mt-1">All invested assets (retirement accounts + taxable)</div>
                     </div>
 
                     <!-- Monthly Expenses -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Monthly Expenses in Retirement ($)
-                            <button type="button" onclick="showHelp('monthlyExpenses')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('monthlyExpenses')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="fireMonthlyExpenses" value="4000" min="1"
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             onchange="updateFireNumber()">
-                        <div class="text-xs text-gray-500 mt-1">
+                        <div class="text-xs text-brand-light mt-1">
                             In <strong>today's dollars</strong>. Annual: $<span id="fireAnnualExpenses">48,000</span>
                         </div>
                     </div>
@@ -415,20 +511,20 @@
                             Current Age
                         </label>
                         <input type="number" id="fireCurrentAge" value="30" min="18" max="80"
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                        <div class="text-xs text-gray-500 mt-1">Your age today</div>
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <div class="text-xs text-brand-light mt-1">Your age today</div>
                     </div>
 
                     <!-- Expected Retirement Duration -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Years in Retirement
-                            <button type="button" onclick="showHelp('retirementDuration')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('retirementDuration')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="fireRetirementYears" value="30" min="10" max="60"
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             onchange="adjustSWRForDuration()">
-                        <div class="text-xs text-gray-500 mt-1">How long your money needs to last</div>
+                        <div class="text-xs text-brand-light mt-1">How long your money needs to last</div>
                         <div id="swrRecommendation" class="text-xs text-yellow-400 mt-1 hidden"></div>
                     </div>
 
@@ -436,48 +532,48 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Monthly Investment ($)
-                            <button type="button" onclick="showHelp('monthlyInvestment')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('monthlyInvestment')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <input type="number" id="fireMonthlyInvestment" value="1500" min="0"
-                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                        <div class="text-xs text-gray-500 mt-1">Amount you invest each month (after expenses)</div>
+                            class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <div class="text-xs text-brand-light mt-1">Amount you invest each month (after expenses)</div>
                     </div>
 
                     <!-- Safe Withdrawal Rate -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Safe Withdrawal Rate (SWR)
-                            <button type="button" onclick="showHelp('swr')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('swr')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <div class="flex items-center gap-3">
                             <input type="range" id="fireSWR" min="2.5" max="5" step="0.25" value="4"
-                                class="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                class="flex-1 h-2 bg-brand-600 rounded-lg appearance-none cursor-pointer"
                                 oninput="updateFireNumber()">
                             <span id="fireSWRDisplay" class="text-sm font-medium text-white w-12 text-right">4%</span>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">% of portfolio you withdraw annually. Lower = safer but requires more savings.</div>
+                        <div class="text-xs text-brand-light mt-1">% of portfolio you withdraw annually. Lower = safer but requires more savings.</div>
                     </div>
 
                     <!-- Inflation Rate -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">
                             Expected Inflation
-                            <button type="button" onclick="showHelp('inflation')" class="ml-1 text-gray-500 hover:text-gray-300">ⓘ</button>
+                            <button type="button" onclick="showHelp('inflation')" class="ml-1 text-brand-light hover:text-brand-lighter">ⓘ</button>
                         </label>
                         <div class="flex items-center gap-3">
                             <input type="range" id="fireInflation" min="1" max="5" step="0.5" value="3"
-                                class="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                class="flex-1 h-2 bg-brand-600 rounded-lg appearance-none cursor-pointer"
                                 oninput="document.getElementById('fireInflationDisplay').textContent = this.value + '%'">
                             <span id="fireInflationDisplay" class="text-sm font-medium text-white w-12 text-right">3%</span>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">Historical US average: ~3%. Reduces your real returns.</div>
+                        <div class="text-xs text-brand-light mt-1">Historical US average: ~3%. Reduces your real returns.</div>
                     </div>
 
                     <!-- Monthly Contribution / Savings Rate Toggle -->
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <label class="text-sm font-medium text-gray-300">Monthly Savings</label>
-                            <button type="button" onclick="toggleSavingsMode()" class="text-xs text-blue-400 hover:text-blue-300">
+                            <button type="button" onclick="toggleSavingsMode()" class="text-xs text-brand-light hover:text-white">
                                 <span id="savingsModeToggle">Switch to salary + rate →</span>
                             </button>
                         </div>
@@ -485,46 +581,46 @@
                         <!-- Direct contribution input (default) -->
                         <div id="directContributionMode">
                             <input type="number" id="monthlyContribution" value="500" min="0" required
-                                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                                class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-brand-light focus:border-transparent text-lg"
                                 placeholder="Monthly savings ($)">
-                            <div class="text-xs text-gray-500 mt-1">How much you save/invest each month</div>
+                            <div class="text-xs text-brand-light mt-1">How much you save/invest each month</div>
                         </div>
 
                         <!-- Salary + rate mode (hidden by default) -->
                         <div id="salaryRateMode" class="hidden space-y-3">
                             <div>
                                 <input type="number" id="netMonthlySalary" value="6000" min="0"
-                                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-brand-light focus:border-transparent"
                                     placeholder="Net monthly salary ($)" onchange="updateCalculatedContribution()">
                             </div>
                             <div class="flex items-center gap-3">
                                 <input type="range" id="savingsRateSlider" min="0" max="50" value="15"
-                                    class="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                    class="flex-1 h-2 bg-brand-600 rounded-lg appearance-none cursor-pointer"
                                     oninput="updateCalculatedContribution()">
                                 <span id="savingsRateDisplay" class="text-sm font-medium text-white w-12 text-right">15%</span>
                             </div>
                             <div class="flex items-center justify-between text-xs">
-                                <span class="text-gray-500">From salary:</span>
+                                <span class="text-brand-light">From salary:</span>
                                 <span id="calculatedContribution" class="text-green-400 font-medium">$900/mo</span>
                             </div>
                             <!-- Additional Monthly Savings -->
-                            <div class="pt-2 border-t border-gray-600">
-                                <label class="text-xs text-gray-400 mb-1 block">
+                            <div class="pt-2 border-t border-brand-600">
+                                <label class="text-xs text-brand-light mb-1 block">
                                     + Additional savings (bonuses, windfalls, etc.)
                                 </label>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-gray-500 text-sm">$</span>
+                                    <span class="text-brand-light text-sm">$</span>
                                     <input type="number" id="additionalSavings" value="0" min="0"
-                                        class="flex-1 bg-gray-600 border-none rounded px-3 py-2 text-white text-sm focus:ring-2 focus:ring-blue-500"
+                                        class="flex-1 bg-brand-600 border-none rounded px-3 py-2 text-white text-sm focus:ring-2 focus:ring-brand-light"
                                         placeholder="0" onchange="updateCalculatedContribution()">
-                                    <span class="text-gray-500 text-sm">/mo</span>
+                                    <span class="text-brand-light text-sm">/mo</span>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-between text-sm font-medium pt-2 border-t border-gray-600">
+                            <div class="flex items-center justify-between text-sm font-medium pt-2 border-t border-brand-600">
                                 <span class="text-gray-300">Total monthly savings:</span>
                                 <span id="totalMonthlySavings" class="text-green-400">$900/mo</span>
                             </div>
-                            <div id="savingsRateFeedback" class="text-xs text-gray-400"></div>
+                            <div id="savingsRateFeedback" class="text-xs text-brand-light"></div>
                         </div>
                     </div>
                 </div>
@@ -533,32 +629,32 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-3">Risk Profile</label>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                        <label class="flex items-center p-3 bg-brand-700 rounded-lg cursor-pointer hover:bg-brand-600 transition">
                             <input type="radio" name="riskProfile" value="conservative" class="mr-2">
                             <div>
                                 <div class="font-medium text-sm">Conservative</div>
-                                <div class="text-xs text-gray-400">6% / 10% vol</div>
+                                <div class="text-xs text-brand-light">6% / 10% vol</div>
                             </div>
                         </label>
-                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                        <label class="flex items-center p-3 bg-brand-700 rounded-lg cursor-pointer hover:bg-brand-600 transition">
                             <input type="radio" name="riskProfile" value="moderate" class="mr-2">
                             <div>
                                 <div class="font-medium text-sm">Moderate</div>
-                                <div class="text-xs text-gray-400">8% / 13% vol</div>
+                                <div class="text-xs text-brand-light">8% / 13% vol</div>
                             </div>
                         </label>
-                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                        <label class="flex items-center p-3 bg-brand-700 rounded-lg cursor-pointer hover:bg-brand-600 transition">
                             <input type="radio" name="riskProfile" value="aggressive" checked class="mr-2">
                             <div>
                                 <div class="font-medium text-sm">Aggressive</div>
-                                <div class="text-xs text-gray-400">10% / 16% vol</div>
+                                <div class="text-xs text-brand-light">10% / 16% vol</div>
                             </div>
                         </label>
-                        <label class="flex items-center p-3 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition">
+                        <label class="flex items-center p-3 bg-brand-700 rounded-lg cursor-pointer hover:bg-brand-600 transition">
                             <input type="radio" name="riskProfile" value="very_aggressive" class="mr-2">
                             <div>
                                 <div class="font-medium text-sm">Very Aggressive</div>
-                                <div class="text-xs text-gray-400">12% / 20% vol</div>
+                                <div class="text-xs text-brand-light">12% / 20% vol</div>
                             </div>
                         </label>
                         <label class="flex items-center p-3 bg-yellow-900/50 border border-yellow-600/50 rounded-lg cursor-pointer hover:bg-yellow-800/50 transition col-span-2 md:col-span-4">
@@ -571,29 +667,29 @@
                     </div>
                 </div>
 
-                <!-- Monthly Income (Optional - shown only in direct mode) -->
-                <div id="incomeInputSection">
+                <!-- Monthly Income (Optional - part of Advanced Options) -->
+                <div id="incomeInputSection" class="hidden">
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Monthly Income <span class="text-gray-500">(optional, for sustainability check)</span>
+                        Monthly Income <span class="text-brand-light">(optional, for sustainability check)</span>
                     </label>
                     <input type="number" id="monthlyIncome" value="" min="0" placeholder="Leave blank to skip"
-                        class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <button type="button" onclick="toggleIncomeGuide()" class="text-xs text-blue-400 hover:text-blue-300 mt-2 underline">
+                        class="w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-brand-light focus:border-transparent">
+                    <button type="button" onclick="toggleIncomeGuide()" class="text-xs text-brand-light hover:text-white mt-2 underline">
                         How to think about income risk →
                     </button>
                 </div>
 
                 <!-- Income Risk Guide (hidden by default) -->
-                <div id="incomeGuide" class="hidden bg-gray-700/50 border border-gray-600 rounded-lg p-4 text-sm">
+                <div id="incomeGuide" class="hidden bg-brand-700/50 border border-brand-600 rounded-lg p-4 text-sm">
                     <div class="font-medium text-gray-200 mb-2">💡 Risk-Adjusting Your Income</div>
-                    <p class="text-gray-400 mb-3">
+                    <p class="text-brand-light mb-3">
                         Just like investments, income has volatility. Your "expected" income growth should be risk-adjusted:
                     </p>
-                    <div class="bg-gray-800 rounded p-2 font-mono text-xs text-center mb-3">
+                    <div class="bg-brand-800 rounded p-2 font-mono text-xs text-center mb-3">
                         Effective Growth ≈ Average Growth − ½ × Volatility²
                     </div>
                     <table class="w-full text-xs mb-3">
-                        <thead class="text-gray-400">
+                        <thead class="text-brand-light">
                             <tr><th class="text-left py-1">Job Type</th><th class="text-right">Avg Growth</th><th class="text-right">Volatility</th><th class="text-right">Effective</th></tr>
                         </thead>
                         <tbody class="text-gray-300">
@@ -604,7 +700,7 @@
                             <tr><td class="py-1">Freelance/Gig</td><td class="text-right">8%</td><td class="text-right">50%</td><td class="text-right text-red-400">~-4.5%</td></tr>
                         </tbody>
                     </table>
-                    <p class="text-gray-500 text-xs">
+                    <p class="text-brand-light text-xs">
                         <strong>Caveat:</strong> This is illustrative. Real income paths aren't log-normal, and human capital has options (you can switch jobs, upskill).
                         But the intuition holds: high variance in income is costly for planning.
                     </p>
@@ -612,7 +708,7 @@
 
                 <!-- Submit -->
                 <button type="submit" id="analyzeBtn"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    class="w-full bg-brand-accent hover:bg-brand-accent-hover text-white font-bold py-4 rounded-lg transition duration-200 flex items-center justify-center">
                     <span id="btnText">Analyze My Goal</span>
                     <svg id="spinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -637,41 +733,41 @@
 
             <!-- Key Metrics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-gray-800 rounded-lg p-4">
-                    <div class="text-sm text-gray-400 mb-1">Required Monthly</div>
+                <div class="bg-brand-800 rounded-lg p-4">
+                    <div class="text-sm text-brand-light mb-1">Required Monthly</div>
                     <div id="requiredMonthly" class="text-2xl font-bold text-white"></div>
                     <div id="contributionGap" class="text-sm mt-1"></div>
                 </div>
-                <div class="bg-gray-800 rounded-lg p-4">
-                    <div class="text-sm text-gray-400 mb-1">80% Confidence Floor</div>
+                <div class="bg-brand-800 rounded-lg p-4">
+                    <div class="text-sm text-brand-light mb-1">80% Confidence Floor</div>
                     <div id="percentile20" class="text-2xl font-bold text-white"></div>
-                    <div class="text-sm text-gray-400 mt-1">Worst likely outcome</div>
+                    <div class="text-sm text-brand-light mt-1">Worst likely outcome</div>
                 </div>
-                <div class="bg-gray-800 rounded-lg p-4">
-                    <div class="text-sm text-gray-400 mb-1">Median Outcome</div>
+                <div class="bg-brand-800 rounded-lg p-4">
+                    <div class="text-sm text-brand-light mb-1">Median Outcome</div>
                     <div id="percentile50" class="text-2xl font-bold text-white"></div>
-                    <div class="text-sm text-gray-400 mt-1">Expected result</div>
+                    <div class="text-sm text-brand-light mt-1">Expected result</div>
                 </div>
             </div>
 
             <!-- Sustainable Income from Target -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-3 flex items-center">
                     <span class="mr-2">🏦</span> Your Target Supports This Annual Income
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-gray-700/50 rounded-lg p-3">
-                        <div class="text-xs text-gray-400 mb-1">Conservative (3% SWR)</div>
+                    <div class="bg-brand-700/50 rounded-lg p-3">
+                        <div class="text-xs text-brand-light mb-1">Conservative (3% SWR)</div>
                         <div id="sustainableConservative" class="text-xl font-bold text-green-400"></div>
-                        <div class="text-xs text-gray-500 mt-1">30+ year horizon, inflation-adjusted</div>
+                        <div class="text-xs text-brand-light mt-1">30+ year horizon, inflation-adjusted</div>
                     </div>
-                    <div class="bg-gray-700/50 rounded-lg p-3">
-                        <div class="text-xs text-gray-400 mb-1">Moderate (4% SWR)</div>
-                        <div id="sustainableModerate" class="text-xl font-bold text-blue-400"></div>
-                        <div class="text-xs text-gray-500 mt-1">Traditional "4% rule"</div>
+                    <div class="bg-brand-700/50 rounded-lg p-3">
+                        <div class="text-xs text-brand-light mb-1">Moderate (4% SWR)</div>
+                        <div id="sustainableModerate" class="text-xl font-bold text-brand-light"></div>
+                        <div class="text-xs text-brand-light mt-1">Traditional "4% rule"</div>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500 mt-3">
+                <div class="text-xs text-brand-light mt-3">
                     <strong>Safe Withdrawal Rate (SWR)</strong> = annual spending as % of portfolio at retirement.
                     Lower SWR = more conservative, higher chance of not running out.
                     <br><br>
@@ -681,7 +777,7 @@
             </div>
 
             <!-- Flags -->
-            <div id="flagsContainer" class="bg-gray-800 rounded-lg p-4">
+            <div id="flagsContainer" class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-2 flex items-center">
                     <span class="mr-2">⚠️</span> Flags
                 </div>
@@ -689,7 +785,7 @@
             </div>
 
             <!-- Recommendations -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-2 flex items-center">
                     <span class="mr-2">💡</span> Recommendations
                 </div>
@@ -697,7 +793,7 @@
             </div>
 
             <!-- Projection Chart -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-4">📈 Wealth Projection</div>
                 <div class="h-64">
                     <canvas id="projectionChart"></canvas>
@@ -705,34 +801,34 @@
             </div>
 
             <!-- Key Considerations (Educational) -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <button onclick="toggleSection('goalConsiderations')" class="w-full flex items-center justify-between font-medium">
                     <span>📚 Key Considerations for Your Plan</span>
                     <span id="goalConsiderationsArrow" class="transform transition-transform">▼</span>
                 </button>
                 <div id="goalConsiderations" class="hidden mt-4 space-y-4 text-sm">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-yellow-400 mb-1">⚠️ Sequence of Returns Risk</div>
                             <p class="text-gray-300"><strong>Accumulation phase:</strong> Bad returns early are actually <em>helpful</em> — you buy more shares cheap (dollar-cost averaging). <strong>Withdrawal phase:</strong> Bad returns early are devastating — you sell at lows, depleting your portfolio faster.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-blue-400 mb-1">💰 Tax Considerations</div>
+                        <div class="bg-brand-700/50 p-3 rounded">
+                            <div class="font-medium text-brand-light mb-1">💰 Tax Considerations</div>
                             <p class="text-gray-300">401(k)/IRA = pre-tax contributions, taxed on withdrawal. Roth = post-tax, tax-free growth. Taxable accounts have capital gains. Plan accordingly.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-red-400 mb-1">📉 Inflation Erosion</div>
                             <p class="text-gray-300">At 3% inflation, $1M in 30 years has the purchasing power of ~$412K today. Always think in "real" (inflation-adjusted) terms.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-green-400 mb-1">👤 Human Capital</div>
                             <p class="text-gray-300">Your ability to earn income is an asset. Early career = high human capital, low financial capital. Invest aggressively when young.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-purple-400 mb-1">🏦 Emergency Fund First</div>
                             <p class="text-gray-300">Keep 3-6 months expenses in cash before investing. This prevents selling investments at bad times to cover emergencies.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-orange-400 mb-1">⚖️ Debt vs Investing</div>
                             <p class="text-gray-300">High-interest debt (>7%) should be paid first. Low-interest debt (mortgage at 3%) can coexist with investing if returns exceed the rate.</p>
                         </div>
@@ -748,7 +844,7 @@
             </div>
 
             <!-- Disclaimer -->
-            <div class="text-xs text-gray-500 text-center p-4 bg-gray-800 rounded-lg">
+            <div class="text-xs text-brand-light text-center p-4 bg-brand-800 rounded-lg">
                 <strong>Disclaimer:</strong> This tool provides educational estimates only and does not constitute financial advice.
                 Projections are based on historical market assumptions and do not guarantee future results.
                 Consult a qualified financial advisor before making investment decisions.
@@ -772,33 +868,33 @@
             </div>
 
             <!-- Investment Assumptions -->
-            <div class="bg-gray-800 rounded-lg p-4">
-                <div class="text-sm text-gray-400 mb-2">📈 Investment Assumptions Used</div>
+            <div class="bg-brand-800 rounded-lg p-4">
+                <div class="text-sm text-brand-light mb-2">📈 Investment Assumptions Used</div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
-                        <div class="text-xs text-gray-500">Risk Profile</div>
+                        <div class="text-xs text-brand-light">Risk Profile</div>
                         <div id="fireRiskProfile" class="font-medium text-white capitalize">Aggressive</div>
                     </div>
                     <div>
-                        <div class="text-xs text-gray-500">Nominal Return</div>
+                        <div class="text-xs text-brand-light">Nominal Return</div>
                         <div id="fireNominalReturn" class="font-medium text-green-400">10%</div>
                     </div>
                     <div>
-                        <div class="text-xs text-gray-500">Inflation</div>
+                        <div class="text-xs text-brand-light">Inflation</div>
                         <div id="fireInflationUsed" class="font-medium text-red-400">3%</div>
                     </div>
                     <div>
-                        <div class="text-xs text-gray-500">Real Return</div>
-                        <div id="fireRealReturn" class="font-medium text-blue-400">7%</div>
+                        <div class="text-xs text-brand-light">Real Return</div>
+                        <div id="fireRealReturn" class="font-medium text-brand-light">7%</div>
                     </div>
                 </div>
-                <div class="text-xs text-gray-500 mt-2 text-center">
+                <div class="text-xs text-brand-light mt-2 text-center">
                     Change risk profile above to see how it affects your FIRE date
                 </div>
             </div>
 
             <!-- What This Means (Educational) -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-2">📚 What This Means</div>
                 <div class="text-sm text-gray-300 space-y-2">
                     <p>
@@ -821,42 +917,42 @@
 
             <!-- Progress & Timeline -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gray-800 rounded-lg p-4">
-                    <div class="text-sm text-gray-400 mb-2">Progress to FIRE</div>
+                <div class="bg-brand-800 rounded-lg p-4">
+                    <div class="text-sm text-brand-light mb-2">Progress to FIRE</div>
                     <div class="flex items-end gap-3">
                         <div id="fireProgress" class="text-3xl font-bold text-orange-400">4.2%</div>
-                        <div class="text-gray-500 text-sm pb-1">of the way there</div>
+                        <div class="text-brand-light text-sm pb-1">of the way there</div>
                     </div>
-                    <div class="mt-3 h-3 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="mt-3 h-3 bg-brand-700 rounded-full overflow-hidden">
                         <div id="fireProgressBar" class="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full transition-all duration-500" style="width: 4.2%"></div>
                     </div>
                 </div>
 
-                <div class="bg-gray-800 rounded-lg p-4">
-                    <div class="text-sm text-gray-400 mb-2">Projected FIRE Date</div>
+                <div class="bg-brand-800 rounded-lg p-4">
+                    <div class="text-sm text-brand-light mb-2">Projected FIRE Date</div>
                     <div id="fireDate" class="text-2xl font-bold text-white mb-1">Age 52</div>
-                    <div id="fireDateDetails" class="text-sm text-gray-400">22 years from now (2048)</div>
+                    <div id="fireDateDetails" class="text-sm text-brand-light">22 years from now (2048)</div>
                 </div>
             </div>
 
             <!-- Scenario Comparison -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-4 flex items-center">
                     <span class="mr-2">📊</span> What-If Scenarios
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div class="bg-gray-700/50 rounded-lg p-3">
-                        <div class="text-gray-400 mb-1">Save 25% More</div>
+                    <div class="bg-brand-700/50 rounded-lg p-3">
+                        <div class="text-brand-light mb-1">Save 25% More</div>
                         <div id="scenarioSaveMore" class="text-lg font-bold text-green-400">Age 48</div>
                         <div id="scenarioSaveMoreDiff" class="text-xs text-green-400">4 years earlier</div>
                     </div>
-                    <div class="bg-gray-700/50 rounded-lg p-3">
-                        <div class="text-gray-400 mb-1">Spend 25% Less</div>
-                        <div id="scenarioSpendLess" class="text-lg font-bold text-blue-400">Age 47</div>
-                        <div id="scenarioSpendLessDiff" class="text-xs text-blue-400">5 years earlier</div>
+                    <div class="bg-brand-700/50 rounded-lg p-3">
+                        <div class="text-brand-light mb-1">Spend 25% Less</div>
+                        <div id="scenarioSpendLess" class="text-lg font-bold text-brand-light">Age 47</div>
+                        <div id="scenarioSpendLessDiff" class="text-xs text-brand-light">5 years earlier</div>
                     </div>
-                    <div class="bg-gray-700/50 rounded-lg p-3">
-                        <div class="text-gray-400 mb-1">Both Changes</div>
+                    <div class="bg-brand-700/50 rounded-lg p-3">
+                        <div class="text-brand-light mb-1">Both Changes</div>
                         <div id="scenarioBoth" class="text-lg font-bold text-purple-400">Age 43</div>
                         <div id="scenarioBothDiff" class="text-xs text-purple-400">9 years earlier</div>
                     </div>
@@ -864,7 +960,7 @@
             </div>
 
             <!-- FIRE Projection Chart -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <div class="font-medium mb-4">📈 Path to Financial Independence</div>
                 <div class="h-64">
                     <canvas id="fireChart"></canvas>
@@ -872,42 +968,42 @@
             </div>
 
             <!-- FIRE Considerations (Educational) -->
-            <div class="bg-gray-800 rounded-lg p-4">
+            <div class="bg-brand-800 rounded-lg p-4">
                 <button onclick="toggleSection('fireConsiderations')" class="w-full flex items-center justify-between font-medium">
                     <span>📚 Key Considerations for Early Retirement</span>
                     <span id="fireConsiderationsArrow" class="transform transition-transform">▼</span>
                 </button>
                 <div id="fireConsiderations" class="hidden mt-4 space-y-4 text-sm">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-red-400 mb-1">🏥 Healthcare Gap</div>
                             <p class="text-gray-300">Medicare starts at 65. If retiring earlier, budget $500-1500/month for health insurance. This is often the biggest FIRE expense surprise.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-blue-400 mb-1">🏛️ Social Security</div>
+                        <div class="bg-brand-700/50 p-3 rounded">
+                            <div class="font-medium text-brand-light mb-1">🏛️ Social Security</div>
                             <p class="text-gray-300">You can claim at 62 (reduced) or wait until 70 (maximum). Each year you delay past 67 increases benefits ~8%. Factor this into late-retirement projections.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-yellow-400 mb-1">📉 Sequence Risk is Critical</div>
                             <p class="text-gray-300">A bear market in years 1-5 of retirement can devastate your portfolio. Consider a 2-3 year cash buffer or flexible withdrawal strategy.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-green-400 mb-1">🔄 Variable Withdrawals</div>
                             <p class="text-gray-300">Instead of fixed 4%, use guardrails: cut spending 10% if portfolio drops 20%, increase 10% if it rises 50%. This dramatically improves success rates.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-purple-400 mb-1">💼 Tax Optimization</div>
                             <p class="text-gray-300">Roth conversion ladder: convert 401(k) to Roth in low-income years, access 5 years later tax-free. Can significantly reduce lifetime taxes.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-orange-400 mb-1">🌍 Geographic Arbitrage</div>
                             <p class="text-gray-300">Moving to lower cost-of-living areas (domestically or internationally) can reduce your FIRE number by 30-50%. Popular: Portugal, Mexico, Thailand, US South.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-cyan-400 mb-1">☕ Coast FIRE / Barista FIRE</div>
                             <p class="text-gray-300">Coast: Save enough that compound growth hits your FIRE number by 65, then stop saving. Barista: Part-time work covers expenses while investments grow.</p>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
+                        <div class="bg-brand-700/50 p-3 rounded">
                             <div class="font-medium text-pink-400 mb-1">🧠 One More Year Syndrome</div>
                             <p class="text-gray-300">The psychological trap of always wanting "one more year" of savings. At some point, time > money. Define your "enough" number and stick to it.</p>
                         </div>
@@ -923,7 +1019,7 @@
             </div>
 
             <!-- FIRE Disclaimer -->
-            <div class="text-xs text-gray-500 text-center p-4 bg-gray-800 rounded-lg">
+            <div class="text-xs text-brand-light text-center p-4 bg-brand-800 rounded-lg">
                 <strong>FIRE Assumptions:</strong> Uses the 4% rule (or your selected SWR) based on the Trinity Study.
                 Actual results will vary based on market conditions, sequence of returns risk, and lifestyle changes.
                 Consider consulting a fee-only fiduciary advisor for personalized planning.
@@ -992,6 +1088,28 @@
             guide.classList.toggle('hidden');
         }
 
+        let advancedOptionsOpen = false;
+        function toggleAdvancedOptions() {
+            advancedOptionsOpen = !advancedOptionsOpen;
+            const section = document.getElementById('advancedOptionsSection');
+            const incomeSection = document.getElementById('incomeInputSection');
+            const incomeGuide = document.getElementById('incomeGuide');
+            const icon = document.getElementById('advancedToggleIcon');
+
+            if (advancedOptionsOpen) {
+                section.classList.remove('hidden');
+                if (!usingSalaryMode) {
+                    incomeSection.classList.remove('hidden');
+                }
+                icon.textContent = '▼';
+            } else {
+                section.classList.add('hidden');
+                incomeSection.classList.add('hidden');
+                incomeGuide.classList.add('hidden');
+                icon.textContent = '▶';
+            }
+        }
+
         let usingSalaryMode = false;
 
         function toggleSavingsMode() {
@@ -1010,7 +1128,10 @@
             } else {
                 directMode.classList.remove('hidden');
                 salaryMode.classList.add('hidden');
-                incomeSection.classList.remove('hidden');
+                // Only show income section if advanced options are open
+                if (advancedOptionsOpen) {
+                    incomeSection.classList.remove('hidden');
+                }
                 toggleText.textContent = 'Switch to salary + rate →';
             }
         }
@@ -1035,7 +1156,7 @@
                 title: 'Target Goal - Future vs Today\'s Dollars',
                 content: `<p class="mb-2"><strong>Today's dollars (real):</strong> Purchasing power equivalent. If you say "$1M in today's dollars" with 3% inflation over 30 years, the actual number you need is ~$2.4M nominal.</p>
                     <p class="mb-2"><strong>Future dollars (nominal):</strong> The actual dollar amount you'll see in your account. $1M nominal in 30 years buys less than $1M today due to inflation.</p>
-                    <p class="mt-2 text-blue-400 text-sm">Recommendation: Use "today's dollars" to think in current purchasing power. The calculator adjusts for inflation internally.</p>`
+                    <p class="mt-2 text-brand-light text-sm">Recommendation: Use "today's dollars" to think in current purchasing power. The calculator adjusts for inflation internally.</p>`
             },
             yearsToGoal: {
                 title: 'Years Until Goal',
@@ -1063,9 +1184,9 @@
                 content: `<p class="mb-2">The famous "4% rule" was based on 30-year retirements.</p>
                     <p class="mb-2"><strong>Recommended SWR by duration:</strong></p>
                     <table class="text-sm w-full mt-2">
-                        <tr class="border-b border-gray-600"><td class="py-1">20 years</td><td class="text-right">4.5-5%</td></tr>
-                        <tr class="border-b border-gray-600"><td class="py-1">30 years</td><td class="text-right">4%</td></tr>
-                        <tr class="border-b border-gray-600"><td class="py-1">40 years</td><td class="text-right">3.5%</td></tr>
+                        <tr class="border-b border-brand-600"><td class="py-1">20 years</td><td class="text-right">4.5-5%</td></tr>
+                        <tr class="border-b border-brand-600"><td class="py-1">30 years</td><td class="text-right">4%</td></tr>
+                        <tr class="border-b border-brand-600"><td class="py-1">40 years</td><td class="text-right">3.5%</td></tr>
                         <tr><td class="py-1">50+ years</td><td class="text-right">3% or lower</td></tr>
                     </table>
                     <p class="mt-2 text-sm">Source: Trinity Study, updated research by Wade Pfau, Kitces, ERN.</p>`
@@ -1080,7 +1201,7 @@
                         <li>Food, utilities, transportation</li>
                         <li>Travel, hobbies, entertainment</li>
                     </ul>
-                    <p class="mt-2 text-blue-400 text-sm">Common rule: Plan for 70-80% of pre-retirement spending. But FIRE folks often spend MORE early in retirement (travel, hobbies).</p>`
+                    <p class="mt-2 text-brand-light text-sm">Common rule: Plan for 70-80% of pre-retirement spending. But FIRE folks often spend MORE early in retirement (travel, hobbies).</p>`
             },
             monthlyInvestment: {
                 title: 'Monthly Investment',
@@ -1118,24 +1239,24 @@
             realVsNominal: {
                 title: 'Real vs Nominal Dollars',
                 content: `<div class="space-y-3">
-                    <div class="bg-blue-900/30 p-3 rounded">
-                        <p class="font-bold text-blue-300">Nominal Dollars (Future Value)</p>
+                    <div class="bg-brand-950/30 p-3 rounded">
+                        <p class="font-bold text-brand-lighter">Nominal Dollars (Future Value)</p>
                         <p class="text-sm">The actual number on your bank statement. $1,000,000 nominal means you'll see "$1,000,000" in your account.</p>
-                        <p class="text-sm mt-1 text-gray-400">Problem: Inflation erodes purchasing power. $1M in 30 years buys less than $1M today.</p>
+                        <p class="text-sm mt-1 text-brand-light">Problem: Inflation erodes purchasing power. $1M in 30 years buys less than $1M today.</p>
                     </div>
                     <div class="bg-green-900/30 p-3 rounded">
                         <p class="font-bold text-green-300">Real Dollars (Today's Purchasing Power)</p>
                         <p class="text-sm">Adjusted for inflation. "$1M in today's dollars" means future wealth that buys what $1M buys today.</p>
-                        <p class="text-sm mt-1 text-gray-400">With 3% inflation over 30 years, you'd need ~$2.4M nominal to have $1M real.</p>
+                        <p class="text-sm mt-1 text-brand-light">With 3% inflation over 30 years, you'd need ~$2.4M nominal to have $1M real.</p>
                     </div>
-                    <div class="bg-gray-700 p-3 rounded">
+                    <div class="bg-brand-700 p-3 rounded">
                         <p class="font-bold">Example: Planning for $50K/year spending</p>
                         <table class="text-sm w-full mt-2">
-                            <tr class="border-b border-gray-600">
+                            <tr class="border-b border-brand-600">
                                 <td class="py-1">Today</td>
                                 <td class="text-right">$50,000/yr</td>
                             </tr>
-                            <tr class="border-b border-gray-600">
+                            <tr class="border-b border-brand-600">
                                 <td class="py-1">In 30 years (nominal, 3% inflation)</td>
                                 <td class="text-right">$121,000/yr</td>
                             </tr>
@@ -1151,31 +1272,31 @@
             glossary: {
                 title: 'Financial Terms Glossary',
                 content: `<div class="space-y-3 text-sm">
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">FIRE</p>
                         <p class="text-gray-300">Financial Independence, Retire Early. Having enough invested that you can live off investment returns without working.</p>
                     </div>
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">SWR (Safe Withdrawal Rate)</p>
                         <p class="text-gray-300">The percentage of your portfolio you withdraw annually. 4% is the classic "rule" based on historical market data.</p>
                     </div>
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">FIRE Number</p>
                         <p class="text-gray-300">Annual expenses ÷ SWR. The portfolio size needed to sustain your lifestyle indefinitely.</p>
                     </div>
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">Real Return</p>
                         <p class="text-gray-300">Investment return after subtracting inflation. If stocks return 10% and inflation is 3%, real return is ~7%.</p>
                     </div>
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">Nominal vs Real</p>
                         <p class="text-gray-300">Nominal = actual dollar amount. Real = inflation-adjusted (purchasing power). $1M nominal in 30 years ≠ $1M real.</p>
                     </div>
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">Sequence of Returns Risk</p>
                         <p class="text-gray-300">The order of returns matters. <strong>Accumulation:</strong> Poor early returns help (buy cheap via DCA). <strong>Withdrawal:</strong> Poor early returns devastate (sell at lows, deplete faster).</p>
                     </div>
-                    <div class="border-b border-gray-700 pb-2">
+                    <div class="border-b border-brand-700 pb-2">
                         <p class="font-bold text-white">Geometric vs Arithmetic Return</p>
                         <p class="text-gray-300">Arithmetic = simple average of returns. Geometric = compound growth rate. Volatility creates a "drag" making geometric < arithmetic.</p>
                     </div>
@@ -1198,10 +1319,10 @@
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 
             modal.innerHTML = `
-                <div class="bg-gray-800 rounded-lg max-w-lg w-full max-h-[80vh] overflow-y-auto">
-                    <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                <div class="bg-brand-800 rounded-lg max-w-lg w-full max-h-[80vh] overflow-y-auto">
+                    <div class="p-4 border-b border-brand-700 flex justify-between items-center">
                         <h3 class="font-bold text-lg text-white">${help.title}</h3>
-                        <button onclick="document.getElementById('helpModal').remove()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+                        <button onclick="document.getElementById('helpModal').remove()" class="text-brand-light hover:text-white text-xl">&times;</button>
                     </div>
                     <div class="p-4 text-gray-300">${help.content}</div>
                 </div>
@@ -1220,17 +1341,17 @@
             const futureExpl = document.getElementById('futureDollarsExplanation');
 
             if (type === 'today') {
-                todayBtn.classList.add('bg-blue-600', 'text-white');
-                todayBtn.classList.remove('text-gray-400');
-                futureBtn.classList.remove('bg-blue-600', 'text-white');
-                futureBtn.classList.add('text-gray-400');
+                todayBtn.classList.add('bg-brand-accent', 'text-white');
+                todayBtn.classList.remove('text-brand-light');
+                futureBtn.classList.remove('bg-brand-accent', 'text-white');
+                futureBtn.classList.add('text-brand-light');
                 todayExpl.classList.remove('hidden');
                 futureExpl.classList.add('hidden');
             } else {
-                futureBtn.classList.add('bg-blue-600', 'text-white');
-                futureBtn.classList.remove('text-gray-400');
-                todayBtn.classList.remove('bg-blue-600', 'text-white');
-                todayBtn.classList.add('text-gray-400');
+                futureBtn.classList.add('bg-brand-accent', 'text-white');
+                futureBtn.classList.remove('text-brand-light');
+                todayBtn.classList.remove('bg-brand-accent', 'text-white');
+                todayBtn.classList.add('text-brand-light');
                 futureExpl.classList.remove('hidden');
                 todayExpl.classList.add('hidden');
             }
@@ -1298,7 +1419,7 @@
                 // Update the inflation assumption text in future dollars view
                 const futureExpl = document.getElementById('futureDollarsExplanation');
                 if (futureExpl) {
-                    const assumptionText = futureExpl.querySelector('.text-gray-500');
+                    const assumptionText = futureExpl.querySelector('.text-brand-light');
                     if (assumptionText) assumptionText.textContent = `(assuming ${inflation}% inflation over ${years} years)`;
                 }
 
@@ -1663,10 +1784,10 @@
             lastFireResult = null;
 
             if (mode === 'goal') {
-                goalBtn.classList.add('bg-blue-600', 'text-white');
-                goalBtn.classList.remove('text-gray-400');
+                goalBtn.classList.add('bg-brand-accent', 'text-white');
+                goalBtn.classList.remove('text-brand-light');
                 fireBtn.classList.remove('bg-orange-600', 'text-white');
-                fireBtn.classList.add('text-gray-400');
+                fireBtn.classList.add('text-brand-light');
                 goalInputs.classList.remove('hidden');
                 fireInputs.classList.add('hidden');
                 targetSection.classList.remove('hidden');
@@ -1676,9 +1797,9 @@
                 analyzeBtn.textContent = 'Analyze My Goal';
             } else {
                 fireBtn.classList.add('bg-orange-600', 'text-white');
-                fireBtn.classList.remove('text-gray-400');
-                goalBtn.classList.remove('bg-blue-600', 'text-white');
-                goalBtn.classList.add('text-gray-400');
+                fireBtn.classList.remove('text-brand-light');
+                goalBtn.classList.remove('bg-brand-accent', 'text-white');
+                goalBtn.classList.add('text-brand-light');
                 goalInputs.classList.add('hidden');
                 fireInputs.classList.remove('hidden');
                 results.classList.add('hidden');
@@ -1914,7 +2035,7 @@
                         {
                             label: 'Lean FIRE (25% less)',
                             data: labels.map(() => result.scenarios.spendLess.fireNumber),
-                            borderColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: 'rgba(168, 180, 196, 0.6)',  // brand-light
                             borderDash: [3, 3],
                             borderWidth: 2,
                             pointRadius: 0,
@@ -1926,19 +2047,19 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { labels: { color: '#9ca3af' } }
+                        legend: { labels: { color: '#a8b4c4' } }  // brand-light
                     },
                     scales: {
                         x: {
-                            ticks: { color: '#9ca3af', maxTicksLimit: 10 },
-                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                            ticks: { color: '#a8b4c4', maxTicksLimit: 10 },  // brand-light
+                            grid: { color: 'rgba(106, 125, 141, 0.3)' }  // brand-600
                         },
                         y: {
                             ticks: {
-                                color: '#9ca3af',
+                                color: '#a8b4c4',  // brand-light
                                 callback: (value) => '$' + (value / 1000000).toFixed(1) + 'M'
                             },
-                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                            grid: { color: 'rgba(106, 125, 141, 0.3)' }  // brand-600
                         }
                     }
                 }
@@ -1980,7 +2101,7 @@
                 feedback.className = 'text-xs text-green-400';
             } else if (rate <= 35) {
                 feedback.textContent = '💪 Above average! Make sure this is sustainable long-term.';
-                feedback.className = 'text-xs text-blue-400';
+                feedback.className = 'text-xs text-brand-light';
             } else {
                 feedback.textContent = '🔥 Very aggressive. Ensure you\'re not sacrificing quality of life.';
                 feedback.className = 'text-xs text-yellow-400';
@@ -2193,7 +2314,7 @@
                         {
                             label: 'Median',
                             data: generateCurve(p50Final),
-                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderColor: '#a8b4c4',  // brand-light
                             backgroundColor: 'transparent',
                             borderWidth: 3,
                             tension: 0.4,
@@ -2224,20 +2345,20 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            labels: { color: '#9ca3af' }
+                            labels: { color: '#a8b4c4' }  // brand-light
                         }
                     },
                     scales: {
                         x: {
-                            ticks: { color: '#9ca3af' },
-                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                            ticks: { color: '#a8b4c4' },  // brand-light
+                            grid: { color: 'rgba(106, 125, 141, 0.3)' }  // brand-600
                         },
                         y: {
                             ticks: {
-                                color: '#9ca3af',
+                                color: '#a8b4c4',  // brand-light
                                 callback: (value) => '$' + (value / 1000).toFixed(0) + 'K'
                             },
-                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                            grid: { color: 'rgba(106, 125, 141, 0.3)' }  // brand-600
                         }
                     }
                 }
@@ -2357,6 +2478,7 @@
             document.body.style.overflow = 'hidden';
             wizardStep = 0;
             updateWizardDisplay();
+            personalizeWizardPrompts();
         }
 
         function closeFrameworkWizard() {
@@ -2420,15 +2542,193 @@
                 }, 2000);
             });
         }
+
+        // ============================================
+        // Expat Onboarding & Profile
+        // ============================================
+
+        const COUNTRY_CONFIG = {
+            'US': { name: 'United States', flag: '🇺🇸' },
+            'UK': { name: 'United Kingdom', flag: '🇬🇧' },
+            'SG': { name: 'Singapore', flag: '🇸🇬' },
+            'FR': { name: 'France', flag: '🇫🇷' },
+            'DE': { name: 'Germany', flag: '🇩🇪' },
+            'IN': { name: 'India', flag: '🇮🇳' },
+            'CN': { name: 'China', flag: '🇨🇳' },
+            'AU': { name: 'Australia', flag: '🇦🇺' },
+            'CA': { name: 'Canada', flag: '🇨🇦' },
+            'OTHER': { name: 'Other', flag: '🌐' }
+        };
+
+        function getExpatProfile() {
+            try {
+                const stored = localStorage.getItem('expatProfile');
+                return stored ? JSON.parse(stored) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveExpatProfile() {
+            const origin = document.getElementById('originCountry').value;
+            const residence = document.getElementById('residenceCountry').value;
+            const mayRelocate = document.getElementById('mayRelocate').checked;
+
+            if (!origin || !residence) {
+                // Highlight empty fields
+                if (!origin) document.getElementById('originCountry').classList.add('border-red-500');
+                if (!residence) document.getElementById('residenceCountry').classList.add('border-red-500');
+                return;
+            }
+
+            const profile = {
+                version: 1,
+                originCountry: origin,
+                residenceCountry: residence,
+                mayRelocate: mayRelocate,
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString()
+            };
+
+            localStorage.setItem('expatProfile', JSON.stringify(profile));
+            localStorage.setItem('onboardingCompleted', 'true');
+
+            closeOnboarding();
+            updateProfileBadge();
+            showExpatTips();
+        }
+
+        function skipOnboarding() {
+            localStorage.setItem('onboardingSkipped', 'true');
+            closeOnboarding();
+            updateProfileBadge();
+        }
+
+        function openOnboarding() {
+            const modal = document.getElementById('onboardingModal');
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            // Pre-fill if profile exists
+            const profile = getExpatProfile();
+            if (profile) {
+                document.getElementById('originCountry').value = profile.originCountry || '';
+                document.getElementById('residenceCountry').value = profile.residenceCountry || '';
+                document.getElementById('mayRelocate').checked = profile.mayRelocate || false;
+            }
+
+            // Remove any error styling
+            document.getElementById('originCountry').classList.remove('border-red-500');
+            document.getElementById('residenceCountry').classList.remove('border-red-500');
+        }
+
+        function closeOnboarding() {
+            const modal = document.getElementById('onboardingModal');
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function updateProfileBadge() {
+            const badge = document.getElementById('profileBadge');
+            const badgeText = document.getElementById('profileBadgeText');
+            const profile = getExpatProfile();
+
+            badge.classList.remove('hidden');
+
+            if (profile && profile.originCountry && profile.residenceCountry) {
+                const originFlag = COUNTRY_CONFIG[profile.originCountry]?.flag || '🌐';
+                const residenceFlag = COUNTRY_CONFIG[profile.residenceCountry]?.flag || '🌐';
+
+                if (profile.originCountry === profile.residenceCountry) {
+                    badgeText.textContent = `${originFlag} ${COUNTRY_CONFIG[profile.originCountry]?.name || 'Set location'}`;
+                } else {
+                    badgeText.textContent = `${originFlag} → ${residenceFlag}`;
+                }
+            } else {
+                badgeText.textContent = '🌍 Set location';
+            }
+        }
+
+        function shouldShowOnboarding() {
+            // Don't show if already completed or skipped
+            if (localStorage.getItem('onboardingCompleted')) return false;
+            if (localStorage.getItem('onboardingSkipped')) return false;
+            return true;
+        }
+
+        function showExpatTips() {
+            // This will be expanded in Phase 2 to show country-specific tips
+            const profile = getExpatProfile();
+            if (!profile) return;
+
+            // For now, just update the framework wizard's situation template
+            prefillSituationTemplate();
+        }
+
+        function prefillSituationTemplate() {
+            const profile = getExpatProfile();
+            if (!profile) return;
+
+            const template = document.getElementById('situationTemplate');
+            if (!template) return;
+
+            const originName = COUNTRY_CONFIG[profile.originCountry]?.name || profile.originCountry;
+            const residenceName = COUNTRY_CONFIG[profile.residenceCountry]?.name || profile.residenceCountry;
+
+            let content = template.textContent;
+            content = content.replace(
+                'Current tax residency: _______________',
+                `Current tax residency: ${residenceName}`
+            );
+            content = content.replace(
+                'Citizenship(s): _______________',
+                `Citizenship(s): ${originName}`
+            );
+
+            if (profile.mayRelocate) {
+                content = content.replace(
+                    'Expected location in 5 years: _______________',
+                    'Expected location in 5 years: May relocate (uncertain)'
+                );
+                content = content.replace(
+                    'Geographic mobility: _______________ (staying put / may relocate / uncertain)',
+                    'Geographic mobility: may relocate'
+                );
+            }
+
+            template.textContent = content;
+        }
+
+        // Initialize onboarding on page load
+        function initOnboarding() {
+            updateProfileBadge();
+
+            if (shouldShowOnboarding()) {
+                // Small delay so page renders first
+                setTimeout(() => {
+                    openOnboarding();
+                }, 500);
+            } else {
+                // Apply saved profile
+                showExpatTips();
+            }
+        }
+
+        // Run after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initOnboarding);
+        } else {
+            initOnboarding();
+        }
     </script>
 
     <!-- Framework Wizard Modal -->
     <div id="frameworkWizard" class="wizard-modal" onclick="if(event.target === this) closeFrameworkWizard()">
         <div class="wizard-container">
             <!-- Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-700">
+            <div class="flex items-center justify-between p-4 border-b border-brand-700">
                 <h2 class="text-xl font-bold text-white">📋 Financial Planning Framework</h2>
-                <button onclick="closeFrameworkWizard()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+                <button onclick="closeFrameworkWizard()" class="text-brand-light hover:text-white text-2xl leading-none">&times;</button>
             </div>
 
             <!-- Slides Container -->
@@ -2437,7 +2737,7 @@
                 <div class="wizard-slide">
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-white mb-2">Step 1: Document Your Situation</h3>
-                        <p class="text-gray-400 text-sm">Fill in this template with your details. You'll paste this into AI prompts for personalized research.</p>
+                        <p class="text-brand-light text-sm">Fill in this template with your details. You'll paste this into AI prompts for personalized research.</p>
                     </div>
 
                     <div class="prompt-card">
@@ -2490,7 +2790,7 @@ Geographic mobility: _______________ (staying put / may relocate / uncertain)
 Career stability: _______________ (stable / moderate / high uncertainty)</pre>
                     </div>
 
-                    <div class="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 text-sm text-blue-200">
+                    <div class="bg-brand-950/30 border border-brand-light/30 rounded-lg p-3 text-sm text-brand-lighter">
                         <strong>Privacy tip:</strong> Use ranges and categories (e.g., "75k-100k") rather than exact figures. The AI only needs ballpark numbers to give useful advice.
                     </div>
                 </div>
@@ -2499,7 +2799,7 @@ Career stability: _______________ (stable / moderate / high uncertainty)</pre>
                 <div class="wizard-slide">
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-white mb-2">Step 2: Research Your Country's Options</h3>
-                        <p class="text-gray-400 text-sm">Copy this prompt and paste it into ChatGPT or Claude. Replace the [BRACKETS] with your info from Step 1.</p>
+                        <p class="text-brand-light text-sm">Copy this prompt and paste it into ChatGPT or Claude. Replace the [BRACKETS] with your info from Step 1.</p>
                     </div>
 
                     <div class="prompt-card">
@@ -2573,18 +2873,18 @@ Given my uncertainty, suggest an allocation between tax-advantaged (locked) vs t
                 <div class="wizard-slide">
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-white mb-2">Step 3: Test Your Numbers</h3>
-                        <p class="text-gray-400 text-sm">Use our Monte Carlo calculator to test if your goals are achievable.</p>
+                        <p class="text-brand-light text-sm">Use our Monte Carlo calculator to test if your goals are achievable.</p>
                     </div>
 
                     <div class="grid gap-4">
                         <div class="prompt-card">
                             <h4 class="font-medium text-white mb-2">What to Enter</h4>
                             <div class="text-sm text-gray-300 space-y-2">
-                                <p><span class="text-blue-400">Current Savings:</span> Total already saved for THIS goal (retirement accounts + brokerage). Don't include emergency fund.</p>
-                                <p><span class="text-blue-400">Target Amount:</span> Your goal amount. Use "today's buying power" — the tool adjusts for inflation.</p>
-                                <p><span class="text-blue-400">Years:</span> How long until you need the money.</p>
-                                <p><span class="text-blue-400">Monthly Contribution:</span> What you plan to invest each month toward this goal.</p>
-                                <p><span class="text-blue-400">Risk Profile:</span> Based on timeline:
+                                <p><span class="text-brand-light">Current Savings:</span> Total already saved for THIS goal (retirement accounts + brokerage). Don't include emergency fund.</p>
+                                <p><span class="text-brand-light">Target Amount:</span> Your goal amount. Use "today's buying power" — the tool adjusts for inflation.</p>
+                                <p><span class="text-brand-light">Years:</span> How long until you need the money.</p>
+                                <p><span class="text-brand-light">Monthly Contribution:</span> What you plan to invest each month toward this goal.</p>
+                                <p><span class="text-brand-light">Risk Profile:</span> Based on timeline:
                                     <br>• &lt;5 years → Conservative
                                     <br>• 5-15 years → Moderate
                                     <br>• 15+ years → Aggressive</p>
@@ -2619,7 +2919,7 @@ Given my uncertainty, suggest an allocation between tax-advantaged (locked) vs t
                 <div class="wizard-slide">
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-white mb-2">Step 4: Assemble Your Plan</h3>
-                        <p class="text-gray-400 text-sm">Combine your research and calculator results into a complete plan.</p>
+                        <p class="text-brand-light text-sm">Combine your research and calculator results into a complete plan.</p>
                     </div>
 
                     <div class="prompt-card">
@@ -2677,7 +2977,7 @@ REVIEW TRIGGERS
                 <div class="wizard-slide">
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-white mb-2">Step 5: Validate Your Plan</h3>
-                        <p class="text-gray-400 text-sm">Use this prompt to have AI check your plan for gaps and inconsistencies.</p>
+                        <p class="text-brand-light text-sm">Use this prompt to have AI check your plan for gaps and inconsistencies.</p>
                     </div>
 
                     <div class="prompt-card">
@@ -2734,7 +3034,7 @@ Be direct. If something doesn't make sense, say so.</pre>
             </div>
 
             <!-- Navigation -->
-            <div class="border-t border-gray-700 p-4">
+            <div class="border-t border-brand-700 p-4">
                 <!-- Step Dots -->
                 <div class="wizard-dots mb-4">
                     <button class="wizard-dot active" onclick="goToWizardStep(0)" aria-label="Step 1"></button>
@@ -2747,15 +3047,98 @@ Be direct. If something doesn't make sense, say so.</pre>
                 <!-- Prev/Next Buttons -->
                 <div class="flex justify-between">
                     <button id="wizardPrevBtn" onclick="prevWizardStep()" disabled
-                        class="px-4 py-2 text-sm text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="px-4 py-2 text-sm text-brand-light hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
                         ← Back
                     </button>
                     <button id="wizardNextBtn" onclick="wizardStep === totalSteps - 1 ? closeFrameworkWizard() : nextWizardStep()"
-                        class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                        class="px-4 py-2 text-sm bg-brand-accent hover:bg-brand-accent-hover text-white rounded-lg">
                         Next →
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Modal -->
+    <div id="onboardingModal" class="onboarding-modal" onclick="if(event.target === this) closeOnboarding()">
+        <div class="onboarding-container">
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <div class="text-4xl mb-3">🌍</div>
+                <h2 class="text-xl font-bold text-white mb-2">Where Are You Planning From?</h2>
+                <p class="text-brand-light text-sm">Help us personalize your experience</p>
+            </div>
+
+            <!-- Form -->
+            <div class="space-y-5">
+                <!-- Origin Country -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        I am FROM
+                        <span class="text-brand-light font-normal">(citizenship)</span>
+                    </label>
+                    <select id="originCountry" class="country-select w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white">
+                        <option value="">Select your origin country...</option>
+                        <option value="US">🇺🇸 United States</option>
+                        <option value="UK">🇬🇧 United Kingdom</option>
+                        <option value="SG">🇸🇬 Singapore</option>
+                        <option value="FR">🇫🇷 France</option>
+                        <option value="DE">🇩🇪 Germany</option>
+                        <option value="IN">🇮🇳 India</option>
+                        <option value="CN">🇨🇳 China</option>
+                        <option value="AU">🇦🇺 Australia</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="OTHER">🌐 Other</option>
+                    </select>
+                </div>
+
+                <!-- Residence Country -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        I LIVE IN
+                        <span class="text-brand-light font-normal">(where you pay taxes)</span>
+                    </label>
+                    <select id="residenceCountry" class="country-select w-full bg-brand-700 border border-brand-600 rounded-lg px-4 py-3 text-white">
+                        <option value="">Select your residence country...</option>
+                        <option value="US">🇺🇸 United States</option>
+                        <option value="UK">🇬🇧 United Kingdom</option>
+                        <option value="SG">🇸🇬 Singapore</option>
+                        <option value="FR">🇫🇷 France</option>
+                        <option value="DE">🇩🇪 Germany</option>
+                        <option value="IN">🇮🇳 India</option>
+                        <option value="CN">🇨🇳 China</option>
+                        <option value="AU">🇦🇺 Australia</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="OTHER">🌐 Other</option>
+                    </select>
+                </div>
+
+                <!-- May Relocate -->
+                <label class="flex items-center gap-3 cursor-pointer p-3 bg-brand-800/50 rounded-lg border border-brand-700 hover:border-brand-600 transition">
+                    <input type="checkbox" id="mayRelocate" class="w-5 h-5 rounded bg-brand-600 border-brand-500 text-brand-light focus:ring-brand-light">
+                    <div>
+                        <span class="text-sm text-white">I may relocate in the next 5 years</span>
+                        <p class="text-xs text-brand-light">We'll highlight portability considerations</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-6 space-y-3">
+                <button type="button" onclick="saveExpatProfile()"
+                    class="w-full py-3 bg-brand-accent hover:bg-brand-accent-hover text-white font-medium rounded-lg transition">
+                    Start Planning
+                </button>
+                <button type="button" onclick="skipOnboarding()"
+                    class="w-full py-2 text-brand-light hover:text-white text-sm transition">
+                    Skip for now
+                </button>
+            </div>
+
+            <!-- Privacy Note -->
+            <p class="mt-4 text-xs text-brand-light text-center">
+                Stored locally in your browser. No account required.
+            </p>
         </div>
     </div>
 </body>

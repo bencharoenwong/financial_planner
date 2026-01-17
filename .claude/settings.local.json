@@ -12,7 +12,13 @@
       "Bash(curl:*)",
       "Bash(lsof:*)",
       "WebFetch(domain:www.campfirefinance.com)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(pip-audit:*)",
+      "Bash(ls:*)",
+      "Bash(xargs kill:*)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }
