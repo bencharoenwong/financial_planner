@@ -1,454 +1,852 @@
 # Financial Planning Framework
 
-A practical, fill-in-the-blank framework for building your financial plan. Works with any country—you provide the context, an LLM does the research.
+A professional framework for comprehensive financial planning. Works for any jurisdiction—you provide the context, an LLM provides jurisdiction-specific research.
 
 **How to use this document:**
-1. Fill in Part 1 (your situation)
-2. Copy the prompts from Part 2 into Claude/ChatGPT for country-specific research
-3. Use our calculator tool to test your numbers (Part 3)
-4. Assemble your plan using the template in Part 4
-5. Validate with the evaluation prompt in Part 5
+1. Complete your situation profile (Part 1)
+2. Use the appropriate prompts from Part 2 for your complexity level
+3. Test your numbers with our calculator (Part 3)
+4. Assemble your plan (Part 4)
+5. Validate with the review prompt (Part 5)
 
-**Privacy:** You only share categories and ranges, never exact figures or personal details.
+**Privacy by design:** Share only categories and ranges, never exact figures or identifying details.
+
+**Important:** This framework facilitates research and planning. It does not constitute financial, tax, or legal advice. Consult qualified professionals for significant decisions.
 
 ---
 
-## Part 1: Your Situation (Fill This In)
+## Part 1: Your Situation Profile
 
-Copy this section and fill in the blanks. You'll paste this into research prompts later.
+Complete this profile before using any prompts. The level of detail determines which prompts are relevant.
 
 ```
-MY SITUATION
-============
+SITUATION PROFILE
+=================
 
-Location & Status
------------------
-Current tax residency: _______________ (e.g., France, Singapore, USA)
-Citizenship(s): _______________ (e.g., Indian citizen, US/UK dual)
-Visa status (if applicable): _______________ (e.g., H-1B, work permit, N/A)
+SECTION A: RESIDENCY & CITIZENSHIP
+----------------------------------
+Current tax residency: _______________
+Citizenship(s): _______________ (note if dual/multiple)
+Visa/immigration status: _______________ (permanent resident, work visa type, citizen, etc.)
+Years in current residence: _______________
 Expected location in 5 years: _______________ (same / different country / uncertain)
+Prior residencies (last 10 years): _______________
 
-Age & Career
-------------
-Age bracket: _______________ (e.g., 25-30, 30-35, 35-40)
-Career stage: _______________ (early career / mid-career / senior)
-Employment type: _______________ (employee / self-employed / business owner)
-Income relative to local median: _______________ (around median / 2-3x / 5x+)
+SECTION B: CAREER & INCOME
+--------------------------
+Age bracket: _______________ (25-30 / 30-35 / 35-40 / 40-50 / 50-60 / 60+)
+Primary role: _______________ (employee / executive / business owner / self-employed / retired)
+Industry: _______________ (finance / tech / consulting / healthcare / other: ___)
+Income level vs local median: _______________ (1-2x / 2-5x / 5-10x / 10x+)
 
-Employer Benefits (if employed)
+Income composition (check all that apply):
+[ ] Base salary
+[ ] Annual bonus (cash)
+[ ] Equity compensation (RSUs, stock options, ESPP)
+[ ] Carried interest / profit participation
+[ ] Partnership/LLC distributions
+[ ] Deferred compensation (NQDC plans)
+[ ] Board fees / consulting income
+[ ] Rental / investment income
+[ ] Business distributions / dividends
+[ ] Other: _______________
+
+SECTION C: EQUITY COMPENSATION (if applicable)
+----------------------------------------------
+Types held: _______________ (RSUs / ISOs / NSOs / ESPP / phantom stock / other)
+Vesting schedule: _______________ (4-year cliff / graded / performance-based)
+Concentrated stock position (>10% of NW): _______________ (yes / no)
+Company status: _______________ (public / pre-IPO / private)
+10b5-1 plan in place: _______________ (yes / no / N/A)
+
+SECTION D: EMPLOYER BENEFITS
+----------------------------
+Retirement plan type: _______________ (401k / pension / DC scheme / none / multiple)
+Employer match: _______________ (% and cap, if any)
+Match vesting: _______________ (immediate / graded over ___ years / cliff at ___ years)
+Deferred comp available: _______________ (yes / no)
+Executive benefits: _______________ (SERP, split-dollar life, other: ___)
+Stock purchase plan: _______________ (ESPP discount: ___%, lookback: yes/no)
+
+SECTION E: BUSINESS INTERESTS (if applicable)
+---------------------------------------------
+Business structure: _______________ (sole prop / LLC / S-corp / C-corp / partnership)
+Ownership %: _______________
+Business valuation (approx): _______________
+Succession plan: _______________ (in place / in progress / none)
+Buy-sell agreement: _______________ (yes / no)
+Key person insurance: _______________ (yes / no)
+
+SECTION F: FINANCIAL FOUNDATION
 -------------------------------
-Employer retirement scheme: _______________ (yes with match / yes no match / none / unsure)
-Match rate (if applicable): _______________%
-
-Financial Foundation
---------------------
-Emergency fund: _______________ (none / 1-3 months / 3-6 months / 6+ months)
+Emergency fund: _______________ (months of expenses)
 High-interest debt (>7%): _______________ (none / some / significant)
+Mortgage(s): _______________ (rate: ___%, years remaining: ___)
 Current savings rate: _______________% of gross income
+Existing retirement accounts: _______________ (types and approximate totals)
 
-Goals
------
+SECTION G: GOALS (ranked by priority)
+-------------------------------------
 Goal 1: _______________
-  - Target amount: _______________
+  - Target amount: _______________ (in today's purchasing power)
   - Timeline: _______________ years
-  - Priority: _______________ (must-have / nice-to-have)
+  - Flexibility: _______________ (fixed date / flexible / aspirational)
 
 Goal 2: _______________
   - Target amount: _______________
   - Timeline: _______________ years
-  - Priority: _______________
+  - Flexibility: _______________
 
-Goal 3 (if any): _______________
+Goal 3: _______________
   - Target amount: _______________
   - Timeline: _______________ years
-  - Priority: _______________
+  - Flexibility: _______________
 
-Uncertainty Factors
--------------------
-Geographic mobility: _______________ (staying put / may relocate / likely moving / highly uncertain)
-Career stability: _______________ (stable / moderate variability / high uncertainty)
-Major upcoming expenses: _______________ (none / yes: _______________)
+SECTION H: RISK FACTORS & CONSTRAINTS
+-------------------------------------
+Geographic mobility: _______________ (anchored / may relocate / likely moving / highly mobile)
+Income stability: _______________ (stable / variable / highly volatile)
+Career trajectory: _______________ (growth expected / plateau / winding down)
+Health considerations: _______________ (standard / chronic conditions / high-cost expected)
+Family obligations: _______________ (dependents, aging parents, education funding, etc.)
+Liquidity constraints: _______________ (locked equity, restricted stock, illiquid assets)
+
+SECTION I: EXISTING STRUCTURES
+------------------------------
+Trusts: _______________ (grantor / non-grantor / foreign / none)
+Holding companies: _______________ (yes / no)
+Life insurance policies: _______________ (term / whole / VUL / none)
+Existing tax elections: _______________ (83(b) filed / QSBS claimed / other)
 ```
 
 ---
 
-## Part 2: Research Prompts (Copy-Paste Into LLM)
+## Part 2: Research Prompts
 
-After filling in Part 1, use these prompts to research your specific situation.
+Select prompts based on your situation complexity. Start with 2A (everyone needs this), then add specialized prompts as relevant.
 
-### Prompt 2A: Understand Your Country's Options
+### Prompt 2A: Tax-Advantaged Accounts & Investment Taxation (Core)
 
-Copy this entire block, paste into Claude/ChatGPT, and replace the [BRACKETS] with your info from Part 1:
+Use this for baseline country-specific research:
 
 ```
-I need to understand the tax-advantaged savings options available to me.
+I need to understand the tax-advantaged savings options and investment taxation in my jurisdiction.
 
 MY SITUATION:
-- Tax residency: [YOUR TAX RESIDENCY]
-- Citizenship: [YOUR CITIZENSHIP]
-- Visa status: [YOUR VISA STATUS OR "N/A"]
-- Employment type: [EMPLOYEE / SELF-EMPLOYED / ETC]
-- Income level: [YOUR INCOME RELATIVE TO MEDIAN]
+- Tax residency: [COUNTRY]
+- Citizenship: [CITIZENSHIP(S)]
+- Immigration status: [VISA TYPE OR CITIZEN/PR]
+- Employment type: [EMPLOYEE / SELF-EMPLOYED / BUSINESS OWNER]
+- Income level: [X TIMES LOCAL MEDIAN]
 
-Please explain:
+Please provide comprehensive information on:
 
 1. RETIREMENT ACCOUNTS
-   - What tax-advantaged retirement accounts exist in [YOUR COUNTRY]?
-   - For each account type:
-     - Contribution limits (annual)
-     - Tax treatment (deductible now? taxed on withdrawal?)
-     - Withdrawal rules and penalties
-     - What happens if I leave the country?
+   For each available account type:
+   - Name and structure (e.g., 401(k), ISA, CPF, superannuation)
+   - 2024/2025 contribution limits (employee and employer portions)
+   - Tax treatment: deductible contributions? tax-deferred growth? taxed on withdrawal?
+   - Early withdrawal penalties and exceptions
+   - Required minimum distributions (if any)
+   - Portability: what happens if I leave this country?
+   - Creditor protection status
 
-2. OTHER TAX-ADVANTAGED VEHICLES
-   - Investment accounts with special tax treatment
-   - Health savings vehicles (if any)
-   - Education savings vehicles (if any)
+2. NON-RETIREMENT TAX-ADVANTAGED ACCOUNTS
+   - Investment accounts with preferential treatment (ISA, PEA, TFSA, etc.)
+   - Health savings vehicles (HSA, etc.)
+   - Education savings vehicles (529, RESP, etc.)
+   - Any wealth-building incentives (first-home savers, etc.)
 
-3. EMPLOYER SCHEMES
-   - What employer retirement matching is typical in [YOUR COUNTRY]?
+3. INVESTMENT TAXATION
+   - Capital gains: rates, holding period benefits, indexation
+   - Dividends: qualified vs ordinary treatment, foreign dividend treatment
+   - Interest income taxation
+   - Tax-loss harvesting rules and wash sale restrictions
+   - Wealth/net worth taxes (if any)
+   - Exit taxes on emigration (if any)
+
+4. SOCIAL SECURITY / STATE PENSION
+   - Contribution requirements and rates
+   - Expected benefit calculation methodology
+   - Vesting requirements for portability
+   - Claiming from abroad (totalization agreements)
+
+5. EMPLOYER RETIREMENT SCHEMES
+   - Typical employer matching formulas
    - Vesting schedules
-   - Portability if I change jobs
+   - What happens to unvested amounts if I leave?
 
-4. INVESTMENT TAXATION
-   - How are capital gains taxed? (rate, holding period benefits)
-   - How are dividends taxed?
-   - Any wealth taxes I should know about?
-
-5. STATE/SOCIAL PENSION
-   - What is the public pension system?
-   - Contribution requirements
-   - Expected benefit level
-   - Can I claim if I leave the country?
-
-Please be specific to [YOUR COUNTRY]. If my visa status affects any of these, note that.
+Be specific to [COUNTRY]. Note any restrictions based on my immigration status.
 ```
 
-### Prompt 2B: Portability Analysis (If You May Relocate)
+### Prompt 2B: Cross-Border Portability Analysis
 
-Use this if your mobility level is anything other than "staying put":
+Use this if you may relocate internationally:
 
 ```
-I may relocate internationally and need to understand how portable different savings vehicles are.
+I need to understand cross-border tax implications for my savings and investments.
 
 MY SITUATION:
-- Current tax residency: [YOUR CURRENT COUNTRY]
-- Citizenship: [YOUR CITIZENSHIP]
-- Likely destination(s): [WHERE YOU MIGHT MOVE, OR "UNCERTAIN"]
-- Timeline: [WHEN YOU MIGHT MOVE]
+- Current tax residency: [CURRENT COUNTRY]
+- Citizenship: [CITIZENSHIP(S)]
+- Possible future residencies: [DESTINATION(S) OR "UNCERTAIN"]
+- Timeline: [WHEN RELOCATION MAY OCCUR]
+- Is US citizenship/green card involved? [YES/NO]
 
-For each of these account types in [YOUR CURRENT COUNTRY]:
-[LIST THE ACCOUNTS FROM PROMPT 2A RESULTS]
+ACCOUNTS I HOLD OR AM CONSIDERING:
+[LIST SPECIFIC ACCOUNTS FROM PROMPT 2A RESULTS]
 
-Please explain:
-1. What happens to this account if I move to [DESTINATION]?
-2. Can I continue contributing from abroad?
-3. How will withdrawals be taxed? (both countries)
-4. Is there a tax treaty that affects this?
-5. Should I consider keeping money in taxable/portable accounts instead?
+For each account type, explain:
 
-Given my uncertainty level, what allocation between tax-advantaged (but locked) vs taxable (but portable) would you suggest?
+1. CONTINUED CONTRIBUTIONS
+   - Can I contribute after becoming non-resident?
+   - Are contributions still tax-advantaged from abroad?
+
+2. INVESTMENT RESTRICTIONS
+   - PFIC issues for US persons investing abroad
+   - Mutual fund restrictions for non-residents
+   - ETF domicile considerations (US vs Ireland-domiciled)
+
+3. WITHDRAWAL TAXATION
+   - How are withdrawals taxed in my origin country?
+   - How are withdrawals taxed in my destination country?
+   - Applicable tax treaty provisions (withholding rates, treaty benefits)
+   - Double taxation relief mechanisms
+
+4. EXIT TAX CONSIDERATIONS
+   - Deemed disposition rules on departure
+   - Mark-to-market requirements
+   - Planning opportunities before exit
+
+5. REPORTING OBLIGATIONS
+   - FBAR (FinCEN 114) requirements
+   - FATCA Form 8938 requirements
+   - CRS reporting implications
+   - Foreign trust reporting (Forms 3520/3520-A)
+   - Controlled Foreign Corporation rules (Form 5471)
+
+6. TAX TREATY ANALYSIS
+   - [ORIGIN]-[DESTINATION] tax treaty provisions
+   - Tie-breaker rules for dual residents
+   - Pension article treatment
+   - Capital gains articles
+   - Limitation on benefits clauses
+
+7. OPTIMAL STRUCTURE
+   Given my mobility level of [ANCHORED/MAY RELOCATE/HIGHLY MOBILE]:
+   - What % should be in portable taxable accounts?
+   - What % in tax-advantaged but jurisdiction-locked accounts?
+   - Any structures that work well across multiple jurisdictions?
 ```
 
-### Prompt 2C: Specific Scenario Analysis
+### Prompt 2C: Equity Compensation Planning
 
-Use this for specific questions that arise:
+Use this if you have stock options, RSUs, or other equity awards:
 
 ```
-I have a specific question about my financial planning situation.
+I need guidance on tax-efficient management of equity compensation.
 
 MY SITUATION:
-[PASTE YOUR FILLED-IN "MY SITUATION" FROM PART 1]
+- Tax residency: [COUNTRY]
+- Citizenship: [CITIZENSHIP(S)]
+- Company: [PUBLIC / PRE-IPO / PRIVATE]
+- Equity types: [RSUs / ISOs / NSOs / ESPP / OTHER]
 
-MY QUESTION:
-[YOUR SPECIFIC QUESTION - e.g., "Should I max out my CPF top-up or invest in a taxable brokerage given I might return to India in 5 years?"]
+EQUITY DETAILS:
+- Current unvested value (approx): [RANGE]
+- Vesting schedule: [E.G., 4-YEAR WITH 1-YEAR CLIFF]
+- Strike price vs current FMV (for options): [UNDERWATER / AT MONEY / IN THE MONEY BY X%]
+- Concentrated position (>10% of NW): [YES/NO]
+- Trading window restrictions: [YES/NO]
+- 10b5-1 plan: [IN PLACE / CONSIDERING / N/A]
+
+Please advise on:
+
+1. TAX TREATMENT BY AWARD TYPE
+   - RSU taxation at vesting
+   - ISO: AMT implications, qualifying vs disqualifying dispositions
+   - NSO: ordinary income at exercise, subsequent capital gains
+   - ESPP: holding period requirements, discount taxation
+
+2. TIMING STRATEGIES
+   - Exercise timing for options (early exercise, 83(b) elections)
+   - RSU delivery timing (if deferral available)
+   - ESPP purchase timing and holding optimization
+   - Coordination with other income years
+
+3. DIVERSIFICATION STRATEGIES
+   - Systematic selling programs (10b5-1 plans)
+   - Hedging strategies (collars, prepaid forwards)
+   - Exchange funds for concentrated positions
+   - Charitable strategies (donor-advised funds, CRTs)
+
+4. CROSS-BORDER COMPLICATIONS
+   - Equity compensation across multiple tax years in different countries
+   - Sourcing rules for multi-year grants
+   - Treaty treatment of equity compensation
+   - Social security implications
+
+5. LIQUIDITY EVENTS
+   - IPO planning and lockup considerations
+   - M&A scenarios (cash vs stock consideration)
+   - QSBS eligibility and Section 1202 exclusion
+   - Installment sales and structured exits
+
+6. RISK MANAGEMENT
+   - Concentration risk assessment
+   - Company-specific vs market risk
+   - Liquidity needs vs tax optimization trade-offs
+```
+
+### Prompt 2D: Business Owner Planning
+
+Use this if you own a business:
+
+```
+I need comprehensive planning guidance as a business owner.
+
+MY SITUATION:
+- Tax residency: [COUNTRY]
+- Business structure: [LLC / S-CORP / C-CORP / PARTNERSHIP / OTHER]
+- Industry: [INDUSTRY]
+- Revenue range: [RANGE]
+- Ownership: [%] (other owners: family / partners / investors)
+- Years in business: [NUMBER]
+
+Please advise on:
+
+1. RETIREMENT PLAN OPTIONS
+   - SEP-IRA vs SIMPLE IRA vs Solo 401(k) vs defined benefit
+   - Contribution limits for each
+   - Employee coverage requirements
+   - Cash balance plan considerations for high earners
+
+2. ENTITY STRUCTURE OPTIMIZATION
+   - S-corp reasonable compensation rules
+   - Self-employment tax optimization
+   - C-corp accumulation strategies
+   - Holding company structures
+
+3. TAX PLANNING STRATEGIES
+   - Qualified Business Income (QBI) deduction (Section 199A)
+   - Timing of income and deductions
+   - Equipment and vehicle deductions (Section 179, bonus depreciation)
+   - R&D tax credits
+   - State tax planning (entity-level taxes, nexus issues)
+
+4. EXIT PLANNING
+   - QSBS (Qualified Small Business Stock) eligibility and planning
+   - Installment sales
+   - Opportunity Zone deferrals
+   - ESOP transactions
+   - Strategic vs financial buyer implications
+   - Earnout structuring
+
+5. SUCCESSION PLANNING
+   - Buy-sell agreement funding and structure
+   - Valuation discount planning
+   - GRAT structures for family succession
+   - Intentionally defective grantor trusts (IDGTs)
+   - Key employee retention
+
+6. RISK MANAGEMENT
+   - Entity liability protection
+   - Key person insurance
+   - Business overhead expense insurance
+   - Directors & Officers coverage
+   - Umbrella liability
+```
+
+### Prompt 2E: Estate & Wealth Transfer Planning
+
+Use this for estate planning, especially with cross-border elements:
+
+```
+I need guidance on estate and wealth transfer planning.
+
+MY SITUATION:
+- Tax residency: [COUNTRY]
+- Citizenship: [CITIZENSHIP(S)]
+- Domicile (for estate tax): [COUNTRY]
+- Family situation: [MARRIED/SINGLE], [NUMBER] children, [OTHER DEPENDENTS]
+- Approximate net worth range: [RANGE]
+- Primary asset types: [REAL ESTATE / SECURITIES / BUSINESS / OTHER]
+- Cross-border assets: [YES/NO - LOCATIONS]
+
+Please advise on:
+
+1. ESTATE TAX FRAMEWORK
+   - Estate/inheritance tax rates and thresholds
+   - Marital deduction or spousal exemption
+   - Lifetime gift tax exemption and annual exclusions
+   - Generation-skipping transfer tax
+   - State/provincial estate taxes (if applicable)
+
+2. CROSS-BORDER ESTATE ISSUES
+   - Situs rules for different asset types
+   - Treaty estate tax provisions
+   - Forced heirship rules
+   - Recognition of foreign wills and trusts
+   - Probate in multiple jurisdictions
+
+3. WEALTH TRANSFER STRATEGIES
+   - Annual exclusion gifting programs
+   - 529 plan superfunding
+   - Grantor retained annuity trusts (GRATs)
+   - Spousal lifetime access trusts (SLATs)
+   - Irrevocable life insurance trusts (ILITs)
+   - Family limited partnerships/LLCs
+
+4. TRUST STRUCTURES
+   - Revocable vs irrevocable trusts
+   - Grantor vs non-grantor trust status
+   - Dynasty/perpetual trusts
+   - Foreign trust rules and reporting
+   - Trust situs selection
+
+5. CHARITABLE PLANNING
+   - Donor-advised funds
+   - Private foundations
+   - Charitable remainder trusts
+   - Charitable lead trusts
+   - Qualified charitable distributions
+
+6. DOCUMENTS NEEDED
+   - Will structure for multi-jurisdictional assets
+   - Power of attorney (financial and healthcare)
+   - Healthcare directives
+   - Trust documents
+   - Beneficiary designation review
+```
+
+### Prompt 2F: Risk Management & Insurance Review
+
+Use this for comprehensive insurance planning:
+
+```
+I need a comprehensive review of risk management and insurance needs.
+
+MY SITUATION:
+- Tax residency: [COUNTRY]
+- Age: [AGE BRACKET]
+- Family: [MARITAL STATUS, DEPENDENTS]
+- Income: [RANGE]
+- Net worth: [RANGE]
+- Occupation: [ROLE AND INDUSTRY]
+- Health status: [STANDARD / SPECIFIC CONDITIONS]
+
+Please advise on:
+
+1. LIFE INSURANCE NEEDS
+   - Income replacement calculation methodology
+   - Term vs permanent insurance analysis
+   - Policy amount and term recommendations
+   - Ownership structure (individual vs trust)
+   - Cross-border life insurance issues
+
+2. DISABILITY INSURANCE
+   - Own-occupation vs any-occupation coverage
+   - Benefit period and elimination period
+   - Group vs individual policy analysis
+   - Residual/partial disability riders
+   - Cost-of-living adjustment riders
+
+3. HEALTH INSURANCE
+   - Coverage gaps analysis
+   - International health insurance for mobile individuals
+   - Long-term care planning
+   - HSA/FSA optimization
+
+4. LIABILITY PROTECTION
+   - Umbrella insurance sizing
+   - Professional liability (E&O, malpractice)
+   - Directors & Officers coverage
+   - Cyber liability
+
+5. PROPERTY PROTECTION
+   - Homeowners/renters coverage adequacy
+   - Valuable articles scheduling
+   - Business property coverage
+
+6. TAX-ADVANTAGED INSURANCE STRATEGIES
+   - Cash value life insurance for tax-deferred growth
+   - Life insurance as alternative to bonds
+   - Premium financing considerations
+   - Section 79 plans
+```
+
+### Prompt 2G: Specific Scenario Analysis
+
+Use this for specific questions not covered above:
+
+```
+I have a specific financial planning question.
+
+MY SITUATION:
+[PASTE RELEVANT SECTIONS FROM YOUR SITUATION PROFILE]
+
+CONTEXT:
+[RELEVANT BACKGROUND FOR THIS QUESTION]
+
+MY SPECIFIC QUESTION:
+[YOUR QUESTION - be as specific as possible]
 
 Please provide:
-1. Direct answer to my question
-2. Key factors I should consider
-3. What I might be missing
-4. Suggested next steps
+
+1. DIRECT ANSWER
+   - Clear recommendation with reasoning
+
+2. KEY FACTORS
+   - Variables that affect the answer
+   - Assumptions made
+
+3. QUANTITATIVE ANALYSIS (if applicable)
+   - Numbers, rates, thresholds involved
+   - Break-even points or decision criteria
+
+4. RISKS & CONSIDERATIONS
+   - Potential downsides
+   - What could change this analysis
+
+5. IMPLEMENTATION STEPS
+   - Specific next actions
+   - Timeline considerations
+   - Professional help needed
+
+6. WHAT YOU MIGHT BE MISSING
+   - Related issues to consider
+   - Questions to ask professionals
 ```
 
 ---
 
 ## Part 3: Use the Calculator Tool
 
-Now use our Monte Carlo calculator to test your numbers. Here's how the tool outputs map to your plan.
+Test your numbers using Monte Carlo simulation.
 
-### What to Input
+### Input Mapping
 
-For each goal, enter:
+| Calculator Field | What to Enter | Source |
+|------------------|---------------|--------|
+| Current Savings | Assets allocated to THIS goal | Your records |
+| Target Amount | Goal amount in today's purchasing power | Section G |
+| Years | Timeline to goal | Section G |
+| Monthly Contribution | Sustainable monthly savings for this goal | Your budget |
+| Risk Profile | Based on timeline and flexibility | See below |
 
-| Field | What to Enter | Where to Get It |
-|-------|---------------|-----------------|
-| Current Savings | Amount already saved for THIS goal | Your records |
-| Target Amount | Goal amount (use "today's buying power") | Part 1 |
-| Years | Timeline from Part 1 | Part 1 |
-| Monthly Contribution | What you plan to contribute to THIS goal | Your budget |
-| Risk Profile | Based on timeline (see below) | Timeline-based |
+### Risk Profile Selection
 
-**Risk Profile Selection:**
-- **Conservative**: Timeline < 5 years, or you cannot tolerate volatility
-- **Moderate**: Timeline 5-15 years, some flexibility
-- **Aggressive**: Timeline 15+ years, won't touch the money
+| Profile | Expected Return | Volatility | Appropriate When |
+|---------|-----------------|------------|------------------|
+| Conservative | 6% | 10% | Timeline <5 years, or fixed deadline |
+| Moderate | 8% | 13% | Timeline 5-15 years, some flexibility |
+| Aggressive | 10% | 16% | Timeline 15+ years, high flexibility |
+| Very Aggressive | 12% | 20% | Timeline 20+ years, maximum flexibility |
 
-### What the Outputs Mean
+### Interpreting Results
 
-| Output | What It Tells You | How to Use It |
-|--------|-------------------|---------------|
-| **Success Probability** | Likelihood of reaching your goal | Green (80%+) = solid plan. Yellow (50-79%) = stretch. Red (<50%) = needs adjustment |
-| **Required Return** | The return needed if using simple compound growth | Compare to risk profile's expected return. If required > expected, plan is aggressive |
-| **Percentile Outcomes** | Range of possible ending values | 10th percentile = bad luck scenario. Check if even this is acceptable |
+| Success Probability | Assessment | Action |
+|---------------------|------------|--------|
+| 80%+ (Green) | On track | Maintain current plan |
+| 50-79% (Yellow) | Stretch goal | Increase contribution, extend timeline, or accept risk |
+| <50% (Red) | Needs adjustment | Significant changes required |
 
-### Record Your Results
-
-Fill this in after running the calculator for each goal:
+### Record Results
 
 ```
 CALCULATOR RESULTS
 ==================
 
 Goal 1: _______________
-  - Inputs: $_______ current, $_______ target, _____ years, $_______ /month, _______ risk
-  - Success Probability: _______%  [GREEN / YELLOW / RED]
-  - Required Return: _______%
-  - 10th Percentile Outcome: $_______
-  - Assessment: [ON TRACK / STRETCH / NEEDS WORK]
+  Inputs: $_______ current → $_______ target over _____ years
+          $_______ /month, _______ risk profile
+  Results:
+    - Success probability: _______% [GREEN/YELLOW/RED]
+    - Required return: _______%
+    - 10th percentile outcome: $_______
+    - Median outcome: $_______
+  Assessment: _______________
 
 Goal 2: _______________
-  - Inputs: $_______ current, $_______ target, _____ years, $_______ /month, _______ risk
-  - Success Probability: _______%  [GREEN / YELLOW / RED]
-  - Required Return: _______%
-  - 10th Percentile Outcome: $_______
-  - Assessment: [ON TRACK / STRETCH / NEEDS WORK]
+  [Same format]
 
 Goal 3: _______________
-  - Inputs: $_______ current, $_______ target, _____ years, $_______ /month, _______ risk
-  - Success Probability: _______%  [GREEN / YELLOW / RED]
-  - Required Return: _______%
-  - 10th Percentile Outcome: $_______
-  - Assessment: [ON TRACK / STRETCH / NEEDS WORK]
+  [Same format]
 
-TOTAL MONTHLY CONTRIBUTION ACROSS ALL GOALS: $_______
+TOTAL MONTHLY SAVINGS REQUIRED: $_______
+TOTAL AS % OF GROSS INCOME: _______%
 ```
-
-### If Results Are Yellow or Red
-
-Adjust one or more of:
-- **Increase contribution** → Re-run calculator
-- **Extend timeline** → Re-run calculator
-- **Reduce target** → Re-run calculator
-- **Accept more risk** → Only if timeline supports it
-
-Re-run until you have a plan you're comfortable with.
 
 ---
 
 ## Part 4: Assemble Your Plan
 
-Now combine everything into your actual plan.
-
-### Your Financial Plan Template
+Synthesize research and calculator results into an actionable plan.
 
 ```
-MY FINANCIAL PLAN
-=================
-Created: [DATE]
-Review by: [DATE + 3-6 MONTHS]
+FINANCIAL PLAN
+==============
+Prepared: [DATE]
+Next review: [DATE + 6 MONTHS]
 
-SITUATION SUMMARY
+EXECUTIVE SUMMARY
 -----------------
-[Paste your filled-in "MY SITUATION" from Part 1]
+Primary residence: [COUNTRY]
+Citizenship: [CITIZENSHIP(S)]
+Planning horizon: [YEARS TO PRIMARY GOAL]
+Mobility: [ANCHORED / MOBILE]
+Overall assessment: [ON TRACK / ADJUSTMENTS NEEDED / SIGNIFICANT CHANGES REQUIRED]
 
-RESEARCH FINDINGS
------------------
-Tax-advantaged accounts I'll use:
-1. [ACCOUNT TYPE]: [WHY - from Prompt 2A results]
-2. [ACCOUNT TYPE]: [WHY]
+ACCOUNT STRATEGY
+----------------
+Tax-advantaged accounts (prioritized):
+1. [ACCOUNT TYPE]: $____/month
+   - Rationale: [WHY THIS ACCOUNT]
+   - Contribution limit: $____/year
+   - Tax benefit: [DESCRIPTION]
 
-Accounts I'm NOT using and why:
-- [ACCOUNT]: [REASON - e.g., "not portable, and I may relocate"]
+2. [ACCOUNT TYPE]: $____/month
+   - Rationale: [WHY]
+   - Contribution limit: $____/year
+   - Tax benefit: [DESCRIPTION]
 
-Key tax considerations:
-- [FINDING 1 from research]
-- [FINDING 2]
+Taxable accounts:
+- Brokerage: $____/month
+  - Purpose: [PORTABILITY / LIQUIDITY / OVERFLOW]
+  - Tax-efficiency approach: [TAX-LOSS HARVESTING / INDEX FUNDS / ETF DOMICILE]
 
-GOALS & ALLOCATION
-------------------
-Monthly savings budget: $_______ (____% of gross income)
+Accounts NOT using and why:
+- [ACCOUNT]: [REASON - e.g., not portable, already maxed, not eligible]
+
+GOAL FUNDING ALLOCATION
+-----------------------
+Total monthly savings: $_______ (____% of gross income)
 
 Goal 1: [NAME] — [GREEN/YELLOW/RED]
   Target: $_______ by [YEAR]
-  Strategy: $_______ /month into [ACCOUNT TYPE]
-  Risk profile: [CONSERVATIVE/MODERATE/AGGRESSIVE]
-  Calculator probability: _______%
+  Account: [WHERE FUNDS GO]
+  Monthly: $_______
+  Probability: _______%
 
 Goal 2: [NAME] — [GREEN/YELLOW/RED]
   Target: $_______ by [YEAR]
-  Strategy: $_______ /month into [ACCOUNT TYPE]
-  Risk profile: [CONSERVATIVE/MODERATE/AGGRESSIVE]
-  Calculator probability: _______%
+  Account: [WHERE FUNDS GO]
+  Monthly: $_______
+  Probability: _______%
 
 Goal 3: [NAME] — [GREEN/YELLOW/RED]
   Target: $_______ by [YEAR]
-  Strategy: $_______ /month into [ACCOUNT TYPE]
-  Risk profile: [CONSERVATIVE/MODERATE/AGGRESSIVE]
-  Calculator probability: _______%
+  Account: [WHERE FUNDS GO]
+  Monthly: $_______
+  Probability: _______%
 
-ALLOCATION SUMMARY
-------------------
-Total monthly: $_______
+EQUITY COMPENSATION STRATEGY (if applicable)
+--------------------------------------------
+Current holdings: [DESCRIPTION]
+Diversification plan: [STRATEGY]
+Tax optimization: [APPROACH]
+Timeline: [WHEN ACTIONS OCCUR]
 
-By account type:
-- [ACCOUNT 1]: $_______ /month (Goal: _______)
-- [ACCOUNT 2]: $_______ /month (Goal: _______)
-- Taxable brokerage: $_______ /month (Goal: _______)
+RISK MANAGEMENT
+---------------
+Life insurance: [AMOUNT, TYPE, OWNER]
+Disability insurance: [COVERAGE DETAILS]
+Umbrella liability: [AMOUNT]
+Gaps identified: [ANY COVERAGE GAPS]
 
-EMPLOYER BENEFITS CHECKLIST
----------------------------
-[ ] Contributing enough to get full employer match
-[ ] Understand vesting schedule
-[ ] Know what happens if I leave
+ESTATE PLANNING STATUS
+----------------------
+Will: [CURRENT / NEEDS UPDATE / NONE]
+Trusts: [DESCRIPTION IF ANY]
+Beneficiary designations: [REVIEWED DATE]
+Power of attorney: [IN PLACE / NEEDED]
+Healthcare directive: [IN PLACE / NEEDED]
 
-FOUNDATION CHECKLIST
---------------------
-[ ] Emergency fund: _____ months (target: 3-6)
-[ ] High-interest debt: [PAID OFF / IN PROGRESS / N/A]
-
-UNCERTAINTIES & CONTINGENCIES
------------------------------
+CONTINGENCY PLANS
+-----------------
 If I relocate to [COUNTRY]:
-- [WHAT CHANGES - from Prompt 2B]
+  - Accounts affected: [LIST]
+  - Actions needed: [STEPS]
+  - Tax implications: [SUMMARY]
 
-If income changes significantly:
-- [ADJUSTMENT PLAN]
+If income decreases significantly:
+  - Priority reduction: [WHICH GOALS FLEX]
+  - Emergency reserves: [MONTHS COVERAGE]
+
+If income increases significantly:
+  - Additional contributions to: [WHERE]
+  - New opportunities: [WHAT OPENS UP]
+
+COMPLIANCE CHECKLIST
+--------------------
+[ ] Employer match fully captured
+[ ] All required tax filings identified (FBAR, FATCA, CRS, etc.)
+[ ] Account beneficiaries current
+[ ] Insurance policies reviewed annually
+[ ] Estate documents valid in current jurisdiction
+
+OPEN QUESTIONS FOR PROFESSIONAL REVIEW
+--------------------------------------
+- [QUESTION 1 - for tax advisor]
+- [QUESTION 2 - for estate attorney]
+- [QUESTION 3 - for financial planner]
 
 REVIEW TRIGGERS
 ---------------
-Re-run calculator and update this plan when:
-- [ ] Major life change (job, marriage, kids, relocation)
-- [ ] Income changes >20%
-- [ ] Every 6-12 months regardless
-- [ ] Market drops >30% (check if still on track)
-
-OPEN QUESTIONS
---------------
-- [QUESTION 1 - for future research]
-- [QUESTION 2]
+Re-evaluate this plan when:
+[ ] Job change or major income change (>20%)
+[ ] Relocation to different jurisdiction
+[ ] Marriage, divorce, or children
+[ ] Major asset acquisition (real estate, business)
+[ ] Every 12 months regardless
+[ ] Tax law changes affecting your situation
 ```
 
 ---
 
-## Part 5: Evaluate Your Plan
+## Part 5: Plan Validation
 
-Before finalizing, use this prompt to check your plan:
+Before finalizing, validate your plan:
 
 ```
-Please evaluate my financial plan for internal consistency and obvious gaps.
-Do NOT give me a new plan—just identify issues with MY plan.
+Please review my financial plan for internal consistency, gaps, and potential issues.
+Do NOT provide a new plan—identify issues with MY plan.
 
-MY SITUATION:
-[PASTE YOUR "MY SITUATION" FROM PART 1]
+MY SITUATION PROFILE:
+[PASTE COMPLETED PROFILE FROM PART 1]
 
 MY RESEARCH FINDINGS:
-[PASTE KEY FINDINGS FROM PROMPTS 2A/2B]
+[PASTE KEY FINDINGS FROM PART 2 PROMPTS]
 
 MY PLAN:
-[PASTE YOUR COMPLETED PLAN FROM PART 4]
+[PASTE COMPLETED PLAN FROM PART 4]
 
 CALCULATOR RESULTS:
-[PASTE YOUR CALCULATOR RESULTS FROM PART 3]
+[PASTE RESULTS FROM PART 3]
 
-Please check:
+Please evaluate:
 
-1. MATH CHECK
-   - Do my monthly contributions add up correctly?
-   - Is my total savings rate reasonable for my income level?
-   - Do the calculator probabilities support my goals?
+1. MATHEMATICAL CONSISTENCY
+   - Do contributions sum correctly?
+   - Is savings rate sustainable for stated income level?
+   - Do calculator probabilities align with stated risk tolerance?
+   - Are contribution limits respected?
 
-2. ACCOUNT CHOICE CHECK
-   - Am I using the right accounts for each goal given my situation?
-   - Am I leaving tax benefits on the table?
-   - Does my portability allocation match my mobility level?
+2. ACCOUNT OPTIMIZATION
+   - Am I maximizing tax-advantaged space appropriately?
+   - Given my mobility, is the portable/locked allocation correct?
+   - Are there account types I should consider but haven't?
+   - Is the investment approach tax-efficient?
 
-3. PRIORITY CHECK
-   - Am I funding goals in the right order?
-   - Is anything missing (emergency fund, debt, employer match)?
+3. GOAL PRIORITIZATION
+   - Is the funding order appropriate?
+   - Are critical foundations in place (emergency fund, debt, insurance)?
+   - Do goal timelines align with account access rules?
 
-4. CONSISTENCY CHECK
-   - Do my stated uncertainties match my account choices?
-   - Are my risk profiles appropriate for my timelines?
+4. RISK ASSESSMENT
+   - Does risk profile match timeline and flexibility?
+   - Is concentration risk addressed?
+   - Are insurance coverages adequate?
+   - Are contingency plans realistic?
 
-5. GAPS
+5. CROSS-BORDER CONSISTENCY (if applicable)
+   - Do account choices align with stated mobility?
+   - Are compliance requirements identified?
+   - Is exit tax exposure considered?
+   - Are treaty benefits correctly applied?
+
+6. GAPS & OVERSIGHTS
    - What am I not thinking about?
-   - What questions should I research further?
+   - What questions should I ask professionals?
+   - What could derail this plan?
+   - What assumptions need monitoring?
 
-Be direct. If something doesn't make sense, say so.
+Be direct and specific. Flag anything that doesn't make sense.
 ```
 
 ---
 
-## Quick Reference: The Full Workflow
+## Quick Reference: Workflow
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ 1. FILL IN YOUR SITUATION (Part 1)                      │
-│    → Country, goals, constraints, uncertainties         │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│ 2. RESEARCH YOUR OPTIONS (Part 2)                       │
-│    → Copy prompts into Claude/ChatGPT                   │
-│    → Learn your country's tax-advantaged accounts       │
-│    → Understand portability if you may relocate         │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│ 3. TEST YOUR NUMBERS (Part 3)                           │
-│    → Use the Monte Carlo calculator for each goal       │
-│    → Record probability, required return, percentiles   │
-│    → Adjust until GREEN or acceptable YELLOW            │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│ 4. ASSEMBLE YOUR PLAN (Part 4)                          │
-│    → Combine situation + research + calculator results  │
-│    → Specify account types for each goal                │
-│    → Document contingencies and review triggers         │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│ 5. VALIDATE (Part 5)                                    │
-│    → Use evaluation prompt to check for gaps            │
-│    → Address any issues found                           │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│ 6. EXECUTE & REVIEW                                     │
-│    → Set up automatic contributions                     │
-│    → Review quarterly or when life changes              │
-│    → Re-run calculator annually                         │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. COMPLETE SITUATION PROFILE (Part 1)                          │
+│    → Be thorough—this determines which prompts you need         │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 2. RESEARCH YOUR JURISDICTION (Part 2)                          │
+│    → Start with 2A (everyone)                                   │
+│    → Add 2B if mobile, 2C if equity comp, 2D if business owner  │
+│    → 2E for estate planning, 2F for insurance review            │
+│    → 2G for specific questions                                  │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 3. TEST YOUR NUMBERS (Part 3)                                   │
+│    → Monte Carlo simulation for each goal                       │
+│    → Adjust until GREEN or acceptable YELLOW                    │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 4. ASSEMBLE YOUR PLAN (Part 4)                                  │
+│    → Synthesize research + calculator into actionable plan      │
+│    → Specify accounts, amounts, contingencies                   │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 5. VALIDATE (Part 5)                                            │
+│    → Check for internal consistency and gaps                    │
+│    → Identify questions for professionals                       │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 6. IMPLEMENT & MONITOR                                          │
+│    → Execute account openings and contributions                 │
+│    → Set up automations                                         │
+│    → Calendar review triggers                                   │
+│    → Engage professionals for complex items                     │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Notes
+## When to Engage Professionals
 
-**What this framework does:**
-- Gives you fillable templates to structure your thinking
-- Provides ready-to-use prompts for LLM research
-- Shows exactly how calculator outputs fit into your plan
-- Helps you validate your plan for consistency
+This framework facilitates self-directed planning, but some situations require professional guidance:
 
-**What this framework does NOT do:**
-- Provide specific investment advice
-- Replace professional tax/legal advice for complex situations
-- Guarantee any outcomes
+**Tax Advisor / CPA:**
+- Cross-border income or assets
+- Equity compensation strategies
+- Business tax optimization
+- Audit support
 
-**When to get professional help:**
-- Cross-border tax situations with significant assets
-- Business ownership with complex equity
-- Estate planning
-- If you're unsure about anything significant
+**Estate Planning Attorney:**
+- Trusts and complex structures
+- Multi-jurisdictional assets
+- Business succession
+- Family wealth transfer
+
+**Financial Planner (CFP):**
+- Comprehensive plan review
+- Insurance analysis
+- Investment policy development
+- Retirement income planning
+
+**Immigration Attorney:**
+- Visa implications for financial planning
+- Expatriation planning
+- Citizenship planning
+
+---
+
+## Disclaimer
+
+This framework is for educational purposes only. It does not constitute financial, tax, legal, or investment advice. The prompts generate general information that may not apply to your specific situation.
+
+- Tax laws change frequently; verify current rules
+- Cross-border situations are particularly complex
+- Past performance does not guarantee future results
+- Individual circumstances vary significantly
+
+Always consult qualified professionals before making significant financial decisions.

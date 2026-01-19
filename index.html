@@ -9,9 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
-        .status-green { background-color: #10b981; }
-        .status-yellow { background-color: #f59e0b; }
-        .status-red { background-color: #ef4444; }
+        /* Status colors with WCAG AA compliant text contrast */
+        .status-green { background-color: #10b981; color: #022c22; }
+        .status-yellow { background-color: #f59e0b; color: #422006; }
+        .status-red { background-color: #ef4444; color: #450a0a; }
 
         /* Guide Panel Styles */
         /* Desktop: side-by-side layout when guide open */
@@ -237,21 +238,33 @@
                     🔥 FIRE Mode
                 </button>
             </div>
-            <div class="mt-2 flex items-center justify-center gap-4 flex-wrap">
-                <!-- Expat Profile Badge -->
-                <button type="button" id="profileBadge" onclick="openOnboarding()" class="profile-badge hidden">
-                    <span id="profileBadgeText">🌍 Set location</span>
+            <!-- Location Setup (Pre-calculation) -->
+            <div class="mt-4 mb-2">
+                <button type="button" id="profileBadge" onclick="openOnboarding()"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg transition text-sm">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="profileBadgeText" class="text-gray-300">Set your location for tax-specific prompts</span>
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
                 </button>
-                <button type="button" onclick="showHelp('glossary')" class="text-xs text-gray-400 hover:text-gray-300">
-                    📖 Financial Terms Glossary
+            </div>
+
+            <div class="mt-2 flex items-center justify-center gap-4 flex-wrap">
+                <button type="button" onclick="showHelp('glossary')" class="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    Financial Terms Glossary
                 </button>
                 <button type="button"
                     id="guideToggleBtn"
                     onclick="toggleGuide()"
                     aria-expanded="false"
                     aria-controls="guidePanel"
-                    class="text-xs text-gray-400 hover:text-white border border-blue-400/30 rounded px-2 py-1 hover:bg-gray-500/10 transition">
-                    Need help? Open Guide
+                    class="text-xs text-gray-400 hover:text-white border border-gray-600 rounded px-2 py-1 hover:bg-gray-700 transition flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Planning Guide
                 </button>
             </div>
         </div>
@@ -409,7 +422,7 @@
                                     <span class="text-gray-400">Worth approximately </span>
                                     <span class="text-white font-medium" id="realValueDisplay">$412,000</span>
                                     <span class="text-gray-400"> in today's buying power</span>
-                                    <div class="text-gray-400 mt-1">(assuming 3% inflation over 30 years)</div>
+                                    <div id="inflationAssumptionText" class="text-gray-400 mt-1">(assuming 3% inflation over 30 years)</div>
                                 </div>
                             </div>
                         </div>
@@ -635,11 +648,11 @@
                                 <div class="text-xs text-gray-400">12% / 20% vol</div>
                             </div>
                         </label>
-                        <label class="flex items-center p-3 bg-yellow-900/50 border border-yellow-600/50 rounded-lg cursor-pointer hover:bg-yellow-800/50 transition col-span-2 md:col-span-4">
+                        <label class="flex items-center p-3 bg-gray-700/50 border border-gray-600 rounded-lg cursor-pointer hover:bg-gray-600/50 transition col-span-2 md:col-span-4">
                             <input type="radio" name="riskProfile" value="rentech" class="mr-2">
                             <div>
-                                <div class="font-medium text-sm text-yellow-300">RenTech Medallion</div>
-                                <div class="text-xs text-yellow-400">40% / 20% vol (Sharpe ~2) - Illustrative only, not accessible to retail investors</div>
+                                <div class="font-medium text-sm text-gray-300">Illustrative: Institutional (40% return, 20% vol)</div>
+                                <div class="text-xs text-gray-400">For comparison only. Represents top-tier institutional returns not available to individual investors.</div>
                             </div>
                         </label>
                     </div>
@@ -771,19 +784,22 @@
             </div>
 
             <!-- Personalize with AI Card -->
-            <div id="personalizationCard" class="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-500/30 rounded-lg p-5">
+            <div id="personalizationCard" class="bg-gray-800 border-l-4 border-blue-500 rounded-lg p-5">
                 <div class="flex flex-col sm:flex-row items-start gap-4">
-                    <div class="text-3xl">🌍</div>
+                    <svg class="w-10 h-10 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                     <div class="flex-1">
-                        <h3 class="font-bold text-white text-lg mb-2">Personalize Your Plan with AI</h3>
-                        <p class="text-gray-300 text-sm mb-3">Get country-specific advice tailored to your citizenship and residence:</p>
+                        <h3 class="font-semibold text-white text-lg mb-2">Get Country-Specific Tax Research Prompts</h3>
+                        <p class="text-gray-300 text-sm mb-3">Generate professional prompts for AI-assisted tax and account research tailored to your jurisdiction:</p>
                         <ul class="text-sm text-gray-400 space-y-1 mb-4">
-                            <li>• Best tax-advantaged accounts for your situation</li>
-                            <li>• Cross-border portability if you relocate</li>
-                            <li>• Retirement systems (CPF, 401k, ISA, etc.)</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Tax-advantaged accounts for your residence</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Cross-border portability analysis</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Treaty implications and reporting requirements</li>
                         </ul>
-                        <button type="button" onclick="openPersonalizationFlow()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                            🌍 Set My Location & Get Personalized Prompts
+                        <button type="button" onclick="openPersonalizationFlow()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Set Location & Generate Prompts
                         </button>
                     </div>
                 </div>
@@ -791,20 +807,52 @@
 
             <!-- Combined Prompt Display (hidden initially) -->
             <div id="combinedPromptDisplay" class="hidden bg-gray-800 rounded-lg p-5">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="font-medium text-white flex items-center gap-2">
-                        <span>📋</span> Your Personalized AI Prompt
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <h4 class="font-semibold text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Tax Research Prompt
                     </h4>
-                    <button type="button" id="copyPromptBtn" onclick="copyCombinedPrompt()" class="copy-btn">
-                        📋 Copy to Clipboard
+                    <button type="button" id="copyPromptBtn" onclick="copyCombinedPrompt()" class="copy-btn flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                        </svg>
+                        Copy to Clipboard
                     </button>
                 </div>
-                <pre id="combinedPromptText" class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto"></pre>
+
+                <!-- Prompt Tier Selection -->
+                <div class="mb-4">
+                    <p class="text-xs text-gray-400 mb-2">Select prompt depth:</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" onclick="setPromptTier('quick')" data-tier="quick"
+                            class="prompt-tier-btn px-3 py-2 rounded-lg text-sm transition bg-gray-700 text-gray-400 hover:bg-gray-600">
+                            <span class="font-medium">Quick</span>
+                            <span class="text-xs opacity-70 block">Executive summary</span>
+                        </button>
+                        <button type="button" onclick="setPromptTier('complete')" data-tier="complete"
+                            class="prompt-tier-btn px-3 py-2 rounded-lg text-sm transition bg-blue-600 text-white">
+                            <span class="font-medium">Complete</span>
+                            <span class="text-xs opacity-70 block">Comprehensive research</span>
+                        </button>
+                        <button type="button" onclick="setPromptTier('full')" data-tier="full"
+                            class="prompt-tier-btn px-3 py-2 rounded-lg text-sm transition bg-gray-700 text-gray-400 hover:bg-gray-600">
+                            <span class="font-medium">Full</span>
+                            <span class="text-xs opacity-70 block">CFP-level detail</span>
+                        </button>
+                    </div>
+                </div>
+
+                <pre id="combinedPromptText" class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto border border-gray-700"></pre>
                 <div class="mt-3 flex items-center justify-between text-xs text-gray-400">
-                    <span>Paste this into ChatGPT, Claude, or your preferred AI assistant.</span>
-                    <button type="button" onclick="openOnboarding()" class="text-blue-400 hover:text-blue-300">
-                        Change location
-                    </button>
+                    <span>Paste into ChatGPT, Claude, or your preferred AI assistant.</span>
+                    <a href="docs/FINANCIAL_PLANNING_FRAMEWORK.md" target="_blank" class="text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        Full Planning Framework
+                    </a>
                 </div>
             </div>
 
@@ -816,38 +864,18 @@
                 </div>
             </div>
 
-            <!-- Key Considerations (Educational) -->
+            <!-- Key Considerations (Dynamic based on inputs) -->
             <div class="bg-gray-800 rounded-lg p-4">
                 <button onclick="toggleSection('goalConsiderations')" class="w-full flex items-center justify-between font-medium">
-                    <span>📚 Key Considerations for Your Plan</span>
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        Key Considerations for Your Situation
+                    </span>
                     <span id="goalConsiderationsArrow" class="transform transition-transform">▼</span>
                 </button>
                 <div id="goalConsiderations" class="hidden mt-4 space-y-4 text-sm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-yellow-400 mb-1">⚠️ Sequence of Returns Risk</div>
-                            <p class="text-gray-300"><strong>Accumulation phase:</strong> Bad returns early are actually <em>helpful</em> — you buy more shares cheap (dollar-cost averaging). <strong>Withdrawal phase:</strong> Bad returns early are devastating — you sell at lows, depleting your portfolio faster.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-gray-400 mb-1">💰 Tax Considerations</div>
-                            <p class="text-gray-300">401(k)/IRA = pre-tax contributions, taxed on withdrawal. Roth = post-tax, tax-free growth. Taxable accounts have capital gains. Plan accordingly.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-red-400 mb-1">📉 Inflation Erosion</div>
-                            <p class="text-gray-300">At 3% inflation, $1M in 30 years has the purchasing power of ~$412K today. Always think in "real" (inflation-adjusted) terms.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-green-400 mb-1">👤 Human Capital</div>
-                            <p class="text-gray-300">Your ability to earn income is an asset. Early career = high human capital, low financial capital. Invest aggressively when young.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-purple-400 mb-1">🏦 Emergency Fund First</div>
-                            <p class="text-gray-300">Keep 3-6 months expenses in cash before investing. This prevents selling investments at bad times to cover emergencies.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-orange-400 mb-1">⚖️ Debt vs Investing</div>
-                            <p class="text-gray-300">High-interest debt (>7%) should be paid first. Low-interest debt (mortgage at 3%) can coexist with investing if returns exceed the rate.</p>
-                        </div>
+                    <div id="dynamicConsiderations" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Populated dynamically by generateDynamicConsiderations() -->
                     </div>
                 </div>
             </div>
@@ -860,10 +888,17 @@
             </div>
 
             <!-- Disclaimer -->
-            <div class="text-xs text-gray-400 text-center p-4 bg-gray-800 rounded-lg">
-                <strong>Disclaimer:</strong> This tool provides educational estimates only and does not constitute financial advice.
-                Projections are based on historical market assumptions and do not guarantee future results.
-                Consult a qualified financial advisor before making investment decisions.
+            <div class="text-xs text-center p-4 bg-gray-800 rounded-lg border border-gray-700">
+                <p class="text-amber-400 font-semibold mb-2">NOT INVESTMENT OR FINANCIAL ADVICE</p>
+                <p class="text-gray-400">
+                    This tool is for educational purposes only. It does not constitute investment advice, financial advice,
+                    tax advice, or any other professional advice. Projections are hypothetical and based on simplified models
+                    that do not account for taxes, fees, or real-world market conditions.
+                </p>
+                <p class="text-gray-400 mt-2">
+                    <strong class="text-gray-300">Please consult a licensed financial professional</strong> (such as a Certified Financial Planner,
+                    CPA, or registered investment advisor) before making any financial decisions.
+                </p>
             </div>
         </div>
 
@@ -976,19 +1011,22 @@
             </div>
 
             <!-- Personalize with AI Card (FIRE) -->
-            <div id="firePersonalizationCard" class="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border border-blue-500/30 rounded-lg p-5">
+            <div id="firePersonalizationCard" class="bg-gray-800 border-l-4 border-orange-500 rounded-lg p-5">
                 <div class="flex flex-col sm:flex-row items-start gap-4">
-                    <div class="text-3xl">🌍</div>
+                    <svg class="w-10 h-10 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                     <div class="flex-1">
-                        <h3 class="font-bold text-white text-lg mb-2">Personalize Your FIRE Plan with AI</h3>
-                        <p class="text-gray-300 text-sm mb-3">Get country-specific advice for early retirement:</p>
+                        <h3 class="font-semibold text-white text-lg mb-2">Get FIRE-Specific Tax Research Prompts</h3>
+                        <p class="text-gray-300 text-sm mb-3">Generate prompts for early retirement and geographic flexibility research:</p>
                         <ul class="text-sm text-gray-400 space-y-1 mb-4">
-                            <li>• Tax-advantaged accounts for your country</li>
-                            <li>• Early access strategies (Roth ladder, 72(t), etc.)</li>
-                            <li>• Geographic arbitrage opportunities</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Tax-advantaged accounts for your jurisdiction</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Early access strategies (Roth ladder, 72(t), SEPP)</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Geographic arbitrage and cross-border strategies</li>
                         </ul>
-                        <button type="button" onclick="openPersonalizationFlow()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                            🌍 Set My Location & Get Personalized Prompts
+                        <button type="button" onclick="openPersonalizationFlow()" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Set Location & Generate Prompts
                         </button>
                     </div>
                 </div>
@@ -996,20 +1034,52 @@
 
             <!-- Combined Prompt Display for FIRE (hidden initially) -->
             <div id="fireCombinedPromptDisplay" class="hidden bg-gray-800 rounded-lg p-5">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="font-medium text-white flex items-center gap-2">
-                        <span>📋</span> Your Personalized FIRE Prompt
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <h4 class="font-semibold text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        FIRE Tax Research Prompt
                     </h4>
-                    <button type="button" id="fireCopyPromptBtn" onclick="copyCombinedPrompt()" class="copy-btn">
-                        📋 Copy to Clipboard
+                    <button type="button" id="fireCopyPromptBtn" onclick="copyCombinedPrompt()" class="copy-btn flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                        </svg>
+                        Copy to Clipboard
                     </button>
                 </div>
-                <pre id="fireCombinedPromptText" class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto"></pre>
+
+                <!-- Prompt Tier Selection -->
+                <div class="mb-4">
+                    <p class="text-xs text-gray-400 mb-2">Select prompt depth:</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <button type="button" onclick="setPromptTier('quick')" data-tier="quick"
+                            class="prompt-tier-btn px-3 py-2 rounded-lg text-sm transition bg-gray-700 text-gray-400 hover:bg-gray-600">
+                            <span class="font-medium">Quick</span>
+                            <span class="text-xs opacity-70 block">Executive summary</span>
+                        </button>
+                        <button type="button" onclick="setPromptTier('complete')" data-tier="complete"
+                            class="prompt-tier-btn px-3 py-2 rounded-lg text-sm transition bg-orange-600 text-white">
+                            <span class="font-medium">Complete</span>
+                            <span class="text-xs opacity-70 block">Comprehensive research</span>
+                        </button>
+                        <button type="button" onclick="setPromptTier('full')" data-tier="full"
+                            class="prompt-tier-btn px-3 py-2 rounded-lg text-sm transition bg-gray-700 text-gray-400 hover:bg-gray-600">
+                            <span class="font-medium">Full</span>
+                            <span class="text-xs opacity-70 block">CFP-level detail</span>
+                        </button>
+                    </div>
+                </div>
+
+                <pre id="fireCombinedPromptText" class="bg-gray-950 p-4 rounded-lg text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto border border-gray-700"></pre>
                 <div class="mt-3 flex items-center justify-between text-xs text-gray-400">
-                    <span>Paste this into ChatGPT, Claude, or your preferred AI assistant.</span>
-                    <button type="button" onclick="openOnboarding()" class="text-blue-400 hover:text-blue-300">
-                        Change location
-                    </button>
+                    <span>Paste into ChatGPT, Claude, or your preferred AI assistant.</span>
+                    <a href="docs/FINANCIAL_PLANNING_FRAMEWORK.md" target="_blank" class="text-orange-400 hover:text-orange-300 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        Full Planning Framework
+                    </a>
                 </div>
             </div>
 
@@ -1021,46 +1091,18 @@
                 </div>
             </div>
 
-            <!-- FIRE Considerations (Educational) -->
+            <!-- FIRE Considerations (Dynamic based on inputs) -->
             <div class="bg-gray-800 rounded-lg p-4">
                 <button onclick="toggleSection('fireConsiderations')" class="w-full flex items-center justify-between font-medium">
-                    <span>📚 Key Considerations for Early Retirement</span>
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg>
+                        Key Considerations for Your FIRE Plan
+                    </span>
                     <span id="fireConsiderationsArrow" class="transform transition-transform">▼</span>
                 </button>
                 <div id="fireConsiderations" class="hidden mt-4 space-y-4 text-sm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-red-400 mb-1">🏥 Healthcare Gap</div>
-                            <p class="text-gray-300">Medicare starts at 65. If retiring earlier, budget $500-1500/month for health insurance. This is often the biggest FIRE expense surprise.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-gray-400 mb-1">🏛️ Social Security</div>
-                            <p class="text-gray-300">You can claim at 62 (reduced) or wait until 70 (maximum). Each year you delay past 67 increases benefits ~8%. Factor this into late-retirement projections.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-yellow-400 mb-1">📉 Sequence Risk is Critical</div>
-                            <p class="text-gray-300">A bear market in years 1-5 of retirement can devastate your portfolio. Consider a 2-3 year cash buffer or flexible withdrawal strategy.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-green-400 mb-1">🔄 Variable Withdrawals</div>
-                            <p class="text-gray-300">Instead of fixed 4%, use guardrails: cut spending 10% if portfolio drops 20%, increase 10% if it rises 50%. This dramatically improves success rates.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-purple-400 mb-1">💼 Tax Optimization</div>
-                            <p class="text-gray-300">Roth conversion ladder: convert 401(k) to Roth in low-income years, access 5 years later tax-free. Can significantly reduce lifetime taxes.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-orange-400 mb-1">🌍 Geographic Arbitrage</div>
-                            <p class="text-gray-300">Moving to lower cost-of-living areas (domestically or internationally) can reduce your FIRE number by 30-50%. Popular: Portugal, Mexico, Thailand, US South.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-cyan-400 mb-1">☕ Coast FIRE / Barista FIRE</div>
-                            <p class="text-gray-300">Coast: Save enough that compound growth hits your FIRE number by 65, then stop saving. Barista: Part-time work covers expenses while investments grow.</p>
-                        </div>
-                        <div class="bg-gray-700/50 p-3 rounded">
-                            <div class="font-medium text-pink-400 mb-1">🧠 One More Year Syndrome</div>
-                            <p class="text-gray-300">The psychological trap of always wanting "one more year" of savings. At some point, time > money. Define your "enough" number and stick to it.</p>
-                        </div>
+                    <div id="dynamicFireConsiderations" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Populated dynamically by generateDynamicFireConsiderations() -->
                     </div>
                 </div>
             </div>
@@ -1073,10 +1115,17 @@
             </div>
 
             <!-- FIRE Disclaimer -->
-            <div class="text-xs text-gray-400 text-center p-4 bg-gray-800 rounded-lg">
-                <strong>FIRE Assumptions:</strong> Uses the 4% rule (or your selected SWR) based on the Trinity Study.
-                Actual results will vary based on market conditions, sequence of returns risk, and lifestyle changes.
-                Consider consulting a fee-only fiduciary advisor for personalized planning.
+            <div class="text-xs text-center p-4 bg-gray-800 rounded-lg border border-gray-700">
+                <p class="text-amber-400 font-semibold mb-2">NOT INVESTMENT OR FINANCIAL ADVICE</p>
+                <p class="text-gray-400">
+                    This tool is for educational purposes only. FIRE calculations use the 4% rule (or your selected SWR)
+                    based on historical research, but actual results will vary significantly based on market conditions,
+                    sequence of returns risk, healthcare costs, and lifestyle changes.
+                </p>
+                <p class="text-gray-400 mt-2">
+                    <strong class="text-gray-300">Please consult a licensed financial professional</strong> (such as a fee-only fiduciary advisor,
+                    Certified Financial Planner, or CPA) before making early retirement decisions.
+                </p>
             </div>
         </div>
 
@@ -1091,7 +1140,10 @@
                 <a href="privacy.html" class="hover:text-gray-300">Privacy</a>
             </div>
             <p class="text-gray-600 text-xs mt-3">
-                Built by <a href="https://chicagoglobal.com" class="hover:text-gray-400">Chicago Global Capital</a>
+                For educational purposes only. Not financial advice. See a licensed professional.
+            </p>
+            <p class="text-gray-700 text-xs mt-1">
+                © 2026 Growth Graph
             </p>
         </footer>
     </div>
@@ -1483,10 +1535,9 @@
                 if (realDisplay) realDisplay.textContent = '$' + realValue.toLocaleString(undefined, { maximumFractionDigits: 0 });
 
                 // Update the inflation assumption text in future dollars view
-                const futureExpl = document.getElementById('futureDollarsExplanation');
-                if (futureExpl) {
-                    const assumptionText = futureExpl.querySelector('.text-gray-400');
-                    if (assumptionText) assumptionText.textContent = `(assuming ${inflation}% inflation over ${years} years)`;
+                const inflationText = document.getElementById('inflationAssumptionText');
+                if (inflationText) {
+                    inflationText.textContent = `(assuming ${inflation}% inflation over ${years} years)`;
                 }
 
                 // Store for calculations
@@ -2037,8 +2088,226 @@
 
             // Chart
             updateFireChart(result);
+            generateDynamicFireConsiderations(result);
 
             document.getElementById('fireResults').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ============================================
+        // DYNAMIC FIRE CONSIDERATIONS
+        // Professional early retirement planning insights
+        // ============================================
+
+        function generateDynamicFireConsiderations(result) {
+            const container = document.getElementById('dynamicFireConsiderations');
+            if (!container) return;
+
+            const considerations = [];
+            const swr = result.swr;
+            const retirementYears = result.retirementYears;
+            const fireNumber = result.fireNumber;
+            const currentWealth = result.currentWealth;
+            const monthlyContrib = result.monthlyContribution;
+            const monthsToFIRE = result.monthsToFIRE;
+            const yearsToFIRE = monthsToFIRE / 12;
+            const annualExpenses = result.annualExpenses;
+
+            // Calculate metrics
+            const progressPercent = (currentWealth / fireNumber * 100);
+            const coastFireNumber = fireNumber / Math.pow(1.07, yearsToFIRE); // Assuming 7% real growth
+
+            // ========== CRITICAL WARNINGS (Red) ==========
+
+            // High SWR for long retirement
+            if (swr > 4 && retirementYears > 30) {
+                considerations.push({
+                    priority: 1,
+                    color: 'red',
+                    icon: '⚠️',
+                    title: 'High Withdrawal Rate Risk',
+                    text: `A ${swr}% withdrawal rate over ${retirementYears} years has historically failed ~15-25% of the time. Consider reducing expenses or building a larger buffer. The "4% rule" was designed for 30-year retirements.`
+                });
+            }
+
+            // Very long retirement with standard SWR
+            if (retirementYears > 40 && swr >= 4) {
+                considerations.push({
+                    priority: 1,
+                    color: 'red',
+                    icon: '📉',
+                    title: 'Extended Retirement Duration',
+                    text: `Planning for ${retirementYears} years of retirement is ambitious. At ${swr}% SWR, historical success rates drop below 85%. Consider: (1) 3.25-3.5% SWR, (2) variable withdrawal strategy, or (3) plan for part-time income.`
+                });
+            }
+
+            // ========== IMPORTANT WARNINGS (Yellow/Amber) ==========
+
+            // Sequence of returns risk
+            considerations.push({
+                priority: 2,
+                color: 'amber',
+                icon: '📊',
+                title: 'Sequence of Returns Risk',
+                text: `The first 5-10 years of retirement are critical. A bear market early can permanently damage your portfolio. Consider keeping 2-3 years of expenses in cash/bonds as a buffer to avoid selling stocks during downturns.`
+            });
+
+            // Healthcare gap warning
+            if (yearsToFIRE < 20) { // Likely retiring before Medicare age
+                considerations.push({
+                    priority: 2,
+                    color: 'amber',
+                    icon: '🏥',
+                    title: 'Healthcare Planning Critical',
+                    text: `If retiring before 65, you'll need private health insurance. Budget $500-1,500/month per person until Medicare eligibility. This is often the most underestimated FIRE expense. Consider ACA marketplace plans.`
+                });
+            }
+
+            // High FIRE number
+            if (fireNumber > 2000000) {
+                considerations.push({
+                    priority: 2,
+                    color: 'amber',
+                    icon: '🎯',
+                    title: 'Large FIRE Number',
+                    text: `Your $${(fireNumber/1000000).toFixed(1)}M target is substantial. Ensure your expense estimate includes healthcare, taxes, home maintenance, and lifestyle inflation. Many FIRE planners underestimate true costs by 20-30%.`
+                });
+            }
+
+            // ========== POSITIVE / ON TRACK (Green) ==========
+
+            // Good progress
+            if (progressPercent >= 50) {
+                considerations.push({
+                    priority: 3,
+                    color: 'green',
+                    icon: '🏁',
+                    title: `${progressPercent.toFixed(0)}% to FIRE`,
+                    text: `You've already accumulated ${progressPercent.toFixed(0)}% of your FIRE number. Compound growth accelerates from here—your money is now working harder than you. Stay the course.`
+                });
+            }
+
+            // Conservative SWR
+            if (swr <= 3.5) {
+                considerations.push({
+                    priority: 3,
+                    color: 'green',
+                    icon: '✅',
+                    title: 'Conservative Withdrawal Rate',
+                    text: `A ${swr}% withdrawal rate is conservative—historical success rate exceeds 95% even for 40+ year retirements. You're building in a strong safety margin.`
+                });
+            }
+
+            // Coast FIRE reached
+            if (currentWealth >= coastFireNumber) {
+                considerations.push({
+                    priority: 3,
+                    color: 'green',
+                    icon: '⛵',
+                    title: 'Coast FIRE Achieved',
+                    text: `At $${currentWealth.toLocaleString()}, you've hit Coast FIRE! If you stopped saving entirely, compound growth alone would reach your FIRE number. You could reduce savings and enjoy life more now.`
+                });
+            }
+
+            // ========== STRATEGIC ADVICE (Blue) ==========
+
+            // Tax optimization
+            considerations.push({
+                priority: 4,
+                color: 'blue',
+                icon: '🏛️',
+                title: 'Tax-Efficient Withdrawal Strategy',
+                text: `Plan your withdrawal sequence: taxable accounts first (tax-free return of basis), then traditional 401(k)/IRA (ordinary income), then Roth (tax-free). Consider Roth conversions in low-income years before claiming Social Security.`
+            });
+
+            // Access to retirement accounts
+            if (yearsToFIRE < 15) {
+                considerations.push({
+                    priority: 4,
+                    color: 'blue',
+                    icon: '🔓',
+                    title: 'Early Access Strategies',
+                    text: `Retiring before 59½? Access retirement funds penalty-free via: (1) Roth conversion ladder (5-year wait), (2) Rule 72(t)/SEPP substantially equal payments, (3) taxable brokerage bridge. Plan this 5+ years in advance.`
+                });
+            }
+
+            // Variable withdrawal strategy
+            considerations.push({
+                priority: 4,
+                color: 'blue',
+                icon: '⚖️',
+                title: 'Consider Variable Withdrawals',
+                text: `Instead of fixed ${swr}%, use guardrails: reduce spending 10% if portfolio drops 20%; increase 10% if it rises 50%. This "variable percentage withdrawal" dramatically improves success rates and lets you enjoy good years.`
+            });
+
+            // ========== LIFESTYLE / PLANNING (Gray) ==========
+
+            // Geographic arbitrage
+            if (annualExpenses > 60000) {
+                considerations.push({
+                    priority: 5,
+                    color: 'gray',
+                    icon: '🌍',
+                    title: 'Geographic Arbitrage',
+                    text: `At $${annualExpenses.toLocaleString()}/year expenses, relocating could dramatically accelerate FIRE. Lower cost-of-living areas (Portugal, Mexico, Southeast Asia, or even US South) can cut expenses 30-50%.`
+                });
+            }
+
+            // Social Security planning
+            considerations.push({
+                priority: 5,
+                color: 'gray',
+                icon: '📋',
+                title: 'Social Security Strategy',
+                text: `Don't forget Social Security in your long-term plan. Delaying from 62 to 70 increases benefits ~77%. For many, optimal strategy is: spend down portfolio early, then let SS cover later years.`
+            });
+
+            // One more year syndrome
+            if (yearsToFIRE < 5) {
+                considerations.push({
+                    priority: 5,
+                    color: 'gray',
+                    icon: '🧠',
+                    title: 'Beware "One More Year"',
+                    text: `You're close to FIRE! The temptation for "one more year" is real but often irrational. Each year of delay trades irreplaceable time for marginal security. Define your "enough" number and honor it.`
+                });
+            }
+
+            // Barista FIRE option
+            if (progressPercent >= 30 && progressPercent < 80) {
+                considerations.push({
+                    priority: 5,
+                    color: 'gray',
+                    icon: '☕',
+                    title: 'Barista FIRE Option',
+                    text: `At ${progressPercent.toFixed(0)}% progress, consider "Barista FIRE": part-time work covering current expenses while investments grow untouched. This can free you from full-time work years earlier while still reaching full FIRE.`
+                });
+            }
+
+            // Sort by priority and limit
+            considerations.sort((a, b) => a.priority - b.priority);
+            const topConsiderations = considerations.slice(0, 8);
+
+            // Color classes mapping
+            const colorClasses = {
+                red: { bg: 'bg-red-900/30', border: 'border-red-500/50', title: 'text-red-400' },
+                amber: { bg: 'bg-amber-900/30', border: 'border-amber-500/50', title: 'text-amber-400' },
+                green: { bg: 'bg-green-900/30', border: 'border-green-500/50', title: 'text-green-400' },
+                blue: { bg: 'bg-blue-900/30', border: 'border-blue-500/50', title: 'text-blue-400' },
+                gray: { bg: 'bg-gray-700/50', border: 'border-gray-600', title: 'text-gray-400' }
+            };
+
+            // Render
+            container.innerHTML = topConsiderations.map(c => {
+                const colors = colorClasses[c.color] || colorClasses.gray;
+                return `
+                    <div class="${colors.bg} ${colors.border} border p-3 rounded-lg">
+                        <div class="font-medium ${colors.title} mb-1 flex items-center gap-2">
+                            <span>${c.icon}</span> ${c.title}
+                        </div>
+                        <p class="text-gray-300 text-sm">${c.text}</p>
+                    </div>
+                `;
+            }).join('');
         }
 
         function updateFireChart(result) {
@@ -2329,9 +2598,248 @@
 
             // Chart
             updateChart(result);
+            generateDynamicConsiderations(result);
 
             // Scroll to results
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ============================================
+        // DYNAMIC KEY CONSIDERATIONS
+        // Professional financial planning insights based on user's specific situation
+        // ============================================
+
+        function generateDynamicConsiderations(result) {
+            const container = document.getElementById('dynamicConsiderations');
+            if (!container) return;
+
+            const considerations = [];
+            const input = result.input;
+            const years = input.yearsToGoal;
+            const profile = input.riskProfile;
+            const probSuccess = result.probabilityOfSuccess;
+            const monthlyContrib = input.monthlyContribution;
+            const currentWealth = input.currentWealth;
+            const targetWealth = input.targetWealth;
+            const monthlyIncome = input.monthlyIncome;
+            const requiredMonthly = result.requiredMonthlyFor80Percent;
+
+            // Calculate key metrics
+            const savingsRate = monthlyIncome ? (monthlyContrib / monthlyIncome * 100) : null;
+            const requiredSavingsRate = monthlyIncome ? (requiredMonthly / monthlyIncome * 100) : null;
+            const wealthMultiple = targetWealth / currentWealth;
+            const profileReturns = { conservative: 6, moderate: 8, aggressive: 10, very_aggressive: 12, rentech: 40 };
+            const expectedReturn = profileReturns[profile] || 8;
+            const requiredReturn = (Math.pow(wealthMultiple, 1/years) - 1) * 100;
+
+            // ========== CRITICAL WARNINGS (Red) ==========
+
+            // Risk profile vs timeline mismatch
+            if ((profile === 'aggressive' || profile === 'very_aggressive') && years < 5) {
+                considerations.push({
+                    priority: 1,
+                    color: 'red',
+                    icon: '⚠️',
+                    title: 'Risk-Timeline Mismatch',
+                    text: `You've selected an ${profile.replace('_', ' ')} profile for a ${years}-year goal. Short timelines don't allow recovery from market downturns. <strong>Consider a conservative or moderate profile</strong> for goals under 5 years.`
+                });
+            }
+
+            // Unrealistic required return
+            if (requiredReturn > 15 && probSuccess < 0.5) {
+                considerations.push({
+                    priority: 1,
+                    color: 'red',
+                    icon: '🎯',
+                    title: 'Goal May Be Unrealistic',
+                    text: `Achieving your goal requires ${requiredReturn.toFixed(1)}% annual returns—well above historical market averages (7-10%). Consider: extending your timeline, increasing contributions, or adjusting your target.`
+                });
+            }
+
+            // Unsustainable savings rate
+            if (requiredSavingsRate && requiredSavingsRate > 50) {
+                considerations.push({
+                    priority: 1,
+                    color: 'red',
+                    icon: '💸',
+                    title: 'Savings Rate Unsustainable',
+                    text: `Reaching 80% success probability requires saving ${requiredSavingsRate.toFixed(0)}% of your income—likely unsustainable. Either your goal needs adjustment, or you'll need income growth over time.`
+                });
+            }
+
+            // ========== IMPORTANT WARNINGS (Yellow/Amber) ==========
+
+            // Conservative profile with long horizon
+            if (profile === 'conservative' && years > 15) {
+                considerations.push({
+                    priority: 2,
+                    color: 'amber',
+                    icon: '📊',
+                    title: 'Consider Higher Allocation',
+                    text: `With ${years} years, you have time to weather market volatility. A conservative profile may leave significant growth on the table. Historically, equities outperform bonds over 15+ year periods.`
+                });
+            }
+
+            // High savings rate warning
+            if (savingsRate && savingsRate > 30 && savingsRate <= 50) {
+                considerations.push({
+                    priority: 2,
+                    color: 'amber',
+                    icon: '⚖️',
+                    title: 'High Savings Rate',
+                    text: `You're saving ${savingsRate.toFixed(0)}% of income—impressive but ensure it's sustainable. Life changes (family, health, career shifts) may require flexibility. Build in buffer for the unexpected.`
+                });
+            }
+
+            // Required return exceeds profile
+            if (requiredReturn > expectedReturn && probSuccess < 0.8) {
+                considerations.push({
+                    priority: 2,
+                    color: 'amber',
+                    icon: '📈',
+                    title: 'Stretch Goal',
+                    text: `Your goal requires ${requiredReturn.toFixed(1)}% returns, but your ${profile} profile expects ~${expectedReturn}%. Success depends on above-average market performance. Consider this a "stretch" goal.`
+                });
+            }
+
+            // Short timeline general warning
+            if (years <= 3) {
+                considerations.push({
+                    priority: 2,
+                    color: 'amber',
+                    icon: '⏰',
+                    title: 'Short Time Horizon',
+                    text: `With only ${years} years, market volatility is your enemy. Consider keeping a larger portion in stable assets (bonds, CDs, high-yield savings). Don't risk money you'll need soon.`
+                });
+            }
+
+            // ========== POSITIVE REINFORCEMENT (Green) ==========
+
+            // On track
+            if (probSuccess >= 0.8) {
+                considerations.push({
+                    priority: 3,
+                    color: 'green',
+                    icon: '✅',
+                    title: 'Plan Is On Track',
+                    text: `Your current trajectory has a ${(probSuccess * 100).toFixed(0)}% probability of success. Continue your discipline. Consider automating contributions so you're not tempted to skip months.`
+                });
+            }
+
+            // Good timeline for risk
+            if ((profile === 'aggressive' || profile === 'very_aggressive') && years >= 15) {
+                considerations.push({
+                    priority: 3,
+                    color: 'green',
+                    icon: '🎯',
+                    title: 'Risk Profile Appropriate',
+                    text: `With ${years} years and an ${profile.replace('_', ' ')} allocation, you're well-positioned. Time allows you to ride out volatility. Stay the course during market downturns—they're buying opportunities.`
+                });
+            }
+
+            // Already making progress
+            if (currentWealth > targetWealth * 0.1) {
+                const progress = (currentWealth / targetWealth * 100).toFixed(0);
+                considerations.push({
+                    priority: 3,
+                    color: 'green',
+                    icon: '🏁',
+                    title: `${progress}% Progress Already`,
+                    text: `You've already accumulated ${progress}% of your goal. Compound growth works in your favor—your existing wealth will do significant heavy lifting over ${years} years.`
+                });
+            }
+
+            // ========== EDUCATIONAL / PLANNING ADVICE (Blue/Gray) ==========
+
+            // Tax efficiency reminder
+            if (monthlyContrib >= 500) {
+                considerations.push({
+                    priority: 4,
+                    color: 'blue',
+                    icon: '🏛️',
+                    title: 'Maximize Tax Efficiency',
+                    text: `At $${monthlyContrib.toLocaleString()}/month, ensure you're using tax-advantaged accounts first: employer 401(k) match → max IRA/Roth → HSA (if eligible) → taxable brokerage. Use the AI prompts above for country-specific guidance.`
+                });
+            }
+
+            // Employer match check
+            if (monthlyContrib > 0) {
+                considerations.push({
+                    priority: 4,
+                    color: 'blue',
+                    icon: '🤝',
+                    title: 'Employer Match Check',
+                    text: `Are you capturing your full employer match? This is "free money"—typically 3-6% of salary. Missing the match is leaving guaranteed 50-100% returns on the table.`
+                });
+            }
+
+            // Inflation awareness
+            const inflationRate = parseFloat(document.getElementById('goalInflation')?.value) || 3;
+            const realValue = targetWealth / Math.pow(1 + inflationRate/100, years);
+            considerations.push({
+                priority: 4,
+                color: 'gray',
+                icon: '📉',
+                title: 'Inflation Reality Check',
+                text: `At ${inflationRate}% inflation, your $${targetWealth.toLocaleString()} goal will have the purchasing power of ~$${realValue.toLocaleString(undefined, {maximumFractionDigits: 0})} in today's dollars. Make sure this meets your actual future needs.`
+            });
+
+            // Emergency fund reminder
+            considerations.push({
+                priority: 5,
+                color: 'gray',
+                icon: '🛡️',
+                title: 'Foundation First',
+                text: `Before aggressive investing: (1) 3-6 months emergency fund in cash, (2) pay off high-interest debt (>7%), (3) adequate insurance coverage. These protect your plan from derailment.`
+            });
+
+            // Rebalancing reminder for long-term
+            if (years >= 10) {
+                considerations.push({
+                    priority: 5,
+                    color: 'gray',
+                    icon: '⚖️',
+                    title: 'Plan for Rebalancing',
+                    text: `Over ${years} years, your allocation will drift. Set calendar reminders to rebalance annually, or use target-date funds that do it automatically. As you near your goal, gradually reduce risk.`
+                });
+            }
+
+            // Geographic arbitrage for large goals
+            if (targetWealth >= 1000000) {
+                considerations.push({
+                    priority: 5,
+                    color: 'gray',
+                    icon: '🌍',
+                    title: 'Location Flexibility',
+                    text: `With a $${(targetWealth/1000000).toFixed(1)}M goal, geographic flexibility dramatically changes the math. Living in a lower cost-of-living area (domestically or abroad) can reduce required savings by 30-50%.`
+                });
+            }
+
+            // Sort by priority and limit
+            considerations.sort((a, b) => a.priority - b.priority);
+            const topConsiderations = considerations.slice(0, 6);
+
+            // Color classes mapping
+            const colorClasses = {
+                red: { bg: 'bg-red-900/30', border: 'border-red-500/50', title: 'text-red-400' },
+                amber: { bg: 'bg-amber-900/30', border: 'border-amber-500/50', title: 'text-amber-400' },
+                green: { bg: 'bg-green-900/30', border: 'border-green-500/50', title: 'text-green-400' },
+                blue: { bg: 'bg-blue-900/30', border: 'border-blue-500/50', title: 'text-blue-400' },
+                gray: { bg: 'bg-gray-700/50', border: 'border-gray-600', title: 'text-gray-400' }
+            };
+
+            // Render
+            container.innerHTML = topConsiderations.map(c => {
+                const colors = colorClasses[c.color] || colorClasses.gray;
+                return `
+                    <div class="${colors.bg} ${colors.border} border p-3 rounded-lg">
+                        <div class="font-medium ${colors.title} mb-1 flex items-center gap-2">
+                            <span>${c.icon}</span> ${c.title}
+                        </div>
+                        <p class="text-gray-300 text-sm">${c.text}</p>
+                    </div>
+                `;
+            }).join('');
         }
 
         function updateChart(result) {
@@ -2718,95 +3226,323 @@
             }
         }
 
-        function generateCombinedPrompt(profile) {
+        // Generate tiered prompts: quick, complete, and full
+        function generateTieredPrompts(profile) {
             const originName = COUNTRY_CONFIG[profile.originCountry]?.name || profile.originCountry;
             const residenceName = COUNTRY_CONFIG[profile.residenceCountry]?.name || profile.residenceCountry;
-            const mayRelocateLine = profile.mayRelocate
-                ? "I may relocate internationally in the next 5 years.\n"
-                : "";
+            const isUS = profile.originCountry === 'US' || profile.residenceCountry === 'US';
+            const isDualResident = profile.originCountry !== profile.residenceCountry;
 
-            return `I'm a ${originName} citizen currently living in ${residenceName} as a tax resident.
-${mayRelocateLine}
-For my financial planning, please explain:
+            // QUICK PROMPT (30 seconds) - Executive summary
+            const quickPrompt = `I'm a ${originName} citizen, tax resident in ${residenceName}.${profile.mayRelocate ? ' I may relocate internationally.' : ''}
+
+Quick summary needed:
+1. Top 3 tax-advantaged accounts I should prioritize in ${residenceName} (with 2024/2025 limits)
+2. Any critical restrictions or reporting requirements for ${originName} citizens abroad${isUS ? ' (FBAR, FATCA)' : ''}
+3. Key portability concern if I leave ${residenceName}
+
+Keep response concise - bullet points preferred.`;
+
+            // COMPLETE PROMPT - Comprehensive research
+            const completePrompt = `I'm a ${originName} citizen currently tax resident in ${residenceName}.${profile.mayRelocate ? '\nI may relocate internationally in the next 5 years.' : ''}
+
+Please provide comprehensive guidance on:
 
 1. TAX-ADVANTAGED ACCOUNTS (${residenceName})
-   - What retirement/savings accounts should I use?
-   - Contribution limits and tax treatment
-   - What happens to these if I leave ${residenceName}?
+   For each available account type:
+   - Name and structure (e.g., 401(k), ISA, CPF, superannuation)
+   - 2024/2025 contribution limits (employee and employer portions)
+   - Tax treatment: deductible contributions? tax-deferred growth? taxed on withdrawal?
+   - Early withdrawal penalties and exceptions
+   - Portability: what happens if I leave ${residenceName}?
+   - Creditor protection status
 
-2. PORTABILITY CONSIDERATIONS
-   - As a ${originName} citizen, do I have special tax obligations while abroad?
-   - ${originName}-${residenceName} tax treaty implications
-   - If I return to ${originName}, what happens to my ${residenceName} savings?
+2. INVESTMENT TAXATION (${residenceName})
+   - Capital gains: rates, holding period benefits
+   - Dividends: qualified vs ordinary treatment, foreign dividend treatment
+   - Wealth/net worth taxes (if any)
+   - Exit taxes on emigration (if any)
 
-3. INVESTMENT STRATEGY
-   - What investment vehicles are available to me?
-   - Any restrictions on investing in certain funds (e.g., US persons and PFIC)?
-   - Tax-efficient investing given my situation
+3. CROSS-BORDER CONSIDERATIONS${isDualResident ? `
+   - ${originName}-${residenceName} tax treaty provisions
+   - Tie-breaker rules if I become dual resident
+   - Pension article treatment under treaty` : ''}
+   - Reporting requirements I must comply with${isUS ? ' (FBAR/FinCEN 114, FATCA Form 8938, Form 5471 for CFCs)' : ' (CRS, local FBAR equivalents)'}
+   - PFIC rules if applicable (US persons investing in foreign funds)
 
-4. KEY RISKS & COMMON MISTAKES
-   - What should I be careful about given my situation?
-   - Any common mistakes for ${originName} expats in ${residenceName}?
-   - Reporting requirements I should know about (FBAR, CRS, etc.)
+4. PORTABILITY ANALYSIS${profile.mayRelocate ? `
+   Since I may relocate:
+   - What % should be in portable taxable accounts vs jurisdiction-locked tax-advantaged?
+   - Which ${residenceName} accounts can I continue contributing to from abroad?
+   - Exit planning considerations before departure
+   - What happens to each account type if I return to ${originName}?` : `
+   - What happens to my ${residenceName} accounts if I eventually leave?
+   - Can I access them from abroad without penalty?`}
 
-Please be specific to my ${originName} → ${residenceName} situation.`;
+5. COMMON MISTAKES TO AVOID
+   - Typical errors ${originName} expats make in ${residenceName}
+   - Tax traps specific to this corridor
+   - Investment restrictions (e.g., US persons and non-US funds)
+
+Please be specific to the ${originName} → ${residenceName} situation with current (2024/2025) rules and limits.`;
+
+            // FULL PROMPT - Professional CFP level
+            const fullPrompt = `COMPREHENSIVE FINANCIAL PLANNING RESEARCH REQUEST
+
+PROFILE:
+- Citizenship: ${originName}
+- Tax Residency: ${residenceName}
+- Cross-border Status: ${isDualResident ? 'Yes - dual jurisdiction' : 'Domestic'}
+- Mobility: ${profile.mayRelocate ? 'May relocate internationally' : 'Anchored for foreseeable future'}
+- US Connection: ${isUS ? 'Yes - US reporting obligations apply' : 'No direct US tax obligations'}
+
+I need detailed research on the following areas. Please provide specific, actionable information with current (2024/2025) limits, rates, and requirements.
+
+═══════════════════════════════════════════════════════════════════════════════
+SECTION 1: TAX-ADVANTAGED ACCOUNTS (${residenceName})
+═══════════════════════════════════════════════════════════════════════════════
+
+For EACH available account type in ${residenceName}:
+
+A. RETIREMENT ACCOUNTS
+   • Account name and legal structure
+   • 2024/2025 contribution limits (employee + employer portions)
+   • Tax treatment:
+     - Deductible contributions? (pre-tax vs post-tax)
+     - Tax-deferred growth?
+     - Taxation on withdrawal? (ordinary income vs preferential rate)
+   • Early withdrawal: penalties, exceptions, hardship provisions
+   • Required minimum distributions (age triggers, calculation method)
+   • Portability if I leave ${residenceName}:
+     - Can I maintain the account as non-resident?
+     - Can I continue contributions from abroad?
+     - Withholding on distributions to non-residents
+     - Tax treaty modifications to default treatment
+   • Creditor protection status
+   • Investment restrictions within the account
+
+B. NON-RETIREMENT TAX-ADVANTAGED ACCOUNTS
+   • Investment accounts with preferential tax treatment
+   • Health savings vehicles (contribution limits, eligible expenses)
+   • Education savings vehicles (tax benefits, beneficiary rules)
+   • Any wealth-building incentives (first-home savers schemes, etc.)
+
+C. EMPLOYER SCHEMES
+   • Typical employer matching formulas in ${residenceName}
+   • Vesting schedules (cliff vs graded vesting)
+   • Treatment of unvested amounts on departure
+   • Deferred compensation options
+
+═══════════════════════════════════════════════════════════════════════════════
+SECTION 2: INVESTMENT TAXATION
+═══════════════════════════════════════════════════════════════════════════════
+
+A. CAPITAL GAINS
+   • Short-term vs long-term rates
+   • Holding period requirements for preferential treatment
+   • Indexation benefits (if any)
+   • Tax-loss harvesting rules
+   • Wash sale restrictions and timing
+
+B. INCOME TAXATION
+   • Dividend taxation (qualified vs ordinary)
+   • Foreign dividend treatment and credits
+   • Interest income rates
+   • REIT/trust distribution treatment
+
+C. WEALTH TAXES
+   • Net worth/wealth taxes (rates, thresholds)
+   • Financial transaction taxes
+   • Exit taxes on emigration (deemed disposition rules)
+
+═══════════════════════════════════════════════════════════════════════════════
+SECTION 3: CROSS-BORDER TAX CONSIDERATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+A. TAX TREATY ANALYSIS (${originName} ↔ ${residenceName})
+   • Applicable tax treaty provisions
+   • Pension article treatment
+   • Capital gains article
+   • Dividend and interest articles (withholding rates)
+   • Limitation on benefits clause
+   • Tie-breaker rules for dual residency
+   • Savings clause implications (if US involved)
+
+B. REPORTING OBLIGATIONS
+${isUS ? `   • FBAR (FinCEN 114): thresholds, deadlines, penalties
+   • FATCA Form 8938: thresholds, what to report
+   • Form 5471: CFC reporting requirements
+   • Form 8865: foreign partnership reporting
+   • Form 3520/3520-A: foreign trust reporting
+   • PFIC reporting (Form 8621) for foreign mutual funds` : `   • CRS (Common Reporting Standard) implications
+   • Local FBAR equivalents or foreign account reporting
+   • Foreign trust reporting requirements`}
+
+C. CITIZENSHIP-BASED OBLIGATIONS
+${profile.originCountry === 'US' ? `   • US citizens taxed on worldwide income regardless of residence
+   • Foreign Earned Income Exclusion (FEIE) - limits and requirements
+   • Foreign Tax Credit optimization
+   • State tax obligations (former resident states)` : `   • ${originName} tax obligations while non-resident
+   • Deemed residency rules on return
+   • Social security totalization agreements`}
+
+═══════════════════════════════════════════════════════════════════════════════
+SECTION 4: PORTABILITY & EXIT PLANNING
+═══════════════════════════════════════════════════════════════════════════════
+${profile.mayRelocate ? `
+A. PRE-EXIT PLANNING (Before Leaving ${residenceName})
+   • Optimal timing for departure (tax year considerations)
+   • Accelerating or deferring income/deductions
+   • Realizing gains while resident (step-up strategies)
+   • Converting account types before departure
+   • Exit tax triggers and planning opportunities
+
+B. ACCOUNT-BY-ACCOUNT PORTABILITY
+   For each account type from Section 1:
+   • Can I maintain as non-resident?
+   • Contribution restrictions after departure
+   • Withdrawal taxation from abroad
+   • Treaty modifications to default rules
+   • Recommended action: keep, convert, or liquidate?
+
+C. OPTIMAL ALLOCATION
+   Given my mobility profile:
+   • Recommended % in portable taxable accounts
+   • Recommended % in jurisdiction-locked tax-advantaged
+   • Structures that work across multiple jurisdictions
+   • ETF domicile considerations (US vs Ireland-domiciled)` : `
+A. CONTINGENCY PLANNING
+   • What happens to each account type if I eventually leave?
+   • Minimum residency requirements for continued benefits
+   • Partial portability options`}
+
+═══════════════════════════════════════════════════════════════════════════════
+SECTION 5: SOCIAL SECURITY & STATE PENSION
+═══════════════════════════════════════════════════════════════════════════════
+
+A. ${residenceName.toUpperCase()} SYSTEM
+   • Contribution requirements and rates
+   • Benefit calculation methodology
+   • Vesting requirements for portability
+   • Claiming from abroad
+
+B. TOTALIZATION AGREEMENTS
+   • ${originName}-${residenceName} totalization agreement (if exists)
+   • Credit transfer rules
+   • Avoiding double contributions
+   • Claiming benefits from both systems
+
+═══════════════════════════════════════════════════════════════════════════════
+SECTION 6: COMMON PITFALLS & MISTAKES
+═══════════════════════════════════════════════════════════════════════════════
+
+• Typical errors ${originName} expats make in ${residenceName}
+• Tax traps specific to this corridor
+• Investment restrictions (PFIC, non-US fund rules)
+• Timing mistakes (tax year transitions)
+• Overlooked reporting requirements
+• Professional advice triggers (when to consult specialists)
+
+Please provide specific, current information. Note any areas where professional advice is essential.`;
+
+            return { quick: quickPrompt, complete: completePrompt, full: fullPrompt };
         }
 
-        function showCombinedPrompt(profile) {
-            const promptText = generateCombinedPrompt(profile);
+        // Legacy function for backward compatibility
+        function generateCombinedPrompt(profile) {
+            return generateTieredPrompts(profile).complete;
+        }
 
-            // Update the card to show "profile set" state
-            const originFlag = COUNTRY_CONFIG[profile.originCountry]?.flag || '🌐';
-            const residenceFlag = COUNTRY_CONFIG[profile.residenceCountry]?.flag || '🌐';
+        // Store current prompts globally for tier switching
+        let currentPrompts = null;
+        let currentPromptTier = 'complete';
+
+        function showCombinedPrompt(profile) {
+            currentPrompts = generateTieredPrompts(profile);
+            currentPromptTier = 'complete'; // Default to complete
+
+            const originFlag = COUNTRY_CONFIG[profile.originCountry]?.flag || '';
+            const residenceFlag = COUNTRY_CONFIG[profile.residenceCountry]?.flag || '';
             const originName = COUNTRY_CONFIG[profile.originCountry]?.name || profile.originCountry;
             const residenceName = COUNTRY_CONFIG[profile.residenceCountry]?.name || profile.residenceCountry;
+            const isDualResident = profile.originCountry !== profile.residenceCountry;
 
             const completedCardHTML = `
                 <div class="flex flex-col sm:flex-row items-start gap-4">
-                    <div class="text-3xl">✅</div>
+                    <svg class="w-10 h-10 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                     <div class="flex-1">
-                        <h3 class="font-bold text-white text-lg mb-2">Location Set: ${originFlag} ${originName} → ${residenceFlag} ${residenceName}</h3>
-                        <p class="text-gray-300 text-sm mb-2">Your personalized prompt is ready below. Copy it and paste into ChatGPT or Claude.</p>
-                        ${profile.mayRelocate ? '<p class="text-yellow-400 text-xs mb-2">📍 Includes portability considerations (you may relocate)</p>' : ''}
-                        <button type="button" onclick="openOnboarding()" class="text-blue-400 hover:text-blue-300 text-sm">
-                            Change location →
+                        <h3 class="font-semibold text-white text-lg mb-2">
+                            ${isDualResident ? `${originFlag} ${originName} citizen in ${residenceFlag} ${residenceName}` : `${originFlag} ${originName} resident`}
+                        </h3>
+                        <p class="text-gray-300 text-sm mb-2">Select a prompt depth below, then copy and paste into ChatGPT or Claude.</p>
+                        ${profile.mayRelocate ? '<p class="text-amber-400 text-xs mb-2 flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Includes portability analysis (you may relocate)</p>' : ''}
+                        <button type="button" onclick="openOnboarding()" class="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Change location
                         </button>
                     </div>
                 </div>
             `;
 
-            // Update Goal Mode card and prompt
-            const goalCard = document.getElementById('personalizationCard');
-            const goalDisplayDiv = document.getElementById('combinedPromptDisplay');
-            const goalPromptPre = document.getElementById('combinedPromptText');
-            if (goalCard) {
-                goalCard.innerHTML = completedCardHTML;
-            }
-            if (goalDisplayDiv && goalPromptPre) {
-                goalPromptPre.textContent = promptText;
-                goalDisplayDiv.classList.remove('hidden');
-            }
+            // Update both Goal Mode and FIRE Mode cards
+            ['personalizationCard', 'firePersonalizationCard'].forEach(id => {
+                const card = document.getElementById(id);
+                if (card) card.innerHTML = completedCardHTML;
+            });
 
-            // Update FIRE Mode card and prompt
-            const fireCard = document.getElementById('firePersonalizationCard');
-            const fireDisplayDiv = document.getElementById('fireCombinedPromptDisplay');
-            const firePromptPre = document.getElementById('fireCombinedPromptText');
-            if (fireCard) {
-                fireCard.innerHTML = completedCardHTML;
-            }
-            if (fireDisplayDiv && firePromptPre) {
-                firePromptPre.textContent = promptText;
-                fireDisplayDiv.classList.remove('hidden');
-            }
+            // Update prompt displays with tiered options
+            ['combinedPromptDisplay', 'fireCombinedPromptDisplay'].forEach(id => {
+                const displayDiv = document.getElementById(id);
+                if (displayDiv) {
+                    displayDiv.classList.remove('hidden');
+                }
+            });
 
-            // Scroll to the visible prompt (Goal or FIRE mode)
+            // Set initial prompt content
+            setPromptTier('complete');
+
+            // Scroll to visible prompt
             const results = document.getElementById('results');
             const fireResults = document.getElementById('fireResults');
+            const goalDisplayDiv = document.getElementById('combinedPromptDisplay');
+            const fireDisplayDiv = document.getElementById('fireCombinedPromptDisplay');
+
             if (results && !results.classList.contains('hidden') && goalDisplayDiv) {
                 goalDisplayDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else if (fireResults && !fireResults.classList.contains('hidden') && fireDisplayDiv) {
                 fireDisplayDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+        }
+
+        function setPromptTier(tier) {
+            if (!currentPrompts) return;
+            currentPromptTier = tier;
+
+            // Update prompt text in both Goal and FIRE modes
+            ['combinedPromptText', 'fireCombinedPromptText'].forEach(id => {
+                const pre = document.getElementById(id);
+                if (pre) pre.textContent = currentPrompts[tier];
+            });
+
+            // Determine which mode is active for accent color
+            const fireResults = document.getElementById('fireResults');
+            const isFireMode = fireResults && !fireResults.classList.contains('hidden');
+            const activeColor = isFireMode ? 'bg-orange-600' : 'bg-blue-600';
+
+            // Update tier button states
+            document.querySelectorAll('.prompt-tier-btn').forEach(btn => {
+                const btnTier = btn.dataset.tier;
+                // Remove all possible active colors
+                btn.classList.remove('bg-blue-600', 'bg-orange-600', 'text-white', 'bg-gray-700', 'text-gray-400');
+
+                if (btnTier === tier) {
+                    btn.classList.add(activeColor, 'text-white');
+                } else {
+                    btn.classList.add('bg-gray-700', 'text-gray-400');
+                }
+            });
         }
 
         function copyCombinedPrompt(btnElement) {
@@ -2826,10 +3562,10 @@ Please be specific to my ${originName} → ${residenceName} situation.`;
             if (!promptText || !btn) return;
 
             navigator.clipboard.writeText(promptText).then(() => {
-                btn.textContent = '✅ Copied!';
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Copied!';
                 btn.classList.add('copied');
                 setTimeout(() => {
-                    btn.textContent = '📋 Copy to Clipboard';
+                    btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg> Copy to Clipboard';
                     btn.classList.remove('copied');
                 }, 2000);
             }).catch(err => {
@@ -2840,9 +3576,9 @@ Please be specific to my ${originName} → ${residenceName} situation.`;
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
-                btn.textContent = '✅ Copied!';
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Copied!';
                 setTimeout(() => {
-                    btn.textContent = '📋 Copy to Clipboard';
+                    btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg> Copy to Clipboard';
                 }, 2000);
             });
         }
@@ -2853,22 +3589,26 @@ Please be specific to my ${originName} → ${residenceName} situation.`;
 
             card.innerHTML = `
                 <div class="flex flex-col sm:flex-row items-start gap-4">
-                    <div class="text-3xl">🌍</div>
+                    <svg class="w-10 h-10 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                     <div class="flex-1">
-                        <h3 class="font-bold text-white text-lg mb-2">Personalize Your Plan with AI</h3>
-                        <p class="text-gray-300 text-sm mb-3">Get country-specific advice tailored to your citizenship and residence:</p>
+                        <h3 class="font-semibold text-white text-lg mb-2">Get Country-Specific Tax Research Prompts</h3>
+                        <p class="text-gray-300 text-sm mb-3">Generate professional prompts for AI-assisted tax and account research tailored to your jurisdiction:</p>
                         <ul class="text-sm text-gray-400 space-y-1 mb-4">
-                            <li>• Best tax-advantaged accounts for your situation</li>
-                            <li>• Cross-border portability if you relocate</li>
-                            <li>• Retirement systems (CPF, 401k, ISA, etc.)</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Tax-advantaged accounts for your residence</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Cross-border portability analysis</li>
+                            <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Treaty implications and reporting requirements</li>
                         </ul>
-                        <button type="button" onclick="openPersonalizationFlow()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                            🌍 Set My Location & Get Personalized Prompts
+                        <button type="button" onclick="openPersonalizationFlow()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Set Location & Generate Prompts
                         </button>
                     </div>
                 </div>
             `;
             displayDiv.classList.add('hidden');
+            currentPrompts = null;
         }
 
         function updateProfileBadge() {
@@ -2876,19 +3616,23 @@ Please be specific to my ${originName} → ${residenceName} situation.`;
             const badgeText = document.getElementById('profileBadgeText');
             const profile = getExpatProfile();
 
-            badge.classList.remove('hidden');
-
             if (profile && profile.originCountry && profile.residenceCountry) {
-                const originFlag = COUNTRY_CONFIG[profile.originCountry]?.flag || '🌐';
-                const residenceFlag = COUNTRY_CONFIG[profile.residenceCountry]?.flag || '🌐';
+                const originFlag = COUNTRY_CONFIG[profile.originCountry]?.flag || '';
+                const residenceFlag = COUNTRY_CONFIG[profile.residenceCountry]?.flag || '';
+                const originName = COUNTRY_CONFIG[profile.originCountry]?.name || profile.originCountry;
+                const residenceName = COUNTRY_CONFIG[profile.residenceCountry]?.name || profile.residenceCountry;
 
                 if (profile.originCountry === profile.residenceCountry) {
-                    badgeText.textContent = `${originFlag} ${COUNTRY_CONFIG[profile.originCountry]?.name || 'Set location'}`;
+                    badgeText.textContent = `${originFlag} ${originName}`;
                 } else {
-                    badgeText.textContent = `${originFlag} → ${residenceFlag}`;
+                    badgeText.textContent = `${originFlag} ${originName} → ${residenceFlag} ${residenceName}`;
                 }
+                badge.classList.remove('border-gray-600');
+                badge.classList.add('border-green-600');
             } else {
-                badgeText.textContent = '🌍 Set location';
+                badgeText.textContent = 'Set your location for tax-specific prompts';
+                badge.classList.remove('border-green-600');
+                badge.classList.add('border-gray-600');
             }
         }
 

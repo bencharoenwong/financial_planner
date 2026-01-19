@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Growth Graph Financial Analysis Report</title>
+    <style>
+        /* PDF Report Styles - optimized for WeasyPrint/print */
+        @page {
+            size: letter;
+            margin: 0.75in;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .report-meta {
+            text-align: right;
+            font-size: 9pt;
+            color: #6b7280;
+        }
+
+        /* Title */
+        .title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .title h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #6b7280;
+            font-size: 11pt;
+        }
+
+        /* Executive Summary Box */
+        .summary-box {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-box h2 {
+            font-size: 14pt;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .summary-label {
+            color: #6b7280;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* Probability Banner */
+        .probability-banner {
+            text-align: center;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .probability-banner.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .probability-banner.yellow {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .probability-banner.red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .probability-number {
+            font-size: 48pt;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .probability-label {
+            font-size: 14pt;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .probability-interpretation {
+            margin-top: 12px;
+            font-size: 11pt;
+            opacity: 0.85;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section h2 {
+            font-size: 14pt;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* Outcomes Table */
+        .outcomes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .outcomes-table th,
+        .outcomes-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .outcomes-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .outcomes-table .value {
+            font-weight: 600;
+            font-size: 12pt;
+        }
+
+        /* Sensitivity Analysis */
+        .sensitivity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .sensitivity-change {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .sensitivity-change.negative {
+            color: #ef4444;
+        }
+
+        /* Flags */
+        .flag {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 8px;
+        }
+
+        .flag-icon {
+            font-size: 14pt;
+        }
+
+        /* Recommendations */
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px;
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 8px;
+        }
+
+        /* Methodology */
+        .methodology {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 10pt;
+            color: #6b7280;
+        }
+
+        .methodology h3 {
+            font-size: 11pt;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .methodology ul {
+            margin-left: 16px;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            margin-top: 32px;
+            padding: 16px;
+            background: #fef2f2;
+            border-radius: 8px;
+            font-size: 9pt;
+            color: #991b1b;
+        }
+
+        .disclaimer strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 9pt;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Growth <span>Graph</span></div>
+        <div class="report-meta">
+            Report Generated: {{ generated_date }}<br>
+            Report ID: {{ report_id }}
+        </div>
+    </div>
+
+    <!-- Title -->
+    <div class="title">
+        <h1>Financial Goal Analysis</h1>
+        <p>Monte Carlo Simulation with 10,000 Scenarios</p>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="summary-box">
+        <h2>Your Plan at a Glance</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">Current Savings</span>
+                <span class="summary-value">{{ current_wealth }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Target Goal</span>
+                <span class="summary-value">{{ target_wealth }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Time Horizon</span>
+                <span class="summary-value">{{ years }} years</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Monthly Contribution</span>
+                <span class="summary-value">{{ monthly_contribution }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Risk Profile</span>
+                <span class="summary-value">{{ risk_profile }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Expected Return</span>
+                <span class="summary-value">{{ expected_return }}% annually</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Probability Banner -->
+    <div class="probability-banner {{ probability_class }}">
+        <div class="probability-number">{{ probability }}%</div>
+        <div class="probability-label">Probability of Reaching Your Goal</div>
+        <div class="probability-interpretation">{{ probability_interpretation }}</div>
+    </div>
+
+    <!-- Projected Outcomes -->
+    <div class="section">
+        <h2>Projected Outcomes After {{ years }} Years</h2>
+        <table class="outcomes-table">
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Projected Wealth</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pessimistic (10th percentile)</td>
+                    <td class="value">{{ percentile_10 }}</td>
+                    <td>Worst 10% of outcomes</td>
+                </tr>
+                <tr>
+                    <td>Conservative (20th percentile)</td>
+                    <td class="value">{{ percentile_20 }}</td>
+                    <td>80% confidence floor</td>
+                </tr>
+                <tr>
+                    <td>Expected (50th percentile)</td>
+                    <td class="value">{{ percentile_50 }}</td>
+                    <td>Median outcome</td>
+                </tr>
+                <tr>
+                    <td>Optimistic (90th percentile)</td>
+                    <td class="value">{{ percentile_90 }}</td>
+                    <td>Best 10% of outcomes</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sensitivity Analysis -->
+    <div class="section">
+        <h2>What-If Scenarios</h2>
+        <p style="margin-bottom: 12px; color: #6b7280;">How changes to your plan affect success probability:</p>
+
+        <div class="sensitivity-item">
+            <span>Increase monthly contribution by $200</span>
+            <span class="sensitivity-change">+{{ sensitivity_contribution }}% success</span>
+        </div>
+        <div class="sensitivity-item">
+            <span>Extend timeline by 3 years</span>
+            <span class="sensitivity-change">+{{ sensitivity_timeline }}% success</span>
+        </div>
+        <div class="sensitivity-item">
+            <span>Switch to more aggressive portfolio</span>
+            <span class="sensitivity-change">+{{ sensitivity_risk }}% success</span>
+        </div>
+        <div class="sensitivity-item">
+            <span>Reduce target by 20%</span>
+            <span class="sensitivity-change">+{{ sensitivity_target }}% success</span>
+        </div>
+    </div>
+
+    <!-- Page break for longer reports -->
+    <!-- <div class="page-break"></div> -->
+
+    <!-- Flags -->
+    {% if flags %}
+    <div class="section">
+        <h2>Items to Consider</h2>
+        {% for flag in flags %}
+        <div class="flag">
+            <span class="flag-icon">⚠️</span>
+            <span>{{ flag }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Recommendations -->
+    <div class="section">
+        <h2>Recommendations</h2>
+        {% for rec in recommendations %}
+        <div class="recommendation">
+            <span>💡</span>
+            <span>{{ rec }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Sustainable Income -->
+    <div class="section">
+        <h2>What Your Target Can Support</h2>
+        <p style="margin-bottom: 12px; color: #6b7280;">
+            If you reach {{ target_wealth }}, here's the annual income you could sustainably withdraw:
+        </p>
+        <table class="outcomes-table">
+            <thead>
+                <tr>
+                    <th>Withdrawal Strategy</th>
+                    <th>Annual Income</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Conservative (3% SWR)</td>
+                    <td class="value">{{ income_conservative }}</td>
+                    <td>30+ year horizon, very safe</td>
+                </tr>
+                <tr>
+                    <td>Traditional (4% SWR)</td>
+                    <td class="value">{{ income_moderate }}</td>
+                    <td>Classic "4% rule"</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Methodology -->
+    <div class="methodology">
+        <h3>Methodology</h3>
+        <ul>
+            <li>Monte Carlo simulation with 10,000 independent trials</li>
+            <li>Log-normal return distribution based on historical data</li>
+            <li>Risk profile: {{ risk_profile }} ({{ expected_return }}% return, {{ volatility }}% volatility)</li>
+            <li>All figures in nominal dollars (not inflation-adjusted)</li>
+            <li>Contributions assumed at start of each month</li>
+        </ul>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+        <strong>Important Disclaimer</strong>
+        This report is for educational and informational purposes only and does not constitute financial advice.
+        Past performance does not guarantee future results. The projections shown are based on simplified
+        models and historical assumptions that may not reflect future market conditions. Tax implications
+        vary by jurisdiction and are not modeled. Please consult a qualified financial advisor before
+        making investment decisions. Growth Graph is not a registered investment advisor.
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Generated by Growth Graph<br>
+        © 2026 Growth Graph. All rights reserved.
+    </div>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Growth Graph Financial Analysis Report - Sample</title>
+    <style>
+        /* PDF Report Styles - optimized for WeasyPrint/print */
+        @page {
+            size: letter;
+            margin: 0.75in;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #1f2937;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .report-meta {
+            text-align: right;
+            font-size: 9pt;
+            color: #6b7280;
+        }
+
+        /* Title */
+        .title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .title h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #6b7280;
+            font-size: 11pt;
+        }
+
+        /* Executive Summary Box */
+        .summary-box {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-box h2 {
+            font-size: 14pt;
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .summary-label {
+            color: #6b7280;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* Probability Banner */
+        .probability-banner {
+            text-align: center;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .probability-banner.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .probability-banner.yellow {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .probability-banner.red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .probability-number {
+            font-size: 48pt;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .probability-label {
+            font-size: 14pt;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .probability-interpretation {
+            margin-top: 12px;
+            font-size: 11pt;
+            opacity: 0.85;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section h2 {
+            font-size: 14pt;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* Outcomes Table */
+        .outcomes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .outcomes-table th,
+        .outcomes-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .outcomes-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .outcomes-table .value {
+            font-weight: 600;
+            font-size: 12pt;
+        }
+
+        /* Sensitivity Analysis */
+        .sensitivity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .sensitivity-change {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .sensitivity-change.negative {
+            color: #ef4444;
+        }
+
+        /* Flags */
+        .flag {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 8px;
+        }
+
+        .flag-icon {
+            font-size: 14pt;
+        }
+
+        /* Recommendations */
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px;
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 8px;
+        }
+
+        /* Methodology */
+        .methodology {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 10pt;
+            color: #6b7280;
+        }
+
+        .methodology h3 {
+            font-size: 11pt;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .methodology ul {
+            margin-left: 16px;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            margin-top: 32px;
+            padding: 16px;
+            background: #fef2f2;
+            border-radius: 8px;
+            font-size: 9pt;
+            color: #991b1b;
+        }
+
+        .disclaimer strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 9pt;
+            color: #9ca3af;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Growth <span>Graph</span></div>
+        <div class="report-meta">
+            Report Generated: January 17, 2026<br>
+            Report ID: GG-2026-01-17-A7B3
+        </div>
+    </div>
+
+    <!-- Title -->
+    <div class="title">
+        <h1>Financial Goal Analysis</h1>
+        <p>Monte Carlo Simulation with 10,000 Scenarios</p>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="summary-box">
+        <h2>Your Plan at a Glance</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">Current Savings</span>
+                <span class="summary-value">$50,000</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Target Goal</span>
+                <span class="summary-value">$1,000,000</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Time Horizon</span>
+                <span class="summary-value">25 years</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Monthly Contribution</span>
+                <span class="summary-value">$1,500</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Risk Profile</span>
+                <span class="summary-value">Moderate (60/40)</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Expected Return</span>
+                <span class="summary-value">8% annually</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Probability Banner -->
+    <div class="probability-banner yellow">
+        <div class="probability-number">72%</div>
+        <div class="probability-label">Probability of Reaching Your Goal</div>
+        <div class="probability-interpretation">
+            Your plan is achievable but would benefit from optimization.
+            In 72 out of 100 simulated market scenarios, you reached $1,000,000.
+        </div>
+    </div>
+
+    <!-- Projected Outcomes -->
+    <div class="section">
+        <h2>Projected Outcomes After 25 Years</h2>
+        <table class="outcomes-table">
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Projected Wealth</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pessimistic (10th percentile)</td>
+                    <td class="value">$685,000</td>
+                    <td>Worst 10% of outcomes</td>
+                </tr>
+                <tr>
+                    <td>Conservative (20th percentile)</td>
+                    <td class="value">$812,000</td>
+                    <td>80% confidence floor</td>
+                </tr>
+                <tr>
+                    <td>Expected (50th percentile)</td>
+                    <td class="value">$1,145,000</td>
+                    <td>Median outcome</td>
+                </tr>
+                <tr>
+                    <td>Optimistic (90th percentile)</td>
+                    <td class="value">$1,890,000</td>
+                    <td>Best 10% of outcomes</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sensitivity Analysis -->
+    <div class="section">
+        <h2>What-If Scenarios</h2>
+        <p style="margin-bottom: 12px; color: #6b7280;">How changes to your plan affect success probability:</p>
+
+        <div class="sensitivity-item">
+            <span>Increase monthly contribution by $200 (to $1,700)</span>
+            <span class="sensitivity-change">+8% → 80% success</span>
+        </div>
+        <div class="sensitivity-item">
+            <span>Extend timeline by 3 years (to 28 years)</span>
+            <span class="sensitivity-change">+11% → 83% success</span>
+        </div>
+        <div class="sensitivity-item">
+            <span>Switch to aggressive portfolio (10% return, 16% vol)</span>
+            <span class="sensitivity-change">+6% → 78% success</span>
+        </div>
+        <div class="sensitivity-item">
+            <span>Reduce target by 20% (to $800,000)</span>
+            <span class="sensitivity-change">+15% → 87% success</span>
+        </div>
+    </div>
+
+    <!-- Flags -->
+    <div class="section">
+        <h2>Items to Consider</h2>
+        <div class="flag">
+            <span class="flag-icon">⚠️</span>
+            <span>Success probability below 80% threshold. Consider increasing contributions or extending timeline.</span>
+        </div>
+        <div class="flag">
+            <span class="flag-icon">⚠️</span>
+            <span>Monthly contribution ($1,500) represents 15% of typical income at this savings level. Ensure this is sustainable.</span>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="section">
+        <h2>Recommendations</h2>
+        <div class="recommendation">
+            <span>💡</span>
+            <span><strong>Increase contributions gradually:</strong> Adding just $100/month now compounds to significant gains. Even small increases help.</span>
+        </div>
+        <div class="recommendation">
+            <span>💡</span>
+            <span><strong>Maximize tax-advantaged accounts:</strong> Ensure you're capturing any employer 401(k) match and using IRA contribution limits.</span>
+        </div>
+        <div class="recommendation">
+            <span>💡</span>
+            <span><strong>Review annually:</strong> Re-run this analysis each year as your income and circumstances change.</span>
+        </div>
+        <div class="recommendation">
+            <span>💡</span>
+            <span><strong>Consider a higher equity allocation:</strong> With 25 years, you have time to recover from downturns. An 80/20 portfolio may be appropriate.</span>
+        </div>
+    </div>
+
+    <!-- Sustainable Income -->
+    <div class="section">
+        <h2>What Your Target Can Support</h2>
+        <p style="margin-bottom: 12px; color: #6b7280;">
+            If you reach $1,000,000, here's the annual income you could sustainably withdraw:
+        </p>
+        <table class="outcomes-table">
+            <thead>
+                <tr>
+                    <th>Withdrawal Strategy</th>
+                    <th>Annual Income</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Conservative (3% SWR)</td>
+                    <td class="value">$30,000/year</td>
+                    <td>30+ year horizon, very safe</td>
+                </tr>
+                <tr>
+                    <td>Traditional (4% SWR)</td>
+                    <td class="value">$40,000/year</td>
+                    <td>Classic "4% rule"</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 12px; color: #6b7280; font-size: 10pt;">
+            These are inflation-adjusted figures. The actual dollar amount withdrawn increases each year to maintain purchasing power.
+        </p>
+    </div>
+
+    <!-- Methodology -->
+    <div class="methodology">
+        <h3>Methodology</h3>
+        <ul>
+            <li>Monte Carlo simulation with 10,000 independent trials</li>
+            <li>Log-normal return distribution based on historical data</li>
+            <li>Risk profile: Moderate (8% arithmetic return, 13% volatility)</li>
+            <li>All figures in nominal dollars (not inflation-adjusted)</li>
+            <li>Contributions assumed at start of each month</li>
+            <li>No taxes modeled (results may vary based on account types)</li>
+        </ul>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+        <strong>Important Disclaimer</strong>
+        This report is for educational and informational purposes only and does not constitute financial advice.
+        Past performance does not guarantee future results. The projections shown are based on simplified
+        models and historical assumptions that may not reflect future market conditions. Tax implications
+        vary by jurisdiction and are not modeled. Please consult a qualified financial advisor before
+        making investment decisions. Growth Graph is not a registered investment advisor.
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Generated by Growth Graph<br>
+        © 2026 Growth Graph. All rights reserved.
+    </div>
+</body>
+</html>
